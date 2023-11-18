@@ -22,14 +22,14 @@ class MyselfFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val notificationsViewModel =
+        val myselfViewModel =
             ViewModelProvider(this).get(MyselfViewModel::class.java)
 
         _binding = FragmentMyselfBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
         val textView: TextView = binding.textMyself
-        notificationsViewModel.text.observe(viewLifecycleOwner) {
+        myselfViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
         }
         return root
