@@ -12,14 +12,14 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.squidsentry.mobile.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        android:id="@+id/navigation_devices"
+        android:name="com.squidsentry.mobile.ui.devices.DashboardFragment"
+        android:label="@string/title_devices"
+        tools:layout="@layout/fragment_devices" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.squidsentry.mobile.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        android:id="@+id/navigation_myself"
+        android:name="com.squidsentry.mobile.ui.myself.NotificationsFragment"
+        android:label="@string/title_myself"
+        tools:layout="@layout/fragment_myself" />
 </navigation>

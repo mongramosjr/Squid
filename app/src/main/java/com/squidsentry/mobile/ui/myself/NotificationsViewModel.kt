@@ -1,4 +1,4 @@
-package com.squidsentry.mobile.ui.notifications
+package com.squidsentry.mobile.ui.myself
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

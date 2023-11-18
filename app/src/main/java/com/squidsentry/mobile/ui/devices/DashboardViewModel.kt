@@ -1,4 +1,4 @@
-package com.squidsentry.mobile.ui.dashboard
+package com.squidsentry.mobile.ui.devices
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
