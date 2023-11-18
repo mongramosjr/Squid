@@ -13,13 +13,13 @@
 
     <fragment
         android:id="@+id/navigation_devices"
-        android:name="com.squidsentry.mobile.ui.devices.DashboardFragment"
+        android:name="com.squidsentry.mobile.ui.devices.DevicesFragment"
         android:label="@string/title_devices"
         tools:layout="@layout/fragment_devices" />
 
     <fragment
         android:id="@+id/navigation_myself"
-        android:name="com.squidsentry.mobile.ui.myself.NotificationsFragment"
+        android:name="com.squidsentry.mobile.ui.myself.MyselfFragment"
         android:label="@string/title_myself"
         tools:layout="@layout/fragment_myself" />
 </navigation>
