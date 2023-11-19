@@ -3,4 +3,6 @@
     <string name="title_home">Home</string>
     <string name="title_devices">Devices</string>
     <string name="title_myself">Me</string>
+    <string name="thingspeak_channel">2210889</string>
+    <string name="thingspeak_test_channel">2319797</string>
 </resources>

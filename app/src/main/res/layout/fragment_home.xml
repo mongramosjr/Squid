@@ -4,8 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingTop="16dp"
+    android:paddingRight="16dp"
+
     tools:context=".ui.home.HomeFragment">
 
+    <!--
     <TextView
         android:id="@+id/text_home"
         android:layout_width="match_parent"
@@ -18,5 +23,50 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" />-->
+    <GridLayout
+        android:id="@+id/home_card_grid"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:columnCount="2"
+        android:horizontalSpacing="6dp"
+        android:rowCount="4">
+
+        <include
+            layout="@layout/home_card_status"
+            android:layout_width="match_parent"
+            android:layout_height="240dp"
+            android:layout_columnSpan="2" />
+
+        <include
+            layout="@layout/home_card_ph"
+            android:layout_width="180dp"
+            android:layout_height="220dp" />
+
+        <include
+            layout="@layout/home_card_temperature"
+            android:layout_width="180dp"
+            android:layout_height="220dp" />
+
+        <include
+            layout="@layout/home_card_salinity"
+            android:layout_width="180dp"
+            android:layout_height="240dp" />
+
+        <include
+            layout="@layout/home_card_dissolvedoxygen"
+            android:layout_width="180dp"
+            android:layout_height="240dp" />
+
+        <include
+            layout="@layout/home_card_turbidity"
+            android:layout_width="180dp"
+            android:layout_height="180dp" />
+
+        <include
+            layout="@layout/home_card_tds"
+            android:layout_width="180dp"
+            android:layout_height="180dp" />
+
+    </GridLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
