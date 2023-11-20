@@ -51,7 +51,7 @@ class HomeFragment : Fragment() {
 
 
         //homeViewModel = ViewModelProvider(this)[HomeViewModel::class.java]
-        //homeViewModel.getThingSpeakData()
+        homeViewModel.getThingSpeakData()
 
         Log.i("MMMMMMMM", "onCreateView Home fragment")
 

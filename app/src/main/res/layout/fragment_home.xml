@@ -7,7 +7,6 @@
     android:paddingLeft="16dp"
     android:paddingTop="16dp"
     android:paddingRight="16dp"
-
     tools:context=".ui.home.HomeFragment">
 
     <!--
@@ -35,7 +34,8 @@
         <include
             layout="@layout/home_card_status"
             android:layout_width="match_parent"
-            android:layout_height="240dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="22dp"
             android:layout_columnSpan="2" />
 
         <include

@@ -22,4 +22,9 @@
         android:name="com.squidsentry.mobile.ui.myself.MyselfFragment"
         android:label="@string/title_myself"
         tools:layout="@layout/fragment_myself" />
+    <fragment
+        android:id="@+id/login_fragment"
+        android:name="com.squidsentry.mobile.ui.login.LoginFragment"
+        android:label="login_fragment"
+        tools:layout="@layout/fragment_login"/>
 </navigation>
