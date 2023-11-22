@@ -23,50 +23,69 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />-->
+
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:orientation="vertical">
+
+    <include
+        android:id="@+id/home_card_status_id"
+        layout="@layout/home_card_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp" />
+
+
     <GridLayout
         android:id="@+id/home_card_grid"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:columnCount="2"
-        android:horizontalSpacing="6dp"
-        android:rowCount="4">
-
-        <include
-            layout="@layout/home_card_status"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="22dp"
-            android:layout_columnSpan="2" />
+        android:rowCount="4"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/home_card_status_id">
 
         <include
             layout="@layout/home_card_ph"
             android:layout_width="180dp"
-            android:layout_height="220dp" />
+            android:layout_height="240dp"
+            android:layout_margin="8dp" />
 
         <include
             layout="@layout/home_card_temperature"
             android:layout_width="180dp"
-            android:layout_height="220dp" />
+            android:layout_height="240dp"
+            android:layout_margin="8dp" />
 
         <include
             layout="@layout/home_card_salinity"
             android:layout_width="180dp"
-            android:layout_height="240dp" />
+            android:layout_height="240dp"
+            android:layout_margin="8dp" />
 
         <include
             layout="@layout/home_card_dissolvedoxygen"
             android:layout_width="180dp"
-            android:layout_height="240dp" />
+            android:layout_height="240dp"
+            android:layout_margin="8dp" />
 
         <include
             layout="@layout/home_card_turbidity"
             android:layout_width="180dp"
-            android:layout_height="180dp" />
+            android:layout_height="240dp"
+            android:layout_margin="8dp" />
 
         <include
             layout="@layout/home_card_tds"
             android:layout_width="180dp"
-            android:layout_height="180dp" />
+            android:layout_height="240dp"
+            android:layout_margin="8dp" />
 
     </GridLayout>
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
