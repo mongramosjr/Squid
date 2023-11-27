@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_myself"
+    app:startDestination="@+id/myselfFragment">
+
+    <fragment
+        android:id="@+id/myselfFragment"
+        android:name="com.squidsentry.mobile.ui.myself.MyselfFragment"
+        android:label="@string/title_myself"
+        tools:layout="@layout/fragment_myself" >
+        <action
+            android:id="@+id/action_myselfFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.squidsentry.mobile.ui.login.LoginFragment"
+        android:label="Login"
+        tools:layout="@layout/fragment_login">
+        <action
+            android:id="@+id/action_loginFragment_to_myselfFragment"
+            app:destination="@id/myselfFragment" />
+    </fragment>
+
+</navigation>

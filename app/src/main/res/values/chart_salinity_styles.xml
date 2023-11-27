@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="ChartSalinityLineStyle">
+        <item name="color">@color/chart_salinity_color</item>
+    </style>
+    <style name="ChartSalinityAlertLineStyle">
+        <item name="color">@color/chart_alert_color</item>
+    </style>
+
+    <style name="ChartSalinityLineChartStyle">
+        <item name="line1Spec">@style/ChartSalinityLineStyle</item>
+    </style>
+    <style name="ChartSalinityAlertLineChartStyle">
+        <item name="line1Spec">@style/ChartSalinityAlertLineStyle</item>
+    </style>
+</resources>

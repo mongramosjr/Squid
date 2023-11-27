@@ -6,8 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.Navigation
 import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
 import com.patrykandpatrick.vico.core.entry.FloatEntry
 import com.patrykandpatrick.vico.core.entry.entriesOf
@@ -17,7 +20,6 @@ import com.squidsentry.mobile.Feed
 import com.squidsentry.mobile.R
 import com.squidsentry.mobile.ThingSpeak
 import com.squidsentry.mobile.databinding.FragmentHomeBinding
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
@@ -38,7 +40,7 @@ class HomeFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        Log.i("HOMEHHHHHHHH", "onCreate")
         //homeViewModel = HomeViewModel()
         homeViewModel = ViewModelProvider(this)[HomeViewModel::class.java]
         // Call the ThingSpeak API
@@ -52,27 +54,36 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        val root: View = binding.root
 
+        Log.i("HOMEHHHHHHHH", "onCreateView")
+        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        val view: View = binding.root
+        //val view = inflater.inflate(R.layout.fragment_home, container, false)
 
         //homeViewModel = ViewModelProvider(this)[HomeViewModel::class.java]
         homeViewModel.getThingSpeakData()
-
-        Log.i("MMMMMMMM", "onCreateView Home fragment")
 
         //val textView: TextView = binding.textHome
         //homeViewModel.text.observe(viewLifecycleOwner) {
         //    textView.text = it
         //}
 
-        subscribe(root)
-        return root
+        view.findViewById<TextView>(R.id.last_measure_pH).setOnClickListener {
+            Navigation.findNavController(view).navigate(R.id.action_homeFragment_to_potentialOfHydrogenFragment)
+        }
+        view.findViewById<CardView>(R.id.cardview_pH).setOnClickListener {
+            Navigation.findNavController(view).navigate(R.id.action_homeFragment_to_potentialOfHydrogenFragment)
+        }
+
+        subscribe(view)
+
+        return view
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+
     }
 
     private fun subscribe(root: View) {
@@ -83,8 +94,12 @@ class HomeFragment : Fragment() {
                 //result.text = resources.getString(R.string.loading)
                 //TODO: display chart with random
                 fun getRandomEntries() = entriesOf( Random.nextFloat() * 16f)
-                root.findViewById<ChartView>(R.id.chart_view_temperature)
-                    .setModel(entryModelOf(entriesOf(96f,33,23f,455f,76f)))
+                displayEmptyChart(root, R.id.chart_view_temperature, 7f)
+                displayEmptyChart(root, R.id.chart_view_pH, 7f)
+                displayEmptyChart(root, R.id.chart_view_tds, 7f)
+                displayEmptyChart(root, R.id.chart_view_turbidity, 7f)
+                displayEmptyChart(root, R.id.chart_view_dissolvedoxygen, 7f)
+                displayEmptyChart(root, R.id.chart_view_salinity, 7f)
             }
 
         }
@@ -191,7 +206,6 @@ class HomeFragment : Fragment() {
                 }
             }
 
-            Log.e("OOOOOOOOOOO", pH.count().toString())
             /*
             val phList: List<FloatEntry> = pH.toList()
             root.findViewById<ChartView>(R.id.chart_view_pH)
@@ -253,8 +267,15 @@ class HomeFragment : Fragment() {
 
 
         }else{
-            Log.i("MMMMMMMM", "no displayChart")
+            Log.i("HOMEHHHHHHHH", "no displayChart")
         }
+    }
+
+    private fun displayEmptyChart(view: View, id: Int, value: Float)
+    {
+        view.findViewById<ChartView>(id)
+            .setModel(entryModelOf(entriesOf(value, value, value,value,value, value)))
+
     }
 
 }

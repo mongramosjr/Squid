@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="ChartDissolvedOxygenLineStyle">
+        <item name="color">@color/chart_dissolvedoxygen_color</item>
+    </style>
+    <style name="ChartDissolvedOxygenAlertLineStyle">
+        <item name="color">@color/chart_alert_color</item>
+    </style>
+
+    <style name="ChartDissolvedOxygenLineChartStyle">
+        <item name="line1Spec">@style/ChartDissolvedOxygenLineStyle</item>
+    </style>
+    <style name="ChartDissolvedOxygenAlertLineChartStyle">
+        <item name="line1Spec">@style/ChartDissolvedOxygenAlertLineStyle</item>
+    </style>
+</resources>

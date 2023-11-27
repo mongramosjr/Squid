@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="ChartTdsLineStyle">
+        <item name="color">@color/chart_tds_color</item>
+    </style>
+    <style name="ChartTdsAlertLineStyle">
+        <item name="color">@color/chart_alert_color</item>
+    </style>
+
+    <style name="ChartTdsLineChartStyle">
+        <item name="line1Spec">@style/ChartTdsLineStyle</item>
+    </style>
+    <style name="ChartTdsAlertLineChartStyle">
+        <item name="line1Spec">@style/ChartTdsAlertLineStyle</item>
+    </style>
+</resources>

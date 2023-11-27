@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="chart_alert_color">#f07777</color>
+    <color name="chart_ph_color">#a485e0</color>
+    <color name="chart_ph_acidic_color">#a485e0</color>
+    <color name="chart_temperature_color">#3490de</color>
+    <color name="chart_temperature_hot_color">#f094bb</color>
+    <color name="chart_salinity_color">#a485e0</color>
+    <color name="chart_tds_color">#a485e0</color>
+    <color name="chart_turbidity_color">#a485e0</color>
+    <color name="chart_dissolvedoxygen_color">#a485e0</color>
+</resources>

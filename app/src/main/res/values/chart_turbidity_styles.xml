@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="ChartTurbidityLineStyle">
+        <item name="color">@color/chart_turbidity_color</item>
+    </style>
+    <style name="ChartTurbidityAlertLineStyle">
+        <item name="color">@color/chart_alert_color</item>
+    </style>
+
+    <style name="ChartTurbidityLineChartStyle">
+        <item name="line1Spec">@style/ChartTurbidityLineStyle</item>
+    </style>
+    <style name="ChartTurbidityAlertLineChartStyle">
+        <item name="line1Spec">@style/ChartTurbidityAlertLineStyle</item>
+    </style>
+</resources>

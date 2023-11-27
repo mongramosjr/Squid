@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_home"
+    app:startDestination="@+id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.squidsentry.mobile.ui.home.HomeFragment"
+        android:label="@string/title_home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_dissolvedOxygenFragment"
+            app:destination="@id/dissolvedOxygenFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_salinityFragment"
+            app:destination="@id/salinityFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_potentialOfHydrogenFragment"
+            app:destination="@id/potentialOfHydrogenFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_temperatureFragment"
+            app:destination="@id/temperatureFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_turbidityFragment"
+            app:destination="@id/turbidityFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_tdsFragment"
+            app:destination="@id/tdsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/dissolvedOxygenFragment"
+        android:name="com.squidsentry.mobile.ui.dissolvedoxygen.DissolvedOxygenFragment"
+        android:label="Dissolved Oxygen"
+        tools:layout="@layout/fragment_dissolved_oxygen" >
+        <action
+            android:id="@+id/action_dissolvedOxygenFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/potentialOfHydrogenFragment"
+        android:name="com.squidsentry.mobile.ui.ph.PotentialOfHydrogenFragment"
+        android:label="pH"
+        tools:layout="@layout/fragment_potential_of_hydrogen" >
+        <action
+            android:id="@+id/action_potentialOfHydrogenFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/salinityFragment"
+        android:name="com.squidsentry.mobile.ui.salinity.SalinityFragment"
+        android:label="Salinity"
+        tools:layout="@layout/fragment_salinity" >
+        <action
+            android:id="@+id/action_salinityFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/temperatureFragment"
+        android:name="com.squidsentry.mobile.ui.temperature.TemperatureFragment"
+        android:label="Temperature"
+        tools:layout="@layout/fragment_temperature" >
+        <action
+            android:id="@+id/action_temperatureFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/turbidityFragment"
+        android:name="com.squidsentry.mobile.ui.turbidity.TurbidityFragment"
+        android:label="Turbidity"
+        tools:layout="@layout/fragment_turbidity" >
+        <action
+            android:id="@+id/action_turbidityFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/tdsFragment"
+        android:name="com.squidsentry.mobile.ui.tds.TdsFragment"
+        android:label="TDS"
+        tools:layout="@layout/fragment_tds" >
+        <action
+            android:id="@+id/action_tdsFragment2_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
+
+</navigation>

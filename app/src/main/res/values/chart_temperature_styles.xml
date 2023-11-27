@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="ChartTemperatureLineStyle">
+        <item name="color">@color/chart_temperature_color</item>
+    </style>
+    <style name="ChartTemperatureHotLineStyle">
+        <item name="color">@color/chart_temperature_hot_color</item>
+    </style>
+    <style name="ChartTemperatureAlertLineStyle">
+        <item name="color">@color/chart_alert_color</item>
+    </style>
+
+    <style name="ChartTemperatureLineChartStyle">
+        <item name="line1Spec">@style/ChartTemperatureLineStyle</item>
+    </style>
+    <style name="ChartTemperatureHotLineChartStyle">
+        <item name="line1Spec">@style/ChartTemperatureHotLineStyle</item>
+    </style>
+    <style name="ChartTemperatureAlertLineChartStyle">
+        <item name="line1Spec">@style/ChartTemperatureAlertLineStyle</item>
+    </style>
+</resources>

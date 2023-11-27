@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="ChartPHLineStyle">
+        <item name="color">@color/chart_ph_color</item>
+    </style>
+    <style name="ChartPHAcidicLineStyle">
+        <item name="color">@color/chart_ph_color</item>
+    </style>
+    <style name="ChartPHAlertLineStyle">
+        <item name="color">@color/chart_alert_color</item>
+    </style>
+
+    <style name="ChartPHLineChartStyle">
+        <item name="line1Spec">@style/ChartPHLineStyle</item>
+    </style>
+    <style name="ChartPHAcidicLineChartStyle">
+        <item name="line1Spec">@style/ChartPHAcidicLineStyle</item>
+    </style>
+    <style name="ChartPHAlertLineChartStyle">
+        <item name="line1Spec">@style/ChartPHAlertLineStyle</item>
+    </style>
+</resources>

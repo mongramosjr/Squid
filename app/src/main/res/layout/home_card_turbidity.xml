@@ -62,6 +62,7 @@
             android:layout_marginTop="4dp"
             android:forceDarkAllowed="false"
             app:chart="line"
+            app:lineChartStyle="@style/ChartTurbidityLineChartStyle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/last_measure_turbidity_holder"

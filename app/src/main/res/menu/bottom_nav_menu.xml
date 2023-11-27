@@ -1,19 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
         android:id="@+id/navigation_home"
         android:icon="@drawable/ic_home_black_24dp"
-        android:title="@string/title_home" />
+        android:contentDescription="@string/title_home"
+        android:title="@string/title_home"
+        app:showAsAction="never"/>
 
     <item
         android:id="@+id/navigation_devices"
         android:icon="@drawable/ic_devices_black_24dp"
+        android:contentDescription="@string/title_devices"
         android:title="@string/title_devices" />
 
     <item
         android:id="@+id/navigation_myself"
         android:icon="@drawable/ic_myself_black_24dp"
+        android:contentDescription="@string/title_myself"
         android:title="@string/title_myself" />
 
 </menu>
