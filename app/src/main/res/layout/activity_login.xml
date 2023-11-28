@@ -15,7 +15,7 @@
         android:id="@+id/squidlogo"
         android:layout_width="160dp"
         android:layout_height="160dp"
-        android:layout_marginTop="160dp"
+        android:layout_marginTop="120dp"
         android:clipToOutline="true"
         android:contentDescription="@string/squid_logo"
         android:src="@drawable/ic_launcher_round"

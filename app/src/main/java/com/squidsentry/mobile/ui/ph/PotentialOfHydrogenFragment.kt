@@ -119,7 +119,6 @@ class PotentialOfHydrogenFragment : Fragment() {
                         last_measure_pH = e.field1.toFloat()
                         date_last_pH = OffsetDateTime.parse(e.createdAt).toLocalDateTime()
                         idx_ph++
-                        Log.e("OOOOOO", e.field1.toString() + ":" + idx_ph.toFloat())
                     }
 
 

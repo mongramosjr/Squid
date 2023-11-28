@@ -125,7 +125,7 @@ class HomeFragment : Fragment() {
 
         val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         //2023-04-06T00:13:00Z
-        val format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ssX")
+        //val format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ssX")
 
         if (thingSpeakData != null) {
             feeds = thingSpeakData.feeds?.listIterator()
@@ -169,7 +169,6 @@ class HomeFragment : Fragment() {
                         last_measure_pH = e.field1.toFloat()
                         date_last_pH = OffsetDateTime.parse(e.createdAt).toLocalDateTime()
                         idx_ph++
-                        Log.e("OOOOOO", e.field1.toString() + ":" + idx_ph.toFloat())
                     }
                     if(e.field2!=null) {
                         temperature.add(idx_temperature, FloatEntry(idx_temperature.toFloat(), e.field2.toFloat()))
