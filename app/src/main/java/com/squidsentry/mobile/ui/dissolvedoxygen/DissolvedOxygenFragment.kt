@@ -16,17 +16,17 @@ class DissolvedOxygenFragment : Fragment() {
 
     private lateinit var viewModel: DissolvedOxygenViewModel
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        viewModel = ViewModelProvider(this).get(DissolvedOxygenViewModel::class.java)
+        // TODO: Use the ViewModel
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_dissolved_oxygen, container, false)
     }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(DissolvedOxygenViewModel::class.java)
-        // TODO: Use the ViewModel
-    }
-
 }

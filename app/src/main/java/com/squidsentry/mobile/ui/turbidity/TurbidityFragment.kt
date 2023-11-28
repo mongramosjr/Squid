@@ -16,17 +16,16 @@ class TurbidityFragment : Fragment() {
 
     private lateinit var viewModel: TurbidityViewModel
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel = ViewModelProvider(this).get(TurbidityViewModel::class.java)
+        // TODO: Use the ViewModel
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_turbidity, container, false)
     }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(TurbidityViewModel::class.java)
-        // TODO: Use the ViewModel
-    }
-
 }

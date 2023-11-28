@@ -43,17 +43,18 @@
                 android:id="@+id/imageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
                 android:padding="22dp"
-                app:srcCompat="@drawable/water_droplet_" />
+                app:srcCompat="@drawable/water_droplet_"
+                android:contentDescription="Water Drop" />
 
             <TextView
                 android:id="@+id/last_measure_status"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_marginLeft="0dp"
+                android:layout_marginStart="0dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
                 android:fontFamily="@font/inter_black"

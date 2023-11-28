@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.ph.PotentialOfHydrogenFragment">
 
-    <androidx.appcompat.widget.Toolbar
+    <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/fragment_ph_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
@@ -26,53 +26,41 @@
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="?attr/actionBarSize">
 
-        <TextView
-            android:id="@+id/title_pH_fragment"
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/different_timeframes_tablayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="pH"
-            android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent" >
 
-        <LinearLayout
-            android:id="@+id/different_timeframes"
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Day" />
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Week" />
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Month" />
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Year" />
+        </com.google.android.material.tabs.TabLayout>
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/different_timeframes_pager"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginTop="4dp"
-            android:orientation="horizontal"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title_pH_fragment">
-
-            <TextView
-                android:id="@+id/different_timeframes_day"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Day"
-                android:textSize="24sp" />
-            <TextView
-                android:id="@+id/different_timeframes_week"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Week"
-                android:textSize="24sp" />
-            <TextView
-                android:id="@+id/different_timeframes_month"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Month"
-                android:textSize="24sp" />
-            <TextView
-                android:id="@+id/different_timeframes_year"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Year"
-                android:textSize="24sp" />
-
-        </LinearLayout>
+            app:layout_constraintTop_toBottomOf="@id/different_timeframes_tablayout"/>
 
         <LinearLayout
             android:id="@+id/last_measure_pH_holder_fragment"
@@ -82,7 +70,7 @@
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/different_timeframes">
+            app:layout_constraintTop_toBottomOf="@id/different_timeframes_pager">
 
             <TextView
                 android:id="@+id/last_measure_pH_fragment"
@@ -95,9 +83,9 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="4dp"
+                android:layout_marginStart="4dp"
                 android:layout_marginTop="4dp"
-                android:text=""
+                android:text="pH"
                 android:textSize="18sp" />
         </LinearLayout>
 
@@ -107,6 +95,7 @@
             android:layout_height="120dp"
             android:layout_marginTop="4dp"
             android:clickable="true"
+            android:contentDescription="@string/display_chart"
             android:forceDarkAllowed="false"
             android:longClickable="true"
             android:theme="@style/Theme.Squid"
@@ -128,6 +117,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/chart_fragment_pH" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>

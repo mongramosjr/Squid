@@ -16,17 +16,16 @@ class SalinityFragment : Fragment() {
 
     private lateinit var viewModel: SalinityViewModel
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel = ViewModelProvider(this).get(SalinityViewModel::class.java)
+        // TODO: Use the ViewModel
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_salinity, container, false)
     }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(SalinityViewModel::class.java)
-        // TODO: Use the ViewModel
-    }
-
 }

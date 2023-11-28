@@ -9,6 +9,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.navigation.Navigation
+import androidx.viewpager2.widget.ViewPager2
+import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
 import com.patrykandpatrick.vico.core.entry.FloatEntry
 import com.patrykandpatrick.vico.core.entry.entriesOf
@@ -17,6 +21,7 @@ import com.patrykandpatrick.vico.views.chart.ChartView
 import com.squidsentry.mobile.Feed
 import com.squidsentry.mobile.R
 import com.squidsentry.mobile.ThingSpeak
+import com.squidsentry.mobile.adapter.TimeframesPagerAdapter
 import com.squidsentry.mobile.databinding.FragmentPotentialOfHydrogenBinding
 import com.squidsentry.mobile.ui.home.HomeViewModel
 import java.time.LocalDateTime
@@ -32,6 +37,10 @@ class PotentialOfHydrogenFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+
+    private lateinit var viewPager: ViewPager2
+    private lateinit var tabLayout: TabLayout
+    private lateinit var adapterTimeframes: TimeframesPagerAdapter
 
     companion object {
         fun newInstance() = PotentialOfHydrogenFragment()
@@ -58,6 +67,33 @@ class PotentialOfHydrogenFragment : Fragment() {
         //return inflater.inflate(R.layout.fragment_potential_of_hydrogen, container, false)
         _binding = FragmentPotentialOfHydrogenBinding.inflate(inflater, container, false)
 
+        viewPager = binding.differentTimeframesPager
+        tabLayout = binding.differentTimeframesTablayout
+
+        adapterTimeframes = TimeframesPagerAdapter(this.childFragmentManager, lifecycle)
+        viewPager.adapter = adapterTimeframes
+
+        //TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+        //    tab.text = "Tab $position"
+        //}.attach()
+
+        tabLayout.addOnTabSelectedListener(object : OnTabSelectedListener {
+            override fun onTabSelected(timeframeTab: TabLayout.Tab) {
+                    viewPager.currentItem = timeframeTab.position
+            }
+
+            override fun onTabUnselected(timeframeTab: TabLayout.Tab) {}
+
+            override fun onTabReselected(timeframeTab: TabLayout.Tab) {}
+        })
+
+        viewPager.registerOnPageChangeCallback(object: OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                tabLayout.getTabAt(position)?.select()
+            }
+        })
+
         return binding.root
     }
 
@@ -71,8 +107,8 @@ class PotentialOfHydrogenFragment : Fragment() {
         // NOTE: Using binding instead of findViewById
         //view.findViewById<Toolbar>(R.id.fragment_ph_toolbar).setNavigationIcon(R.drawable.arrow_back_24)
         binding.fragmentPhToolbar.setNavigationIcon(R.drawable.arrow_back_24)
-        binding.fragmentPhToolbar.setNavigationOnClickListener { view ->
-            Navigation.findNavController(view).navigate(R.id.action_potentialOfHydrogenFragment_to_homeFragment)
+        binding.fragmentPhToolbar.setNavigationOnClickListener { me: View ->
+            Navigation.findNavController(me).navigate(R.id.action_potentialOfHydrogenFragment_to_homeFragment)
         }
     }
 
@@ -88,7 +124,7 @@ class PotentialOfHydrogenFragment : Fragment() {
 
         val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         //2023-04-06T00:13:00Z
-        val format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ssX")
+        //val format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ssX")
 
         if (thingSpeakData != null) {
             feeds = thingSpeakData.feeds?.listIterator()
@@ -104,11 +140,6 @@ class PotentialOfHydrogenFragment : Fragment() {
             if(feeds!=null) {
 
                 var idx_ph: Int = 0
-                var idx_temperature: Int = 0
-                var idx_salinity: Int = 0
-                var idx_dissolvedoxygen: Int = 0
-                var idx_tds: Int = 0
-                var idx_turbidity: Int = 0
 
                 while (feeds.hasNext()) {
                     val e = feeds.next()
