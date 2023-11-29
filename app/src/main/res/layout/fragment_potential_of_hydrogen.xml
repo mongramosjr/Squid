@@ -18,8 +18,6 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/rounded_edge_squid_background"
-        android:padding="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -37,87 +35,82 @@
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Day" />
+                android:text="@string/timeframes_day" />
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Week" />
+                android:text="@string/timeframes_week" />
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Month" />
+                android:text="@string/timeframes_month" />
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Year" />
+                android:text="@string/timeframes_year" />
         </com.google.android.material.tabs.TabLayout>
 
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/different_timeframes_pager"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/different_timeframes_date_selector"
+            android:layout_width="wrap_content"
+            android:layout_height="28dp"
+            android:drawableEnd="@drawable/arrow_drop_down_24"
+            android:paddingTop="0dp"
+            android:paddingBottom="0dp"
+            android:text="@string/sample_date"
+            android:textSize="12sp"
+            app:iconPadding="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/different_timeframes_tablayout"
+            tools:ignore="TouchTargetSizeCheck" />
+
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_marginBottom="80dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/different_timeframes_tablayout"/>
+            app:layout_constraintTop_toBottomOf="@+id/different_timeframes_date_selector">
 
-        <LinearLayout
-            android:id="@+id/last_measure_pH_holder_fragment"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginTop="4dp"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/different_timeframes_pager">
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="4dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/last_measure_pH_fragment"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="--"
-                android:textSize="24sp" />
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/different_timeframes_pager"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="4dp"
-                android:text="pH"
-                android:textSize="18sp" />
-        </LinearLayout>
-
-        <com.patrykandpatrick.vico.views.chart.ChartView
-            android:id="@+id/chart_fragment_pH"
-            android:layout_width="wrap_content"
-            android:layout_height="120dp"
-            android:layout_marginTop="4dp"
-            android:clickable="true"
-            android:contentDescription="@string/display_chart"
-            android:forceDarkAllowed="false"
-            android:longClickable="true"
-            android:theme="@style/Theme.Squid"
-            app:chart="line"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/last_measure_pH_holder_fragment"
-            app:lineChartStyle="@style/ChartPHLineChartStyle"
-            app:showBottomAxis="false"
-            app:showStartAxis="false" />
-
-        <TextView
-            android:id="@+id/date_last_measure_pH_fragment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="----"
-            android:textSize="12sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/chart_fragment_pH" />
-
+                <CalendarView
+                    android:id="@+id/different_timeframes_calendar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/different_timeframes_pager" />
+                <CalendarView
+                    android:id="@+id/different_timeframes_calendar2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/different_timeframes_calendar" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>

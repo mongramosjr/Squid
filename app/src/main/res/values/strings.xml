@@ -16,4 +16,9 @@
     <string name="login_failed">"Login failed"</string>
     <string name="squid_logo">SQUID logo</string>
     <string name="display_chart">Display Chart</string>
+    <string name="timeframes_year">Year</string>
+    <string name="timeframes_month">Month</string>
+    <string name="timeframes_week">Week</string>
+    <string name="timeframes_day">Day</string>
+    <string name="sample_date">Wed, Nov 20</string>
 </resources>
