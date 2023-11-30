@@ -12,11 +12,6 @@ import retrofit2.Response
 
 
 class HomeViewModel : ViewModel() {
-
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is home Fragment"
-    }
-    val text: LiveData<String> = _text
     
     private val _thingSpeakData = MutableLiveData<ThingSpeak?>()
     val thingSpeakData: LiveData<ThingSpeak?> get() = _thingSpeakData

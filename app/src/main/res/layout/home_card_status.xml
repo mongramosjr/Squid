@@ -17,7 +17,7 @@
 
 
         <TextView
-            android:id="@+id/title"
+            android:id="@+id/title_status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -37,10 +37,10 @@
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title">
+            app:layout_constraintTop_toBottomOf="@id/title_status">
 
             <ImageView
-                android:id="@+id/imageView"
+                android:id="@+id/water_droplet"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"

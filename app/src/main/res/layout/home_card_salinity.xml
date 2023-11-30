@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clickable="true"
+    android:id="@+id/cardview_salinity"
     app:cardCornerRadius="15dp"
     app:contentPadding="4dp">
 
@@ -61,7 +63,6 @@
             android:layout_height="120dp"
             android:layout_marginTop="4dp"
             android:forceDarkAllowed="false"
-            android:theme="@style/Theme.Squid"
             app:chart="line"
             app:lineChartStyle="@style/ChartSalinityLineChartStyle"
             app:layout_constraintEnd_toEndOf="parent"

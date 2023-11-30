@@ -7,7 +7,7 @@
     tools:context=".ui.timeframes.TimeframesYearFragment">
 
     <com.patrykandpatrick.vico.views.chart.ChartView
-        android:id="@+id/timeframes_year"
+        android:id="@+id/timeframes_year_chart"
         android:layout_width="wrap_content"
         android:layout_height="120dp"
         android:layout_marginTop="4dp"
@@ -18,17 +18,18 @@
         android:theme="@style/Theme.Squid"
         app:chart="line"
         app:lineChartStyle="@style/ChartPHLineChartStyle"
-        app:showBottomAxis="false"
-        app:showStartAxis="false"
+        app:showBottomAxis="true"
+        app:showStartAxis="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
     <TextView
+        android:id="@+id/timeframes_year_high"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:text="YEAR"
+        android:text="--"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/timeframes_year"/>
+        app:layout_constraintTop_toBottomOf="@id/timeframes_year_chart"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

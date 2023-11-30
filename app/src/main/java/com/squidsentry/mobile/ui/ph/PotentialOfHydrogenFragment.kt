@@ -2,52 +2,59 @@ package com.squidsentry.mobile.ui.ph
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.viewpager2.widget.ViewPager2
-import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.squidsentry.mobile.R
 import com.squidsentry.mobile.adapter.TimeframesPagerAdapter
 import com.squidsentry.mobile.databinding.FragmentPotentialOfHydrogenBinding
+import com.squidsentry.mobile.ui.viewmodel.ThingSpeakViewModel
+import com.squidsentry.mobile.ui.viewmodel.TimeframeViewModel
 import java.text.SimpleDateFormat
+import java.time.Instant
 import java.util.Date
 import java.util.Locale
 
+
 class PotentialOfHydrogenFragment : Fragment() {
+
     private var _binding: FragmentPotentialOfHydrogenBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var viewPager: ViewPager2
     private lateinit var tabLayout: TabLayout
     private lateinit var adapterTimeframes: TimeframesPagerAdapter
-
     private lateinit var timeframesSelectorButton : MaterialButton
-
     private lateinit var timeframesDate: Date
-    /*
-    NOTE: Testing CalenndarView
-    private lateinit var calendarView: CalendarView
-     */
 
+    //Note: can communicate between children fragments
+    lateinit var thingspeakViewModel: ThingSpeakViewModel
+    lateinit var timeframeViewModel: TimeframeViewModel
 
     // TODO: What the fuck is this, no need to call this object
     companion object {
         fun newInstance() = PotentialOfHydrogenFragment()
     }
 
-    private lateinit var viewModel: PotentialOfHydrogenViewModel
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.i("PHHHHHHHHH", "onCreate")
+        timeframeViewModel = ViewModelProvider(requireActivity())[TimeframeViewModel::class.java]
+        thingspeakViewModel = ViewModelProvider(requireActivity())[ThingSpeakViewModel::class.java]
+
+        //set the water parameter
+        timeframeViewModel.selectedWaterParameter("pH")
+        // Call the ThingSpeak API
+        //TODO: query based on the current date and timeframe
+        // getWaterQuality(selected_date, timeframe)
     }
 
     override fun onCreateView(
@@ -55,10 +62,10 @@ class PotentialOfHydrogenFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         Log.i("PHHHHHHHHH", "onCreateView")
-
         _binding = FragmentPotentialOfHydrogenBinding.inflate(inflater, container, false)
 
         viewPager = binding.differentTimeframesPager
+
         tabLayout = binding.differentTimeframesTablayout
 
         timeframesSelectorButton =  binding.differentTimeframesDateSelector
@@ -71,15 +78,16 @@ class PotentialOfHydrogenFragment : Fragment() {
         adapterTimeframes = TimeframesPagerAdapter(this.childFragmentManager, lifecycle)
         viewPager.adapter = adapterTimeframes
 
-        tabLayout.addOnTabSelectedListener(object : OnTabSelectedListener {
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(timeframeTab: TabLayout.Tab) {
-                    viewPager.currentItem = timeframeTab.position
+                viewPager.currentItem = timeframeTab.position
+                timeframeViewModel.selectedTabPosition(viewPager.currentItem)
             }
             override fun onTabUnselected(timeframeTab: TabLayout.Tab) {}
             override fun onTabReselected(timeframeTab: TabLayout.Tab) {}
         })
 
-        viewPager.registerOnPageChangeCallback(object: OnPageChangeCallback() {
+        viewPager.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
                 tabLayout.getTabAt(position)?.select()
@@ -89,30 +97,26 @@ class PotentialOfHydrogenFragment : Fragment() {
         datePicker.addOnPositiveButtonClickListener {
             val sdf = SimpleDateFormat("EEE, MMM dd", Locale.getDefault())
             val date = sdf.format(it)
+            // change the date
             timeframesDate = Date(it)
             Toast.makeText(binding.root.context, date, Toast.LENGTH_SHORT).show();
             timeframesSelectorButton.text = date
+
+            //propagate the selected date to be used by all children
+            Log.i("TemperatureHHHHHHHH", "setting date to display"
+                    + viewPager.currentItem.toString() + ": "  + timeframesDate.toString())
+
+            // query based on the selected date and timeframe
+            // getWaterQuality(selected_date, timeframe)
+            // #1. query ThingSpeak
+            // #2. send changes in date
+            thingspeakViewModel.getWaterQuality(Instant.ofEpochMilli(it), viewPager.currentItem)
+            timeframeViewModel.selectedTimeframesDate(timeframesDate)
         }
 
         timeframesSelectorButton.setOnClickListener {
             datePicker.show(this.childFragmentManager, "timeframes")
         }
-
-        /*
-        NOTE: Testing CalenndarView
-        calendarView = binding.differentTimeframesCalendar
-        calendarView.setOnDateChangeListener(object: OnDateChangeListener {
-            override fun onSelectedDayChange(
-                view: CalendarView,
-                year: Int,
-                month: Int,
-                dayOfMonth: Int
-            ) {
-                val msg = "Selected date Day: " + dayOfMonth + " Month : " + (month + 1) + " Year " + year;
-                Toast.makeText(binding.root.context, msg, Toast.LENGTH_SHORT).show();
-            }
-        })
-        */
 
         return binding.root
     }
@@ -121,8 +125,6 @@ class PotentialOfHydrogenFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         Log.i("PHHHHHHHHH", "onViewCreated")
-        // NOTE: Using binding instead of findViewById
-        //view.findViewById<Toolbar>(R.id.fragment_ph_toolbar).setNavigationIcon(R.drawable.arrow_back_24)
         binding.fragmentPhToolbar.setNavigationIcon(R.drawable.arrow_back_24)
         binding.fragmentPhToolbar.setNavigationOnClickListener { me: View ->
             Navigation.findNavController(me).navigate(R.id.action_potentialOfHydrogenFragment_to_homeFragment)

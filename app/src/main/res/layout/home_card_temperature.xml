@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clickable="true"
+    android:id="@+id/cardview_temperature"
     app:cardCornerRadius="15dp"
     app:contentPadding="4dp">
 
@@ -53,8 +55,6 @@
                 android:layout_marginTop="4dp"
                 android:text="&#xb0;C"
                 android:textSize="18sp" />
-
-
         </LinearLayout>
 
         <com.patrykandpatrick.vico.views.chart.ChartView

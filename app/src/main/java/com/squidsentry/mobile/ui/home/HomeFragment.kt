@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -29,8 +28,6 @@ import kotlin.random.Random
 class HomeFragment : Fragment() {
 
     private lateinit var homeViewModel: HomeViewModel
-    //private lateinit var squidErrorImg: ImageView
-    //private lateinit var result: TextView
 
     private var _binding: FragmentHomeBinding? = null
 
@@ -54,25 +51,36 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-
         Log.i("HOMEHHHHHHHH", "onCreateView")
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val view: View = binding.root
         //val view = inflater.inflate(R.layout.fragment_home, container, false)
 
-        //homeViewModel = ViewModelProvider(this)[HomeViewModel::class.java]
+        //TODO: Do I need to rerun?
+        // Call the ThingSpeak API
         homeViewModel.getThingSpeakData()
 
-        //val textView: TextView = binding.textHome
-        //homeViewModel.text.observe(viewLifecycleOwner) {
-        //    textView.text = it
-        //}
-
+        // click to open the detailed graph of each parameters
         view.findViewById<TextView>(R.id.last_measure_pH).setOnClickListener {
             Navigation.findNavController(view).navigate(R.id.action_homeFragment_to_potentialOfHydrogenFragment)
         }
         view.findViewById<CardView>(R.id.cardview_pH).setOnClickListener {
             Navigation.findNavController(view).navigate(R.id.action_homeFragment_to_potentialOfHydrogenFragment)
+        }
+        view.findViewById<CardView>(R.id.cardview_dissolvedoxygen).setOnClickListener {
+            Navigation.findNavController(view).navigate(R.id.action_homeFragment_to_dissolvedOxygenFragment)
+        }
+        view.findViewById<CardView>(R.id.cardview_salinity).setOnClickListener {
+            Navigation.findNavController(view).navigate(R.id.action_homeFragment_to_salinityFragment)
+        }
+        view.findViewById<CardView>(R.id.cardview_tds).setOnClickListener {
+            Navigation.findNavController(view).navigate(R.id.action_homeFragment_to_tdsFragment)
+        }
+        view.findViewById<CardView>(R.id.cardview_temperature).setOnClickListener {
+            Navigation.findNavController(view).navigate(R.id.action_homeFragment_to_temperatureFragment)
+        }
+        view.findViewById<CardView>(R.id.cardview_turbidity).setOnClickListener {
+            Navigation.findNavController(view).navigate(R.id.action_homeFragment_to_turbidityFragment)
         }
 
         subscribe(view)
@@ -83,7 +91,6 @@ class HomeFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-
     }
 
     private fun subscribe(root: View) {
@@ -91,7 +98,6 @@ class HomeFragment : Fragment() {
         homeViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             // Set the result text to Loading
             if (isLoading) {
-                //result.text = resources.getString(R.string.loading)
                 //TODO: display chart with random
                 fun getRandomEntries() = entriesOf( Random.nextFloat() * 16f)
                 displayEmptyChart(root, R.id.chart_view_temperature, 7f)
@@ -107,8 +113,6 @@ class HomeFragment : Fragment() {
         homeViewModel.isError.observe(viewLifecycleOwner) { isError ->
             // Hide display image and set the result text to the error message
             if (isError) {
-                //squidErrorImg.visibility = View.GONE
-                //result.text = homeViewModel.errorMessage
                 //TODO: display error message
             }
         }
@@ -163,7 +167,6 @@ class HomeFragment : Fragment() {
                 while (feeds.hasNext()) {
                     val e = feeds.next()
 
-
                     if(e.field1!=null) {
                         pH.add(idx_ph, FloatEntry(idx_ph.toFloat(), e.field1.toFloat()))
                         last_measure_pH = e.field1.toFloat()
@@ -200,8 +203,6 @@ class HomeFragment : Fragment() {
                         date_last_turbidity = OffsetDateTime.parse(e.createdAt).toLocalDateTime()
                         idx_turbidity++
                     }
-
-
                 }
             }
 
@@ -218,7 +219,6 @@ class HomeFragment : Fragment() {
                 root.findViewById<TextView>(R.id.last_measure_pH).text = last_measure_pH.toString()
             }
 
-
             val temperatureList: List<FloatEntry> = temperature.toList()
             val temperatureProducer = ChartEntryModelProducer(temperatureList)
             root.findViewById<ChartView>(R.id.chart_view_temperature).entryProducer = temperatureProducer
@@ -226,7 +226,6 @@ class HomeFragment : Fragment() {
                 root.findViewById<TextView>(R.id.date_last_measure_temperature).text = date_last_temperature.format(dateTimeFormatter).toString()
                 root.findViewById<TextView>(R.id.last_measure_temperature).text = last_measure_temperature.toString()
             }
-
 
             val salinityList: List<FloatEntry> = salinity.toList()
             val salinityProducer = ChartEntryModelProducer(salinityList)
@@ -236,7 +235,6 @@ class HomeFragment : Fragment() {
                 root.findViewById<TextView>(R.id.last_measure_salinity).text = last_measure_salinity.toString()
             }
 
-
             val dissolvedoxygenList: List<FloatEntry> = dissolvedoxygen.toList()
             val dissolvedoxygenProducer = ChartEntryModelProducer(dissolvedoxygenList)
             root.findViewById<ChartView>(R.id.chart_view_dissolvedoxygen).entryProducer = dissolvedoxygenProducer
@@ -244,7 +242,6 @@ class HomeFragment : Fragment() {
                 root.findViewById<TextView>(R.id.date_last_measure_dissolvedoxygen).text = date_last_dissolvedoxygen.format(dateTimeFormatter).toString()
                 root.findViewById<TextView>(R.id.last_measure_dissolvedoxygen).text = last_measure_dissolvedoxygen.toString()
             }
-
 
             val tdsList: List<FloatEntry> = tds.toList()
             val tdsProducer = ChartEntryModelProducer(tdsList)
@@ -254,7 +251,6 @@ class HomeFragment : Fragment() {
                 root.findViewById<TextView>(R.id.last_measure_tds).text = last_measure_tds.toString()
             }
 
-
             val turbidityList: List<FloatEntry> = turbidity.toList()
             val turbidityProducer = ChartEntryModelProducer(turbidityList)
             root.findViewById<ChartView>(R.id.chart_view_turbidity).entryProducer = turbidityProducer
@@ -262,8 +258,6 @@ class HomeFragment : Fragment() {
                 root.findViewById<TextView>(R.id.date_last_measure_turbidity).text = date_last_turbidity.format(dateTimeFormatter).toString()
                 root.findViewById<TextView>(R.id.last_measure_turbidity).text = last_measure_turbidity.toString()
             }
-
-
 
         }else{
             Log.i("HOMEHHHHHHHH", "no displayChart")
@@ -274,7 +268,6 @@ class HomeFragment : Fragment() {
     {
         view.findViewById<ChartView>(id)
             .setModel(entryModelOf(entriesOf(value, value, value,value,value, value)))
-
     }
 
 }
