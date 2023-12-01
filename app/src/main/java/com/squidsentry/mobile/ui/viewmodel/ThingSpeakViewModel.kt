@@ -90,7 +90,7 @@ class ThingSpeakViewModel : ViewModel() {
 
 
     //@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    fun getWaterQuality(selectedDate: Instant = Instant.now(),
+    private fun getWaterQualityAt(selectedDate: Instant = Instant.now(),
                         timeframe: Int = 0){
         _isLoading.value = true
         _isError.value = false
@@ -132,7 +132,9 @@ class ThingSpeakViewModel : ViewModel() {
                     // store
                     Log.i("ViewModelHHHHHHHH", "getWaterQuality: Processing Response from ThingSpeak")
                     _isLoading.value = false
-                    _isDone.value = selectedDate
+                    // NOTE: always do this at the end of response to ensure
+                    // right timing of sending updates to all receiver
+                    _isDone.postValue(Instant.now())
                 } else {
                     // Handle error
                     print("${response.errorBody()} ")
@@ -146,6 +148,19 @@ class ThingSpeakViewModel : ViewModel() {
                 t.printStackTrace()
             }
         })
+    }
+
+    fun getWaterQuality(selectedDate: Instant = Instant.now(),
+                                    timeframe: Int = DAILY_TIMEFRAME, isAll: Boolean = false)
+    {
+        if(isAll){
+            getWaterQualityAt(selectedDate, DAILY_TIMEFRAME)
+            getWaterQualityAt(selectedDate, WEEKLY_TIMEFRAME)
+            getWaterQualityAt(selectedDate, MONTHLY_TIMEFRAME)
+            getWaterQualityAt(selectedDate, YEARLY_TIMEFRAME)
+        }else{
+            getWaterQualityAt(selectedDate, timeframe)
+        }
     }
 
 
