@@ -7,13 +7,14 @@ import androidx.lifecycle.ViewModel
 import com.patrykandpatrick.vico.core.entry.FloatEntry
 import com.squidsentry.mobile.ThingSpeak
 import com.squidsentry.mobile.ThingSpeakApiClient
-import com.squidsentry.mobile.data.model.WaterQualityData
+import com.squidsentry.mobile.data.model.WaterQuality
 import com.squidsentry.mobile.data.model.WaterQualityTimeframe
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.time.DayOfWeek
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.TemporalAdjusters
@@ -30,10 +31,19 @@ class ThingSpeakViewModel : ViewModel() {
     private val _thingSpeakData = MutableLiveData<ThingSpeak?>()
     val thingSpeakData: LiveData<ThingSpeak?> get() = _thingSpeakData
 
-    // Data that were structured based on the dyanmics of TabLayout
-    // Only one parameter can hold
-    private val _waterQualityTimeframe = MutableLiveData<WaterQualityTimeframe?>()
-    val waterQualityTimeframe: LiveData<WaterQualityTimeframe?> get() = _waterQualityTimeframe
+    // NOTE: Data that were structured based on the dynamics of TabLayout
+    // current query based on chosen date per active parameter only
+    private val _waterQualityTimeframe = MutableLiveData<WaterQualityTimeframe>()
+    val waterQualityTimeframe: LiveData<WaterQualityTimeframe> get() = _waterQualityTimeframe
+
+    // List of above data based on date keys
+    private val _waterQualityTimeframeList =
+        MutableLiveData<Map<String, MutableMap<LocalDate, WaterQualityTimeframe>>>().apply {
+            mapOf("temperature" to null, "pH" to null,
+            "salinity" to null, "dissolvedOxygen" to null,
+            "tds" to null, "turbidity" to null)}
+    val waterQualityTimeframeList: LiveData<Map<String,MutableMap<LocalDate, WaterQualityTimeframe>>> get() = _waterQualityTimeframeList
+
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> get() = _isLoading
@@ -47,7 +57,9 @@ class ThingSpeakViewModel : ViewModel() {
     private val _isDone = MutableLiveData<Instant>()
     val isDone: LiveData<Instant> get() = _isDone
 
-    // list of waterQualityTimeframe
+    // TODO: make this not a mutable livedata
+    //  list of waterQualityTimeframe
+
     private val _pH = MutableLiveData<WaterQualityTimeframe>()
     val pH: LiveData<WaterQualityTimeframe> get() = _pH
 
@@ -101,6 +113,69 @@ class ThingSpeakViewModel : ViewModel() {
         })
     }
 
+
+    //@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    fun getWaterQuality(selectedDate: Instant = Instant.now(),
+                        timeframe: Int = 0){
+        _isLoading.value = true
+        _isError.value = false
+
+        //compute the start and end
+        val (start, end) = computeTimeframe(selectedDate, timeframe)
+
+        var average: Int = 0
+        //daily average = 0 = 288 results
+        //weekly average = 4 = 504 results
+        //monthly average = 12 = 720 results
+        //yearly average = 120 = 876 results
+        average = if(timeframe==YEARLY_TIMEFRAME) {
+            120
+        } else if(timeframe==MONTHLY_TIMEFRAME){
+            12
+        }else if(timeframe==WEEKLY_TIMEFRAME){
+            4
+        }else{
+            0
+        }
+
+        val client = ThingSpeakApiClient.apiService.getData(start, end, average)
+
+        client.enqueue(object : Callback<ThingSpeak> {
+
+            override fun onResponse(call: Call<ThingSpeak>,
+                                    response: Response<ThingSpeak>) {
+                if (response.isSuccessful) {
+                    val responseBody = response.body()
+                    if (responseBody == null) {
+                        onError("getWaterQuality: Data Processing Error")
+                        return
+                    }
+                    // save to the viewmodel
+                    Log.i("ViewModelHHHHHHHH", "getWaterQuality Size of feeds" + responseBody.feeds?.size.toString())
+                    rearrangeData(responseBody, selectedDate, timeframe)
+
+                    // store
+                    Log.i("ViewModelHHHHHHHH", "getWaterQuality: Processing Response from ThingSpeak")
+                    _isLoading.value = false
+                    _isDone.value = selectedDate
+                } else {
+                    // Handle error
+                    print("${response.errorBody()} ")
+                    onError("getWaterQuality: Data Processing Error")
+                    return
+                }
+            }
+
+            override fun onFailure(call: Call<ThingSpeak>, t: Throwable) {
+                onError(t.message)
+                t.printStackTrace()
+            }
+        })
+
+
+    }
+
+
     private fun onError(inputMessage: String?) {
 
         val message = if (inputMessage.isNullOrBlank() or inputMessage.isNullOrEmpty()) "Unknown Error"
@@ -122,6 +197,21 @@ class ThingSpeakViewModel : ViewModel() {
         //val format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ssX")
         //date_last_turbidity = OffsetDateTime.parse(e.createdAt).toLocalDateTime()
 
+        val date: LocalDate = instantToLocalDate(selectedDate)
+        var temperaturetimeframe: WaterQualityTimeframe?
+        var phtimeframe: WaterQualityTimeframe?
+        var salinitytimeframe: WaterQualityTimeframe?
+        var dissolvedoxygentimeframe: WaterQualityTimeframe?
+        var tdstimeframe: WaterQualityTimeframe?
+        var turbiditytimeframe: WaterQualityTimeframe?
+
+        /*
+        temperaturetimeframe = _waterQualityTimeframeList.value?.get(date)
+        if(waterqualitytimeframe==null){
+            // store the request and response
+            waterqualitytimeframe = WaterQualityTimeframe(selectedDate)
+        }
+*/
         val feeds = responseBody.feeds?.listIterator()
 
         var pH = mutableListOf <FloatEntry>().apply {  }
@@ -188,56 +278,56 @@ class ThingSpeakViewModel : ViewModel() {
         // daily, weekly, monthly and yearly
         if(timeframe==DAILY_TIMEFRAME){
             var tmp = WaterQualityTimeframe(selectedDate)
-            tmp.dailyWaterQualityData = WaterQualityData(timeframe)
-            tmp.dailyWaterQualityData.measured = pH.toMutableList()
-            tmp.dailyWaterQualityData.datetime = pH_date.toMutableList()
+            tmp.dailyWaterQuality = WaterQuality(timeframe)
+            tmp.dailyWaterQuality.measured = pH.toMutableList()
+            tmp.dailyWaterQuality.datetime = pH_date.toMutableList()
             if(_pH.value!=null){
-                _pH.value!!.dailyWaterQualityData = tmp.dailyWaterQualityData
+                _pH.value!!.dailyWaterQuality = tmp.dailyWaterQuality
             }else{
                 _pH.value = tmp
             }
             tmp = WaterQualityTimeframe(selectedDate)
-            tmp.dailyWaterQualityData = WaterQualityData(timeframe)
-            tmp.dailyWaterQualityData.measured = salinity.toMutableList()
-            tmp.dailyWaterQualityData.datetime = salinity_date.toMutableList()
+            tmp.dailyWaterQuality = WaterQuality(timeframe)
+            tmp.dailyWaterQuality.measured = salinity.toMutableList()
+            tmp.dailyWaterQuality.datetime = salinity_date.toMutableList()
             if(_salinity.value!=null){
-                _salinity.value!!.dailyWaterQualityData = tmp.dailyWaterQualityData
+                _salinity.value!!.dailyWaterQuality = tmp.dailyWaterQuality
             }else{
                 _salinity.value = tmp
             }
             tmp = WaterQualityTimeframe(selectedDate)
-            tmp.dailyWaterQualityData = WaterQualityData(timeframe)
-            tmp.dailyWaterQualityData.measured = dissolvedoxygen.toMutableList()
-            tmp.dailyWaterQualityData.datetime = dissolvedoxygen_date.toMutableList()
+            tmp.dailyWaterQuality = WaterQuality(timeframe)
+            tmp.dailyWaterQuality.measured = dissolvedoxygen.toMutableList()
+            tmp.dailyWaterQuality.datetime = dissolvedoxygen_date.toMutableList()
             if(_dissolvedOxygen.value!=null){
-                _dissolvedOxygen.value!!.dailyWaterQualityData = tmp.dailyWaterQualityData
+                _dissolvedOxygen.value!!.dailyWaterQuality = tmp.dailyWaterQuality
             }else{
                 _dissolvedOxygen.value = tmp
             }
             tmp = WaterQualityTimeframe(selectedDate)
-            tmp.dailyWaterQualityData = WaterQualityData(timeframe)
-            tmp.dailyWaterQualityData.measured = tds.toMutableList()
-            tmp.dailyWaterQualityData.datetime = tds_date.toMutableList()
+            tmp.dailyWaterQuality = WaterQuality(timeframe)
+            tmp.dailyWaterQuality.measured = tds.toMutableList()
+            tmp.dailyWaterQuality.datetime = tds_date.toMutableList()
             if(_tds.value!=null){
-                _tds.value!!.dailyWaterQualityData = tmp.dailyWaterQualityData
+                _tds.value!!.dailyWaterQuality = tmp.dailyWaterQuality
             }else{
                 _tds.value = tmp
             }
             tmp = WaterQualityTimeframe(selectedDate)
-            tmp.dailyWaterQualityData = WaterQualityData(timeframe)
-            tmp.dailyWaterQualityData.measured = temperature.toMutableList()
-            tmp.dailyWaterQualityData.datetime = temperature_date.toMutableList()
+            tmp.dailyWaterQuality = WaterQuality(timeframe)
+            tmp.dailyWaterQuality.measured = temperature.toMutableList()
+            tmp.dailyWaterQuality.datetime = temperature_date.toMutableList()
             if(_temperature.value!=null){
-                _temperature.value!!.dailyWaterQualityData = tmp.dailyWaterQualityData
+                _temperature.value!!.dailyWaterQuality = tmp.dailyWaterQuality
             }else{
                 _temperature.value = tmp
             }
             tmp = WaterQualityTimeframe(selectedDate)
-            tmp.dailyWaterQualityData = WaterQualityData(timeframe)
-            tmp.dailyWaterQualityData.measured = turbidity.toMutableList()
-            tmp.dailyWaterQualityData.datetime = turbidity_date.toMutableList()
+            tmp.dailyWaterQuality = WaterQuality(timeframe)
+            tmp.dailyWaterQuality.measured = turbidity.toMutableList()
+            tmp.dailyWaterQuality.datetime = turbidity_date.toMutableList()
             if(_turbidity.value!=null){
-                _turbidity.value!!.dailyWaterQualityData = tmp.dailyWaterQualityData
+                _turbidity.value!!.dailyWaterQuality = tmp.dailyWaterQuality
             }else{
                 _turbidity.value = tmp
             }
@@ -245,112 +335,112 @@ class ThingSpeakViewModel : ViewModel() {
 
         if(timeframe==WEEKLY_TIMEFRAME){
             var tmp = WaterQualityTimeframe(selectedDate)
-            tmp.weeklyWaterQualityData = WaterQualityData(timeframe)
-            tmp.weeklyWaterQualityData.measured = pH.toMutableList()
-            tmp.weeklyWaterQualityData.datetime = pH_date.toMutableList()
+            tmp.weeklyWaterQuality = WaterQuality(timeframe)
+            tmp.weeklyWaterQuality.measured = pH.toMutableList()
+            tmp.weeklyWaterQuality.datetime = pH_date.toMutableList()
             if(_pH.value!=null){
-                _pH.value!!.weeklyWaterQualityData = tmp.weeklyWaterQualityData
+                _pH.value!!.weeklyWaterQuality = tmp.weeklyWaterQuality
             }else{
                 _pH.value = tmp
             }
             tmp = WaterQualityTimeframe(selectedDate)
-            tmp.weeklyWaterQualityData = WaterQualityData(timeframe)
-            tmp.weeklyWaterQualityData.measured = salinity.toMutableList()
-            tmp.weeklyWaterQualityData.datetime = salinity_date.toMutableList()
+            tmp.weeklyWaterQuality = WaterQuality(timeframe)
+            tmp.weeklyWaterQuality.measured = salinity.toMutableList()
+            tmp.weeklyWaterQuality.datetime = salinity_date.toMutableList()
             if(_salinity.value!=null){
-                _salinity.value!!.weeklyWaterQualityData = tmp.weeklyWaterQualityData
+                _salinity.value!!.weeklyWaterQuality = tmp.weeklyWaterQuality
             }else{
                 _salinity.value = tmp
             }
             tmp = WaterQualityTimeframe(selectedDate)
-            tmp.weeklyWaterQualityData = WaterQualityData(timeframe)
-            tmp.weeklyWaterQualityData.measured = dissolvedoxygen.toMutableList()
-            tmp.weeklyWaterQualityData.datetime = dissolvedoxygen_date.toMutableList()
+            tmp.weeklyWaterQuality = WaterQuality(timeframe)
+            tmp.weeklyWaterQuality.measured = dissolvedoxygen.toMutableList()
+            tmp.weeklyWaterQuality.datetime = dissolvedoxygen_date.toMutableList()
             if(_dissolvedOxygen.value!=null){
-                _dissolvedOxygen.value!!.weeklyWaterQualityData = tmp.weeklyWaterQualityData
+                _dissolvedOxygen.value!!.weeklyWaterQuality = tmp.weeklyWaterQuality
             }else{
                 _dissolvedOxygen.value = tmp
             }
             tmp = WaterQualityTimeframe(selectedDate)
-            tmp.weeklyWaterQualityData = WaterQualityData(timeframe)
-            tmp.weeklyWaterQualityData.measured = tds.toMutableList()
-            tmp.weeklyWaterQualityData.datetime = tds_date.toMutableList()
+            tmp.weeklyWaterQuality = WaterQuality(timeframe)
+            tmp.weeklyWaterQuality.measured = tds.toMutableList()
+            tmp.weeklyWaterQuality.datetime = tds_date.toMutableList()
             if(_tds.value!=null){
-                _tds.value!!.weeklyWaterQualityData = tmp.weeklyWaterQualityData
+                _tds.value!!.weeklyWaterQuality = tmp.weeklyWaterQuality
             }else{
                 _tds.value = tmp
             }
             tmp = WaterQualityTimeframe(selectedDate)
-            tmp.weeklyWaterQualityData = WaterQualityData(timeframe)
-            tmp.weeklyWaterQualityData.measured = temperature.toMutableList()
-            tmp.weeklyWaterQualityData.datetime = temperature_date.toMutableList()
+            tmp.weeklyWaterQuality = WaterQuality(timeframe)
+            tmp.weeklyWaterQuality.measured = temperature.toMutableList()
+            tmp.weeklyWaterQuality.datetime = temperature_date.toMutableList()
             if(_temperature.value!=null){
-                _temperature.value!!.weeklyWaterQualityData = tmp.weeklyWaterQualityData
+                _temperature.value!!.weeklyWaterQuality = tmp.weeklyWaterQuality
             }else{
                 _temperature.value = tmp
             }
             tmp = WaterQualityTimeframe(selectedDate)
-            tmp.weeklyWaterQualityData = WaterQualityData(timeframe)
-            tmp.weeklyWaterQualityData.measured = turbidity.toMutableList()
-            tmp.weeklyWaterQualityData.datetime = turbidity_date.toMutableList()
+            tmp.weeklyWaterQuality = WaterQuality(timeframe)
+            tmp.weeklyWaterQuality.measured = turbidity.toMutableList()
+            tmp.weeklyWaterQuality.datetime = turbidity_date.toMutableList()
             if(_turbidity.value!=null){
-                _turbidity.value!!.weeklyWaterQualityData = tmp.weeklyWaterQualityData
+                _turbidity.value!!.weeklyWaterQuality = tmp.weeklyWaterQuality
             }else{
                 _turbidity.value = tmp
             }
         }
         if(timeframe==MONTHLY_TIMEFRAME){
             var tmp = WaterQualityTimeframe(selectedDate)
-            tmp.monthlyWaterQualityData = WaterQualityData(timeframe)
-            tmp.monthlyWaterQualityData.measured = pH.toMutableList()
-            tmp.monthlyWaterQualityData.datetime = pH_date.toMutableList()
+            tmp.monthlyWaterQuality = WaterQuality(timeframe)
+            tmp.monthlyWaterQuality.measured = pH.toMutableList()
+            tmp.monthlyWaterQuality.datetime = pH_date.toMutableList()
             if(_pH.value!=null){
-                _pH.value!!.monthlyWaterQualityData = tmp.monthlyWaterQualityData
+                _pH.value!!.monthlyWaterQuality = tmp.monthlyWaterQuality
             }else{
                 _pH.value = tmp
             }
             tmp = WaterQualityTimeframe(selectedDate)
-            tmp.monthlyWaterQualityData = WaterQualityData(timeframe)
-            tmp.monthlyWaterQualityData.measured = salinity.toMutableList()
-            tmp.monthlyWaterQualityData.datetime = salinity_date.toMutableList()
+            tmp.monthlyWaterQuality = WaterQuality(timeframe)
+            tmp.monthlyWaterQuality.measured = salinity.toMutableList()
+            tmp.monthlyWaterQuality.datetime = salinity_date.toMutableList()
             if(_salinity.value!=null){
-                _salinity.value!!.monthlyWaterQualityData = tmp.monthlyWaterQualityData
+                _salinity.value!!.monthlyWaterQuality = tmp.monthlyWaterQuality
             }else{
                 _salinity.value = tmp
             }
             tmp = WaterQualityTimeframe(selectedDate)
-            tmp.monthlyWaterQualityData = WaterQualityData(timeframe)
-            tmp.monthlyWaterQualityData.measured = dissolvedoxygen.toMutableList()
-            tmp.monthlyWaterQualityData.datetime = dissolvedoxygen_date.toMutableList()
+            tmp.monthlyWaterQuality = WaterQuality(timeframe)
+            tmp.monthlyWaterQuality.measured = dissolvedoxygen.toMutableList()
+            tmp.monthlyWaterQuality.datetime = dissolvedoxygen_date.toMutableList()
             if(_dissolvedOxygen.value!=null){
-                _dissolvedOxygen.value!!.monthlyWaterQualityData = tmp.monthlyWaterQualityData
+                _dissolvedOxygen.value!!.monthlyWaterQuality = tmp.monthlyWaterQuality
             }else{
                 _dissolvedOxygen.value = tmp
             }
             tmp = WaterQualityTimeframe(selectedDate)
-            tmp.monthlyWaterQualityData = WaterQualityData(timeframe)
-            tmp.monthlyWaterQualityData.measured = tds.toMutableList()
-            tmp.monthlyWaterQualityData.datetime = tds_date.toMutableList()
+            tmp.monthlyWaterQuality = WaterQuality(timeframe)
+            tmp.monthlyWaterQuality.measured = tds.toMutableList()
+            tmp.monthlyWaterQuality.datetime = tds_date.toMutableList()
             if(_tds.value!=null){
-                _tds.value!!.monthlyWaterQualityData = tmp.monthlyWaterQualityData
+                _tds.value!!.monthlyWaterQuality = tmp.monthlyWaterQuality
             }else{
                 _tds.value = tmp
             }
             tmp = WaterQualityTimeframe(selectedDate)
-            tmp.monthlyWaterQualityData = WaterQualityData(timeframe)
-            tmp.monthlyWaterQualityData.measured = temperature.toMutableList()
-            tmp.monthlyWaterQualityData.datetime = temperature_date.toMutableList()
+            tmp.monthlyWaterQuality = WaterQuality(timeframe)
+            tmp.monthlyWaterQuality.measured = temperature.toMutableList()
+            tmp.monthlyWaterQuality.datetime = temperature_date.toMutableList()
             if(_temperature.value!=null){
-                _temperature.value!!.monthlyWaterQualityData = tmp.monthlyWaterQualityData
+                _temperature.value!!.monthlyWaterQuality = tmp.monthlyWaterQuality
             }else{
                 _temperature.value = tmp
             }
             tmp = WaterQualityTimeframe(selectedDate)
-            tmp.monthlyWaterQualityData = WaterQualityData(timeframe)
-            tmp.monthlyWaterQualityData.measured = turbidity.toMutableList()
-            tmp.monthlyWaterQualityData.datetime = turbidity_date.toMutableList()
+            tmp.monthlyWaterQuality = WaterQuality(timeframe)
+            tmp.monthlyWaterQuality.measured = turbidity.toMutableList()
+            tmp.monthlyWaterQuality.datetime = turbidity_date.toMutableList()
             if(_turbidity.value!=null){
-                _turbidity.value!!.monthlyWaterQualityData = tmp.monthlyWaterQualityData
+                _turbidity.value!!.monthlyWaterQuality = tmp.monthlyWaterQuality
             }else{
                 _turbidity.value = tmp
             }
@@ -358,62 +448,65 @@ class ThingSpeakViewModel : ViewModel() {
 
         if(timeframe==YEARLY_TIMEFRAME){
             var tmp = WaterQualityTimeframe(selectedDate)
-            tmp.yearlyWaterQualityData = WaterQualityData(timeframe)
-            tmp.yearlyWaterQualityData.measured = pH.toMutableList()
-            tmp.yearlyWaterQualityData.datetime = pH_date.toMutableList()
+            tmp.yearlyWaterQuality = WaterQuality(timeframe)
+            tmp.yearlyWaterQuality.measured = pH.toMutableList()
+            tmp.yearlyWaterQuality.datetime = pH_date.toMutableList()
             if(_pH.value!=null){
-                _pH.value!!.yearlyWaterQualityData = tmp.yearlyWaterQualityData
+                _pH.value!!.yearlyWaterQuality = tmp.yearlyWaterQuality
             }else{
                 _pH.value = tmp
             }
             tmp = WaterQualityTimeframe(selectedDate)
-            tmp.yearlyWaterQualityData = WaterQualityData(timeframe)
-            tmp.yearlyWaterQualityData.measured = salinity.toMutableList()
-            tmp.yearlyWaterQualityData.datetime = salinity_date.toMutableList()
+            tmp.yearlyWaterQuality = WaterQuality(timeframe)
+            tmp.yearlyWaterQuality.measured = salinity.toMutableList()
+            tmp.yearlyWaterQuality.datetime = salinity_date.toMutableList()
             if(_salinity.value!=null){
-                _salinity.value!!.yearlyWaterQualityData = tmp.yearlyWaterQualityData
+                _salinity.value!!.yearlyWaterQuality = tmp.yearlyWaterQuality
             }else{
                 _salinity.value = tmp
             }
             tmp = WaterQualityTimeframe(selectedDate)
-            tmp.yearlyWaterQualityData = WaterQualityData(timeframe)
-            tmp.yearlyWaterQualityData.measured = dissolvedoxygen.toMutableList()
-            tmp.yearlyWaterQualityData.datetime = dissolvedoxygen_date.toMutableList()
+            tmp.yearlyWaterQuality = WaterQuality(timeframe)
+            tmp.yearlyWaterQuality.measured = dissolvedoxygen.toMutableList()
+            tmp.yearlyWaterQuality.datetime = dissolvedoxygen_date.toMutableList()
             if(_dissolvedOxygen.value!=null){
-                _dissolvedOxygen.value!!.yearlyWaterQualityData = tmp.yearlyWaterQualityData
+                _dissolvedOxygen.value!!.yearlyWaterQuality = tmp.yearlyWaterQuality
             }else{
                 _dissolvedOxygen.value = tmp
             }
             tmp = WaterQualityTimeframe(selectedDate)
-            tmp.yearlyWaterQualityData = WaterQualityData(timeframe)
-            tmp.yearlyWaterQualityData.measured = tds.toMutableList()
-            tmp.yearlyWaterQualityData.datetime = tds_date.toMutableList()
+            tmp.yearlyWaterQuality = WaterQuality(timeframe)
+            tmp.yearlyWaterQuality.measured = tds.toMutableList()
+            tmp.yearlyWaterQuality.datetime = tds_date.toMutableList()
             if(_tds.value!=null){
-                _tds.value!!.yearlyWaterQualityData = tmp.yearlyWaterQualityData
+                _tds.value!!.yearlyWaterQuality = tmp.yearlyWaterQuality
             }else{
                 _tds.value = tmp
             }
             tmp = WaterQualityTimeframe(selectedDate)
-            tmp.yearlyWaterQualityData = WaterQualityData(timeframe)
-            tmp.yearlyWaterQualityData.measured = temperature.toMutableList()
-            tmp.yearlyWaterQualityData.datetime = temperature_date.toMutableList()
+            tmp.yearlyWaterQuality = WaterQuality(timeframe)
+            tmp.yearlyWaterQuality.measured = temperature.toMutableList()
+            tmp.yearlyWaterQuality.datetime = temperature_date.toMutableList()
             if(_temperature.value!=null){
-                _temperature.value!!.yearlyWaterQualityData = tmp.yearlyWaterQualityData
+                _temperature.value!!.yearlyWaterQuality = tmp.yearlyWaterQuality
             }else{
                 _temperature.value = tmp
             }
             tmp = WaterQualityTimeframe(selectedDate)
-            tmp.yearlyWaterQualityData = WaterQualityData(timeframe)
-            tmp.yearlyWaterQualityData.measured = turbidity.toMutableList()
-            tmp.yearlyWaterQualityData.datetime = turbidity_date.toMutableList()
+            tmp.yearlyWaterQuality = WaterQuality(timeframe)
+            tmp.yearlyWaterQuality.measured = turbidity.toMutableList()
+            tmp.yearlyWaterQuality.datetime = turbidity_date.toMutableList()
             if(_turbidity.value!=null){
-                _turbidity.value!!.yearlyWaterQualityData = tmp.yearlyWaterQualityData
+                _turbidity.value!!.yearlyWaterQuality = tmp.yearlyWaterQuality
             }else{
                 _turbidity.value = tmp
             }
         }
+
+        //waterqualitytimeframe.dailyWaterQuality =
     }
 
+    // TODO: return the data from the current request
     fun getSelectedWaterQualityData(waterParameter: String): WaterQualityTimeframe? {
 
         var tmp: WaterQualityTimeframe? = null
@@ -438,63 +531,17 @@ class ThingSpeakViewModel : ViewModel() {
         return tmp
     }
 
-    //@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    fun getWaterQuality(selectedDate: Instant = Instant.now(),
-                        timeframe: Int = 0){
-        _isLoading.value = true
-        _isError.value = false
+    fun instantToLocalDateString(selectedDate: Instant = Instant.now(),
+                                 pattern: String = "yyyy-MM-dd"): String {
+        val formatter = DateTimeFormatter.ofPattern(pattern)
+            .withZone(ZoneId.systemDefault())
+        var dateformatted: String = "2023-10-20"
+        dateformatted = formatter.format(selectedDate)
+        return dateformatted
+    }
 
-        //compute the start and end
-        val (start, end) = computeTimeframe(selectedDate, timeframe)
-
-        var average: Int = 0
-        //daily average = 0 = 288 results
-        //weekly average = 4 = 504 results
-        //monthly average = 12 = 720 results
-        //yearly average = 120 = 876 results
-        average = if(timeframe==YEARLY_TIMEFRAME) {
-            120
-        } else if(timeframe==MONTHLY_TIMEFRAME){
-            12
-        }else if(timeframe==WEEKLY_TIMEFRAME){
-            4
-        }else{
-            0
-        }
-
-        val client = ThingSpeakApiClient.apiService.getData(start, end, average)
-
-        client.enqueue(object : Callback<ThingSpeak> {
-
-            override fun onResponse(call: Call<ThingSpeak>,
-                                    response: Response<ThingSpeak>) {
-                if (response.isSuccessful) {
-                    val responseBody = response.body()
-                    if (responseBody == null) {
-                        onError("getWaterQuality: Data Processing Error")
-                        return
-                    }
-                    // save to the viewmodel
-                    Log.i("ViewModelHHHHHHHH", "getWaterQuality Size of feeds" + responseBody.feeds?.size.toString())
-                    rearrangeData(responseBody, selectedDate, timeframe)
-                    Log.i("ViewModelHHHHHHHH", "getWaterQuality: Processing Response from ThingSpeak")
-                    _isLoading.value = false
-                    _isDone.value = selectedDate
-                } else {
-                    // Handle error
-                    print("${response.errorBody()} ")
-                    onError("getWaterQuality: Data Processing Error")
-                    return
-                }
-            }
-
-            override fun onFailure(call: Call<ThingSpeak>, t: Throwable) {
-                onError(t.message)
-                t.printStackTrace()
-            }
-        })
-
-
+    fun instantToLocalDate(selectedDate: Instant = Instant.now()): LocalDate{
+        return selectedDate.atZone(ZoneId.systemDefault()).toLocalDate()
     }
 
     fun computeTimeframe(selectedDate: Instant = Instant.now(), timeframe: Int = 0):

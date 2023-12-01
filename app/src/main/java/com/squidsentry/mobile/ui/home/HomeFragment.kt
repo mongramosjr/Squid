@@ -114,6 +114,7 @@ class HomeFragment : Fragment() {
             // Hide display image and set the result text to the error message
             if (isError) {
                 //TODO: display error message
+                Log.i("HOMEHHHHHHHH", "TODO: display error message")
             }
         }
 

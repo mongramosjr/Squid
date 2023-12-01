@@ -113,5 +113,3 @@ data class ThingSpeak(
     @Expose
     val feeds: List<Feed>? = null
 }
-
-data class Point2D(val s: String?, val y: Float?)

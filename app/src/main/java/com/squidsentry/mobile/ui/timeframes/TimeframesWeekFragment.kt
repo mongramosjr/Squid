@@ -65,10 +65,10 @@ class TimeframesWeekFragment : Fragment() {
             Log.i(
                 "HHHHHHHHTIMEFRAMESWEEK",
                 "displaying measured " + thingspeakViewModel.getSelectedWaterQualityData(water_parameter)
-                    ?.weeklyWaterQualityData?.measured?.size.toString()
+                    ?.weeklyWaterQuality?.measured?.size.toString()
             )
             val weekList: List<FloatEntry>? =
-                thingspeakViewModel.getSelectedWaterQualityData(water_parameter)?.weeklyWaterQualityData?.measured?.toList()
+                thingspeakViewModel.getSelectedWaterQualityData(water_parameter)?.weeklyWaterQuality?.measured?.toList()
             if (weekList != null) {
                 if(weekList.isNotEmpty()) {
                     val dayProducer = ChartEntryModelProducer(weekList)

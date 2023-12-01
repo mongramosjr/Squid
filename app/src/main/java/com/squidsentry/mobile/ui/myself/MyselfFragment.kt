@@ -88,6 +88,7 @@ class MyselfFragment : Fragment() {
         //view.findViewById<Button>(R.id.btn_to_login).setOnClickListener {
         //    view.findNavController().navigate(R.id.action_navigation_myself_to_navigation_login)
         //}
+        print("TODO")
 
     }
 

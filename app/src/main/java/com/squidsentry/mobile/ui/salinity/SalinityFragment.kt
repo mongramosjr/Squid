@@ -98,7 +98,7 @@ class SalinityFragment : Fragment() {
             val date = sdf.format(it)
             // change the date
             timeframesDate = Date(it)
-            Toast.makeText(binding.root.context, date, Toast.LENGTH_SHORT).show();
+            Toast.makeText(binding.root.context, date, Toast.LENGTH_SHORT).show()
             timeframesSelectorButton.text = date
 
             //propagate the selected date to be used by all children
