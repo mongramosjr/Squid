@@ -14,6 +14,7 @@ import com.patrykandpatrick.vico.core.entry.entryModelOf
 import com.squidsentry.mobile.databinding.FragmentTimeframesWeekBinding
 import com.squidsentry.mobile.ui.viewmodel.ThingSpeakViewModel
 import com.squidsentry.mobile.ui.viewmodel.TimeframeViewModel
+import java.time.LocalDate
 
 class TimeframesWeekFragment : Fragment() {
 
@@ -50,6 +51,7 @@ class TimeframesWeekFragment : Fragment() {
         val thingspeakViewModel = ViewModelProvider(requireActivity())[ThingSpeakViewModel::class.java]
         thingspeakViewModel.isDone.observe(viewLifecycleOwner){selectedDate ->
             val water_parameter: String = timeframeViewModel.waterParameter.value.toString()
+            val timeframesDate: LocalDate = timeframeViewModel.timeframesDate.value!!
             Log.i(
                 "HHHHHHHHTIMEFRAMESWEEK",
                 "prepping to display graph" + selectedDate.toString()
@@ -60,15 +62,15 @@ class TimeframesWeekFragment : Fragment() {
             )
             Log.i(
                 "HHHHHHHHTIMEFRAMESWEEK",
-                "displaying " + thingspeakViewModel.getSelectedWaterQualityData(water_parameter).toString()
+                "displaying " + thingspeakViewModel.getSelectedWaterQualityData(water_parameter, timeframesDate).toString()
             )
             Log.i(
                 "HHHHHHHHTIMEFRAMESWEEK",
-                "displaying measured " + thingspeakViewModel.getSelectedWaterQualityData(water_parameter)
+                "displaying measured " + thingspeakViewModel.getSelectedWaterQualityData(water_parameter, timeframesDate)
                     ?.weeklyWaterQuality?.measured?.size.toString()
             )
             val weekList: List<FloatEntry>? =
-                thingspeakViewModel.getSelectedWaterQualityData(water_parameter)?.weeklyWaterQuality?.measured?.toList()
+                thingspeakViewModel.getSelectedWaterQualityData(water_parameter, timeframesDate)?.weeklyWaterQuality?.measured?.toList()
             if (weekList != null) {
                 if(weekList.isNotEmpty()) {
                     val dayProducer = ChartEntryModelProducer(weekList)

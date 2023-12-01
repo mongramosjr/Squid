@@ -14,6 +14,7 @@ import com.patrykandpatrick.vico.core.entry.entryModelOf
 import com.squidsentry.mobile.databinding.FragmentTimeframesYearBinding
 import com.squidsentry.mobile.ui.viewmodel.ThingSpeakViewModel
 import com.squidsentry.mobile.ui.viewmodel.TimeframeViewModel
+import java.time.LocalDate
 
 class TimeframesYearFragment : Fragment() {
 
@@ -50,6 +51,7 @@ class TimeframesYearFragment : Fragment() {
         val thingspeakViewModel = ViewModelProvider(requireActivity())[ThingSpeakViewModel::class.java]
         thingspeakViewModel.isDone.observe(viewLifecycleOwner){selectedDate ->
             val water_parameter: String = timeframeViewModel.waterParameter.value.toString()
+            val timeframesDate: LocalDate = timeframeViewModel.timeframesDate.value!!
             Log.i(
                 "HHHHHHHHTIMEFRAMESYEAR",
                 "prepping to display graph" + selectedDate.toString()
@@ -60,15 +62,15 @@ class TimeframesYearFragment : Fragment() {
             )
             Log.i(
                 "HHHHHHHHTIMEFRAMESYEAR",
-                "displaying " + thingspeakViewModel.getSelectedWaterQualityData(water_parameter).toString()
+                "displaying " + thingspeakViewModel.getSelectedWaterQualityData(water_parameter, timeframesDate).toString()
             )
             Log.i(
                 "HHHHHHHHTIMEFRAMESYEAR",
-                "displaying measured " + thingspeakViewModel.getSelectedWaterQualityData(water_parameter)
+                "displaying measured " + thingspeakViewModel.getSelectedWaterQualityData(water_parameter, timeframesDate)
                     ?.yearlyWaterQuality?.measured?.size.toString()
             )
             val dayList: List<FloatEntry>? =
-                thingspeakViewModel.getSelectedWaterQualityData(water_parameter)?.yearlyWaterQuality?.measured?.toList()
+                thingspeakViewModel.getSelectedWaterQualityData(water_parameter, timeframesDate)?.yearlyWaterQuality?.measured?.toList()
             if (dayList != null) {
                 if(dayList.isNotEmpty()) {
                     val dayProducer = ChartEntryModelProducer(dayList)

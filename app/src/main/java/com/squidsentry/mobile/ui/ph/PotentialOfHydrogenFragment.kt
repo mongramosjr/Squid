@@ -20,6 +20,8 @@ import com.squidsentry.mobile.ui.viewmodel.ThingSpeakViewModel
 import com.squidsentry.mobile.ui.viewmodel.TimeframeViewModel
 import java.text.SimpleDateFormat
 import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
 import java.util.Date
 import java.util.Locale
 
@@ -33,7 +35,7 @@ class PotentialOfHydrogenFragment : Fragment() {
     private lateinit var tabLayout: TabLayout
     private lateinit var adapterTimeframes: TimeframesPagerAdapter
     private lateinit var timeframesSelectorButton : MaterialButton
-    private lateinit var timeframesDate: Date
+    private lateinit var timeframesDate: LocalDate
 
     //Note: can communicate between children fragments
     lateinit var thingspeakViewModel: ThingSpeakViewModel
@@ -98,7 +100,7 @@ class PotentialOfHydrogenFragment : Fragment() {
             val sdf = SimpleDateFormat("EEE, MMM dd", Locale.getDefault())
             val date = sdf.format(it)
             // change the date
-            timeframesDate = Date(it)
+            timeframesDate = Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate()
             Toast.makeText(binding.root.context, date, Toast.LENGTH_SHORT).show()
             timeframesSelectorButton.text = date
 

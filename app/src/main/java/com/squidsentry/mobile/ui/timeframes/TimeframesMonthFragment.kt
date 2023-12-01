@@ -14,6 +14,7 @@ import com.patrykandpatrick.vico.core.entry.entryModelOf
 import com.squidsentry.mobile.databinding.FragmentTimeframesMonthBinding
 import com.squidsentry.mobile.ui.viewmodel.ThingSpeakViewModel
 import com.squidsentry.mobile.ui.viewmodel.TimeframeViewModel
+import java.time.LocalDate
 
 class TimeframesMonthFragment : Fragment() {
 
@@ -50,6 +51,7 @@ class TimeframesMonthFragment : Fragment() {
         val thingspeakViewModel = ViewModelProvider(requireActivity())[ThingSpeakViewModel::class.java]
         thingspeakViewModel.isDone.observe(viewLifecycleOwner){selectedDate ->
             val water_parameter: String = timeframeViewModel.waterParameter.value.toString()
+            val timeframesDate: LocalDate = timeframeViewModel.timeframesDate.value!!
             Log.i(
                 "HHHHHHHHTIMEFRAMESMONTH",
                 "prepping to display graph" + selectedDate.toString()
@@ -60,15 +62,15 @@ class TimeframesMonthFragment : Fragment() {
             )
             Log.i(
                 "HHHHHHHHTIMEFRAMESMONTH",
-                "displaying " + thingspeakViewModel.getSelectedWaterQualityData(water_parameter).toString()
+                "displaying " + thingspeakViewModel.getSelectedWaterQualityData(water_parameter, timeframesDate).toString()
             )
             Log.i(
                 "HHHHHHHHTIMEFRAMESMONTH",
-                "displaying measured " + thingspeakViewModel.getSelectedWaterQualityData(water_parameter)
+                "displaying measured " + thingspeakViewModel.getSelectedWaterQualityData(water_parameter, timeframesDate)
                     ?.monthlyWaterQuality?.measured?.size.toString()
             )
             val monthList: List<FloatEntry>? =
-                thingspeakViewModel.getSelectedWaterQualityData(water_parameter)?.monthlyWaterQuality?.measured?.toList()
+                thingspeakViewModel.getSelectedWaterQualityData(water_parameter, timeframesDate)?.monthlyWaterQuality?.measured?.toList()
             if (monthList != null) {
                 if(monthList.isNotEmpty()) {
                     val dayProducer = ChartEntryModelProducer(monthList)
