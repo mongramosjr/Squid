@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
@@ -118,6 +119,13 @@ class PotentialOfHydrogenFragment : Fragment() {
 
         timeframesSelectorButton.setOnClickListener {
             datePicker.show(this.childFragmentManager, "timeframes")
+        }
+
+        timeframeViewModel.timeframesDate.observe(viewLifecycleOwner){selectedDate ->
+            val formatter = DateTimeFormatter.ofPattern("EEE, MMM dd")
+                .withZone(ZoneId.systemDefault())
+            val dateformatted = formatter.format(selectedDate)
+            timeframesSelectorButton.text = dateformatted.toString()
         }
 
         return binding.root
