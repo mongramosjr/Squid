@@ -19,15 +19,18 @@ import com.squidsentry.mobile.Feed
 import com.squidsentry.mobile.R
 import com.squidsentry.mobile.ThingSpeak
 import com.squidsentry.mobile.databinding.FragmentHomeBinding
+import com.squidsentry.mobile.ui.viewmodel.DAILY_TIMEFRAME
+import com.squidsentry.mobile.ui.viewmodel.ThingSpeakViewModel
+import com.squidsentry.mobile.ui.viewmodel.TimeframeViewModel
+import java.time.Instant
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import kotlin.random.Random
 
 
 class HomeFragment : Fragment() {
-
-    private lateinit var homeViewModel: HomeViewModel
 
     private var _binding: FragmentHomeBinding? = null
 
@@ -35,13 +38,18 @@ class HomeFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
+    lateinit var thingspeakViewModel: ThingSpeakViewModel
+    lateinit var timeframeViewModel: TimeframeViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.i("HOMEHHHHHHHH", "onCreate")
-        //homeViewModel = HomeViewModel()
-        homeViewModel = ViewModelProvider(this)[HomeViewModel::class.java]
-        // Call the ThingSpeak API
-        homeViewModel.getThingSpeakData()
+
+        timeframeViewModel = ViewModelProvider(requireActivity())[TimeframeViewModel::class.java]
+        thingspeakViewModel = ViewModelProvider(requireActivity())[ThingSpeakViewModel::class.java]
+
+        // Call the last entries in ThingSpeak
+        //thingspeakViewModel.getLastWaterQuality()
     }
 
 
@@ -58,9 +66,10 @@ class HomeFragment : Fragment() {
 
         //TODO: Do I need to rerun?
         // Call the ThingSpeak API
-        homeViewModel.getThingSpeakData()
+        //thingspeakViewModel.getLastWaterQuality()
 
         // click to open the detailed graph of each parameters
+        // (using findById instead of databinding)
         view.findViewById<TextView>(R.id.last_measure_pH).setOnClickListener {
             Navigation.findNavController(view).navigate(R.id.action_homeFragment_to_potentialOfHydrogenFragment)
         }
@@ -85,6 +94,9 @@ class HomeFragment : Fragment() {
 
         subscribe(view)
 
+        // Call the last entries in ThingSpeak
+        thingspeakViewModel.getLastWaterQuality()
+
         return view
     }
 
@@ -95,7 +107,7 @@ class HomeFragment : Fragment() {
 
     private fun subscribe(root: View) {
 
-        homeViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+        thingspeakViewModel.isLoading.observe(viewLifecycleOwner){isLoading->
             // Set the result text to Loading
             if (isLoading) {
                 //TODO: display chart with random
@@ -110,7 +122,7 @@ class HomeFragment : Fragment() {
 
         }
 
-        homeViewModel.isError.observe(viewLifecycleOwner) { isError ->
+        thingspeakViewModel.isError.observe(viewLifecycleOwner) { isError ->
             // Hide display image and set the result text to the error message
             if (isError) {
                 //TODO: display error message
@@ -118,8 +130,12 @@ class HomeFragment : Fragment() {
             }
         }
 
-        homeViewModel.thingSpeakData.observe(viewLifecycleOwner) { thingSpeakData ->
+        thingspeakViewModel.thingSpeakData.observe(viewLifecycleOwner){thingSpeakData ->
             displayChart(thingSpeakData, root)
+            val lastDateEntry = thingspeakViewModel.lastDateEntry.value
+            if (lastDateEntry!=null) {
+                getWaterQualityLastEntries(lastDateEntry)
+            }
         }
     }
 
@@ -207,7 +223,7 @@ class HomeFragment : Fragment() {
                 }
             }
 
-            /*
+            /* NOTE: another way of showing graph
             val phList: List<FloatEntry> = pH.toList()
             root.findViewById<ChartView>(R.id.chart_view_pH)
                 .setModel(entryModelOf(phList))
@@ -269,6 +285,12 @@ class HomeFragment : Fragment() {
     {
         view.findViewById<ChartView>(id)
             .setModel(entryModelOf(entriesOf(value, value, value,value,value, value)))
+    }
+
+    fun getWaterQualityLastEntries(dateNow: Instant = Instant.now()){
+        val timeframesDate = dateNow.atZone(ZoneId.systemDefault()).toLocalDate()
+        thingspeakViewModel.getWaterQuality(dateNow, DAILY_TIMEFRAME, true)
+        timeframeViewModel.selectedTimeframesDate(timeframesDate)
     }
 
 }

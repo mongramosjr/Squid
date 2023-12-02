@@ -101,6 +101,10 @@ dependencies {
 
     //implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
-    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    val retrofit2Version = "2.9.0"
+    implementation ("com.squareup.retrofit2:retrofit:$retrofit2Version")
+    implementation ("com.squareup.retrofit2:converter-gson:$retrofit2Version")
+
+    implementation ("org.osmdroid:osmdroid-android:6.1.17")
+
 }

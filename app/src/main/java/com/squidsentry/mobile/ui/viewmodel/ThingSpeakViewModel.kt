@@ -1,6 +1,6 @@
 package com.squidsentry.mobile.ui.viewmodel
 
-import android .util.Log
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -15,6 +15,7 @@ import retrofit2.Response
 import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
+import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.TemporalAdjusters
@@ -30,6 +31,9 @@ class ThingSpeakViewModel : ViewModel() {
     // Response body from thingspeak
     private val _thingSpeakData = MutableLiveData<ThingSpeak?>()
     val thingSpeakData: LiveData<ThingSpeak?> get() = _thingSpeakData
+
+    private val _lastDateEntry = MutableLiveData<Instant>()
+    val lastDateEntry: LiveData<Instant> = _lastDateEntry
 
     // List of above data based on date keys
     private val _waterQualityData =
@@ -53,12 +57,12 @@ class ThingSpeakViewModel : ViewModel() {
         _waterQualityData.value = WaterQualityData()
     }
 
-    fun getLastWaterQuality(){
+    fun getLastWaterQuality(entries: Int =288){
 
         _isLoading.value = true
         _isError.value = false
 
-        val client = ThingSpeakApiClient.apiService.getLast(288)
+        val client = ThingSpeakApiClient.apiService.getLast(entries)
 
         client.enqueue(object : Callback<ThingSpeak> {
 
@@ -72,6 +76,7 @@ class ThingSpeakViewModel : ViewModel() {
                     }
                     _isLoading.value = false
                     _thingSpeakData.value = responseBody
+                    _lastDateEntry.value = dateLastEntry(responseBody)
                     Log.i("ViewModelHHHHHHHH", "Processing Response from ThingSpeak")
                 } else {
                     // Handle error
@@ -623,4 +628,22 @@ class ThingSpeakViewModel : ViewModel() {
         }
         return Pair(start, end)
     }
+
+    private fun dateLastEntry(lastEntry: ThingSpeak): Instant{
+        var dateLastEntry: Instant
+        val size = lastEntry.feeds?.size
+        dateLastEntry = Instant.now()
+        if (size != null) {
+            if(size > 0){
+                val createdAt = lastEntry.feeds.last().createdAt
+                dateLastEntry = OffsetDateTime.parse(createdAt).toInstant()
+            }
+        }
+        return dateLastEntry
+    }
+
+    fun getDateLastEntry(): Instant?{
+        return _lastDateEntry.value
+    }
+
 }
