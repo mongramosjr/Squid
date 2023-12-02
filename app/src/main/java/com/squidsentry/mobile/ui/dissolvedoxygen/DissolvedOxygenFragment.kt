@@ -16,6 +16,7 @@ import com.google.android.material.tabs.TabLayout
 import com.squidsentry.mobile.R
 import com.squidsentry.mobile.adapter.TimeframesPagerAdapter
 import com.squidsentry.mobile.databinding.FragmentDissolvedOxygenBinding
+import com.squidsentry.mobile.ui.viewmodel.DISSOLVED_OXYGEN
 import com.squidsentry.mobile.ui.viewmodel.ThingSpeakViewModel
 import com.squidsentry.mobile.ui.viewmodel.TimeframeViewModel
 import java.text.SimpleDateFormat
@@ -54,7 +55,8 @@ class DissolvedOxygenFragment : Fragment() {
         thingspeakViewModel = ViewModelProvider(requireActivity())[ThingSpeakViewModel::class.java]
 
         //set the water parameter
-        timeframeViewModel.selectedWaterParameter("dissolvedOxygen")
+        timeframeViewModel.selectedWaterParameter(DISSOLVED_OXYGEN)
+        timeframeViewModel.selectedWaterParameterUom(" ppm")
         // Call the ThingSpeak API
         //TODO: query based on the current date and timeframe
         // getWaterQuality(selected_date, timeframe)
@@ -137,6 +139,7 @@ class DissolvedOxygenFragment : Fragment() {
 
         Log.i("PHHHHHHHHH", "onViewCreated")
         binding.fragmentDissolvedOxygenToolbar.setNavigationIcon(R.drawable.arrow_back_24)
+        binding.fragmentDissolvedOxygenToolbar.setTitle(DISSOLVED_OXYGEN)
         binding.fragmentDissolvedOxygenToolbar.setNavigationOnClickListener { me: View ->
             Navigation.findNavController(me).navigate(R.id.action_dissolvedOxygenFragment_to_homeFragment)
         }

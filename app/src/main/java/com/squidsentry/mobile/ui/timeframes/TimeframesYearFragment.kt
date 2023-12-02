@@ -39,6 +39,10 @@ class TimeframesYearFragment : Fragment() {
         // Inflate the layout for this fragment
         _binding = FragmentTimeframesYearBinding.inflate(inflater, container, false)
         Log.i("HHHHHHHHTIMEFRAMESYEAR", "onCreateView")
+
+        binding.timeframesYearParameter.text = timeframeViewModel.waterParameter.value.toString()
+        binding.timeframesYearUom.text = timeframeViewModel.waterParameterUom.value.toString()
+
         return binding.root
     }
 
@@ -69,16 +73,20 @@ class TimeframesYearFragment : Fragment() {
                 "displaying measured " + thingspeakViewModel.getSelectedWaterQualityData(water_parameter, timeframesDate)
                     ?.yearlyWaterQuality?.measured?.size.toString()
             )
-            val dayList: List<FloatEntry>? =
+            val yearList: List<FloatEntry>? =
                 thingspeakViewModel.getSelectedWaterQualityData(water_parameter, timeframesDate)?.yearlyWaterQuality?.measured?.toList()
-            if (dayList != null) {
-                if(dayList.isNotEmpty()) {
-                    val dayProducer = ChartEntryModelProducer(dayList)
-                    binding.timeframesYearChart.entryProducer = dayProducer
-                    binding.timeframesYearHigh.text = dayList.last().y.toString()
+            val max_measured = yearList?.maxWithOrNull(Comparator.comparingDouble { it.y.toDouble() })
+            val min_measured = yearList?.minWithOrNull(Comparator.comparingDouble { it.y.toDouble() })
+            if (yearList != null) {
+                if(yearList.isNotEmpty()) {
+                    val yearProducer = ChartEntryModelProducer(yearList)
+                    binding.timeframesYearChart.entryProducer = yearProducer
+                    binding.timeframesYearHigh.text = max_measured?.y.toString()
+                    binding.timeframesYearLow.text = min_measured?.y.toString()
                 }else{
                     binding.timeframesYearChart.setModel(entryModelOf(entriesOf(0f,0f,0f,0f,0f,0f)))
-                    binding.timeframesYearHigh.text = "--"
+                    binding.timeframesYearHigh.text = ""
+                    binding.timeframesYearLow.text = ""
                 }
             }
         }

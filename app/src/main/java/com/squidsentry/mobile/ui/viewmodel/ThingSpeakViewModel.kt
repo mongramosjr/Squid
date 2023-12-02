@@ -25,6 +25,13 @@ const val WEEKLY_TIMEFRAME: Int = 1
 const val MONTHLY_TIMEFRAME: Int = 2
 const val YEARLY_TIMEFRAME: Int = 3
 
+const val PH: String = "pH"
+const val TEMPERATURE: String = "Temperature"
+const val DISSOLVED_OXYGEN: String = "Dissolved Oxygen"
+const val SALINITY: String = "SALINITY"
+const val TDS: String = "TDS"
+const val TURBIDITY: String = "Turbidity"
+
 
 class ThingSpeakViewModel : ViewModel() {
 
@@ -554,22 +561,22 @@ class ThingSpeakViewModel : ViewModel() {
     fun getSelectedWaterQualityData(waterParameter: String, date: LocalDate): WaterQualityTimeframe? {
 
         var tmp: WaterQualityTimeframe? = null
-        if(waterParameter=="pH"){
+        if(waterParameter==PH){
             tmp =  _waterQualityData.value?.pH?.get(date)
         }
-        if(waterParameter=="temperature"){
+        if(waterParameter== TEMPERATURE){
             tmp =  _waterQualityData.value?.temperature?.get(date)
         }
-        if(waterParameter=="dissolvedOxygen"){
+        if(waterParameter== DISSOLVED_OXYGEN){
             tmp =  _waterQualityData.value?.dissolvedOxygen?.get(date)
         }
-        if(waterParameter=="salinity"){
+        if(waterParameter== SALINITY){
             tmp =  _waterQualityData.value?.salinity?.get(date)
         }
-        if(waterParameter=="tds"){
+        if(waterParameter==TDS){
             tmp =  _waterQualityData.value?.tds?.get(date)
         }
-        if(waterParameter=="turbidity"){
+        if(waterParameter==TURBIDITY){
             tmp =  _waterQualityData.value?.turbidity?.get(date)
         }
         return tmp

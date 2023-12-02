@@ -39,6 +39,10 @@ class TimeframesMonthFragment : Fragment() {
         // Inflate the layout for this fragment
         _binding = FragmentTimeframesMonthBinding.inflate(inflater, container, false)
         Log.i("HHHHHHHHTIMEFRAMESMONTH", "onCreateView")
+
+        binding.timeframesMonthParameter.text = timeframeViewModel.waterParameter.value.toString()
+        binding.timeframesMonthUom.text = timeframeViewModel.waterParameterUom.value.toString()
+
         return binding.root
     }
 
@@ -71,14 +75,18 @@ class TimeframesMonthFragment : Fragment() {
             )
             val monthList: List<FloatEntry>? =
                 thingspeakViewModel.getSelectedWaterQualityData(water_parameter, timeframesDate)?.monthlyWaterQuality?.measured?.toList()
+            val max_measured = monthList?.maxWithOrNull(Comparator.comparingDouble { it.y.toDouble() })
+            val min_measured = monthList?.minWithOrNull(Comparator.comparingDouble { it.y.toDouble() })
             if (monthList != null) {
                 if(monthList.isNotEmpty()) {
-                    val dayProducer = ChartEntryModelProducer(monthList)
-                    binding.timeframesMonthChart.entryProducer = dayProducer
-                    binding.timeframesMonthHigh.text = monthList.last().y.toString()
+                    val monthProducer = ChartEntryModelProducer(monthList)
+                    binding.timeframesMonthChart.entryProducer = monthProducer
+                    binding.timeframesMonthHigh.text = max_measured?.y.toString()
+                    binding.timeframesMonthLow.text = min_measured?.y.toString()
                 }else{
                     binding.timeframesMonthChart.setModel(entryModelOf(entriesOf(0f,0f,0f,0f,0f,0f)))
-                    binding.timeframesMonthHigh.text = "--"
+                    binding.timeframesMonthHigh.text = ""
+                    binding.timeframesMonthLow.text = ""
                 }
             }
         }

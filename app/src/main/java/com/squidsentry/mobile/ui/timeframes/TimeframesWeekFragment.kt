@@ -39,6 +39,10 @@ class TimeframesWeekFragment : Fragment() {
         // Inflate the layout for this fragment
         _binding = FragmentTimeframesWeekBinding.inflate(inflater, container, false)
         Log.i("HHHHHHHHTIMEFRAMESWEEK", "onCreateView")
+
+        binding.timeframesWeekParameter.text = timeframeViewModel.waterParameter.value.toString()
+        binding.timeframesWeekUom.text = timeframeViewModel.waterParameterUom.value.toString()
+
         return binding.root
     }
 
@@ -71,14 +75,18 @@ class TimeframesWeekFragment : Fragment() {
             )
             val weekList: List<FloatEntry>? =
                 thingspeakViewModel.getSelectedWaterQualityData(water_parameter, timeframesDate)?.weeklyWaterQuality?.measured?.toList()
+            val max_measured = weekList?.maxWithOrNull(Comparator.comparingDouble { it.y.toDouble() })
+            val min_measured = weekList?.minWithOrNull(Comparator.comparingDouble { it.y.toDouble() })
             if (weekList != null) {
                 if(weekList.isNotEmpty()) {
-                    val dayProducer = ChartEntryModelProducer(weekList)
-                    binding.timeframesWeekChart.entryProducer = dayProducer
-                    binding.timeframesWeekHigh.text = weekList.last().y.toString()
+                    val weekProducer = ChartEntryModelProducer(weekList)
+                    binding.timeframesWeekChart.entryProducer = weekProducer
+                    binding.timeframesWeekHigh.text = max_measured?.y.toString()
+                    binding.timeframesWeekLow.text = min_measured?.y.toString()
                 }else{
                     binding.timeframesWeekChart.setModel(entryModelOf(entriesOf(0f,0f,0f,0f,0f,0f)))
-                    binding.timeframesWeekHigh.text = "--"
+                    binding.timeframesWeekHigh.text = ""
+                    binding.timeframesWeekLow.text = ""
                 }
             }
         }

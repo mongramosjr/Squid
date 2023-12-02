@@ -39,6 +39,10 @@ class TimeframesDayFragment : Fragment() {
         // Inflate the layout for this fragment
         _binding = FragmentTimeframesDayBinding.inflate(inflater, container, false)
         Log.i("HHHHHHHHTIMEFRAMESDAY", "onCreateView")
+
+        binding.timeframesDayParameter.text = timeframeViewModel.waterParameter.value.toString()
+        binding.timeframesDayUom.text = timeframeViewModel.waterParameterUom.value.toString()
+
         return binding.root
     }
 
@@ -71,14 +75,18 @@ class TimeframesDayFragment : Fragment() {
             )
             val dayList: List<FloatEntry>? =
                 thingspeakViewModel.getSelectedWaterQualityData(water_parameter, timeframesDate)?.dailyWaterQuality?.measured?.toList()
+            val max_measured = dayList?.maxWithOrNull(Comparator.comparingDouble { it.y.toDouble() })
+            val min_measured = dayList?.minWithOrNull(Comparator.comparingDouble { it.y.toDouble() })
             if (dayList != null) {
                 if(dayList.isNotEmpty()) {
                     val dayProducer = ChartEntryModelProducer(dayList)
                     binding.timeframesDayChart.entryProducer = dayProducer
-                    binding.timeframesDayHigh.text = dayList.last().y.toString()
+                    binding.timeframesDayHigh.text = max_measured?.y.toString()
+                    binding.timeframesDayLow.text = min_measured?.y.toString()
                 }else{
                     binding.timeframesDayChart.setModel(entryModelOf(entriesOf(0f,0f,0f,0f,0f,0f)))
-                    binding.timeframesDayHigh.text = "--"
+                    binding.timeframesDayHigh.text = ""
+                    binding.timeframesDayLow.text = ""
                 }
             }
         }

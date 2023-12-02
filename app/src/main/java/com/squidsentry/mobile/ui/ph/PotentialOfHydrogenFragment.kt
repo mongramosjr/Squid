@@ -16,6 +16,7 @@ import com.google.android.material.tabs.TabLayout
 import com.squidsentry.mobile.R
 import com.squidsentry.mobile.adapter.TimeframesPagerAdapter
 import com.squidsentry.mobile.databinding.FragmentPotentialOfHydrogenBinding
+import com.squidsentry.mobile.ui.viewmodel.PH
 import com.squidsentry.mobile.ui.viewmodel.ThingSpeakViewModel
 import com.squidsentry.mobile.ui.viewmodel.TimeframeViewModel
 import java.text.SimpleDateFormat
@@ -54,7 +55,8 @@ class PotentialOfHydrogenFragment : Fragment() {
         thingspeakViewModel = ViewModelProvider(requireActivity())[ThingSpeakViewModel::class.java]
 
         //set the water parameter
-        timeframeViewModel.selectedWaterParameter("pH")
+        timeframeViewModel.selectedWaterParameter(PH)
+        timeframeViewModel.selectedWaterParameterUom(" ")
         // Call the ThingSpeak API
         //TODO: query based on the current date and timeframe
         // getWaterQuality(selected_date, timeframe)
@@ -136,6 +138,7 @@ class PotentialOfHydrogenFragment : Fragment() {
 
         Log.i("PHHHHHHHHH", "onViewCreated")
         binding.fragmentPhToolbar.setNavigationIcon(R.drawable.arrow_back_24)
+        binding.fragmentPhToolbar.setTitle(PH)
         binding.fragmentPhToolbar.setNavigationOnClickListener { me: View ->
             Navigation.findNavController(me).navigate(R.id.action_potentialOfHydrogenFragment_to_homeFragment)
         }

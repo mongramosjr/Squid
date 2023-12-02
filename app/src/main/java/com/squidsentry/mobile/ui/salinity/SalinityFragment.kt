@@ -16,6 +16,7 @@ import com.google.android.material.tabs.TabLayout
 import com.squidsentry.mobile.R
 import com.squidsentry.mobile.adapter.TimeframesPagerAdapter
 import com.squidsentry.mobile.databinding.FragmentSalinityBinding
+import com.squidsentry.mobile.ui.viewmodel.SALINITY
 import com.squidsentry.mobile.ui.viewmodel.ThingSpeakViewModel
 import com.squidsentry.mobile.ui.viewmodel.TimeframeViewModel
 import java.text.SimpleDateFormat
@@ -53,7 +54,8 @@ class SalinityFragment : Fragment() {
         thingspeakViewModel = ViewModelProvider(requireActivity())[ThingSpeakViewModel::class.java]
 
         //set the water parameter
-        timeframeViewModel.selectedWaterParameter("salinity")
+        timeframeViewModel.selectedWaterParameter(SALINITY)
+        timeframeViewModel.selectedWaterParameterUom(" ppt")
         // Call the ThingSpeak API
         //TODO: query based on the current date and timeframe
         // getWaterQuality(selected_date, timeframe)
@@ -136,6 +138,7 @@ class SalinityFragment : Fragment() {
 
         Log.i("PHHHHHHHHH", "onViewCreated")
         binding.fragmentSalinityToolbar.setNavigationIcon(R.drawable.arrow_back_24)
+        binding.fragmentSalinityToolbar.setTitle(SALINITY)
         binding.fragmentSalinityToolbar.setNavigationOnClickListener { me: View ->
             Navigation.findNavController(me).navigate(R.id.action_salinityFragment_to_homeFragment)
         }

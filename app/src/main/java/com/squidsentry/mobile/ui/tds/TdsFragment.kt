@@ -16,6 +16,8 @@ import com.google.android.material.tabs.TabLayout
 import com.squidsentry.mobile.R
 import com.squidsentry.mobile.adapter.TimeframesPagerAdapter
 import com.squidsentry.mobile.databinding.FragmentTdsBinding
+import com.squidsentry.mobile.ui.viewmodel.PH
+import com.squidsentry.mobile.ui.viewmodel.TDS
 import com.squidsentry.mobile.ui.viewmodel.ThingSpeakViewModel
 import com.squidsentry.mobile.ui.viewmodel.TimeframeViewModel
 import java.text.SimpleDateFormat
@@ -53,7 +55,8 @@ class TdsFragment : Fragment() {
         thingspeakViewModel = ViewModelProvider(requireActivity())[ThingSpeakViewModel::class.java]
 
         //set the water parameter
-        timeframeViewModel.selectedWaterParameter("tds")
+        timeframeViewModel.selectedWaterParameter(TDS)
+        timeframeViewModel.selectedWaterParameterUom(" µS/cm")
         // Call the ThingSpeak API
         //TODO: query based on the current date and timeframe
         // getWaterQuality(selected_date, timeframe)
@@ -136,6 +139,7 @@ class TdsFragment : Fragment() {
 
         Log.i("PHHHHHHHHH", "onViewCreated")
         binding.fragmentTdsToolbar.setNavigationIcon(R.drawable.arrow_back_24)
+        binding.fragmentTdsToolbar.setTitle(TDS)
         binding.fragmentTdsToolbar.setNavigationOnClickListener { me: View ->
             Navigation.findNavController(me).navigate(R.id.action_tdsFragment_to_homeFragment)
         }

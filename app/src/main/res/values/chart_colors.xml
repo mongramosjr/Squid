@@ -9,4 +9,8 @@
     <color name="chart_tds_color">#a485e0</color>
     <color name="chart_turbidity_color">#a485e0</color>
     <color name="chart_dissolvedoxygen_color">#a485e0</color>
+    <color name="chart_minmax_container_good">#b0bdff</color>
+    <color name="chart_minmax_container_bad">#ffd7d7</color>
+    <color name="chart_text_good">#141E42</color>
+    <color name="chart_text_bad">#310000</color>
 </resources>

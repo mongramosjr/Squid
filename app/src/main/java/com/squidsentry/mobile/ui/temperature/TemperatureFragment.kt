@@ -16,6 +16,7 @@ import com.google.android.material.tabs.TabLayout
 import com.squidsentry.mobile.R
 import com.squidsentry.mobile.adapter.TimeframesPagerAdapter
 import com.squidsentry.mobile.databinding.FragmentTemperatureBinding
+import com.squidsentry.mobile.ui.viewmodel.TEMPERATURE
 import com.squidsentry.mobile.ui.viewmodel.ThingSpeakViewModel
 import com.squidsentry.mobile.ui.viewmodel.TimeframeViewModel
 import java.text.SimpleDateFormat
@@ -57,7 +58,8 @@ class TemperatureFragment : Fragment() {
         thingspeakViewModel = ViewModelProvider(requireActivity())[ThingSpeakViewModel::class.java]
 
         //set the water parameter
-        timeframeViewModel.selectedWaterParameter("temperature")
+        timeframeViewModel.selectedWaterParameter(TEMPERATURE)
+        timeframeViewModel.selectedWaterParameterUom(" °C")
         // Call the ThingSpeak API
         //TODO: query based on the current date and timeframe
         // getWaterQuality(selected_date, timeframe)
@@ -140,6 +142,7 @@ class TemperatureFragment : Fragment() {
 
         Log.i("PHHHHHHHHH", "onViewCreated")
         binding.fragmentTemperatureToolbar.setNavigationIcon(R.drawable.arrow_back_24)
+        binding.fragmentTemperatureToolbar.setTitle(TEMPERATURE)
         binding.fragmentTemperatureToolbar.setNavigationOnClickListener { me: View ->
             Navigation.findNavController(me).navigate(R.id.action_temperatureFragment_to_homeFragment)
         }

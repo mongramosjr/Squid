@@ -17,6 +17,9 @@ class TimeframeViewModel : ViewModel() {
     private val _waterParameter = MutableLiveData<String>()
     val waterParameter: LiveData<String> get() = _waterParameter
 
+    private val _waterParameterUom = MutableLiveData<String>()
+    val waterParameterUom: LiveData<String> get() = _waterParameterUom
+
     fun selectedTimeframesDate(selectedDate: LocalDate) {
         _timeframesDate.value = selectedDate
     }
@@ -27,4 +30,8 @@ class TimeframeViewModel : ViewModel() {
     fun selectedWaterParameter(selectedWaterParameter: String) {
         _waterParameter.value = selectedWaterParameter
     }
+    fun selectedWaterParameterUom(selectedWaterParameterUom: String) {
+        _waterParameterUom.value = selectedWaterParameterUom
+    }
+
 }
