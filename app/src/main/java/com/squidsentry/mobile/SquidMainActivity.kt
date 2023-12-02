@@ -1,6 +1,7 @@
 package com.squidsentry.mobile
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
@@ -10,6 +11,10 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.squidsentry.mobile.databinding.ActivityMainSquidBinding
+import com.squidsentry.mobile.ui.login.EmailPhoneLoginViewModel
+import com.squidsentry.mobile.ui.login.EmailPhoneLoginViewModelFactory
+import com.squidsentry.mobile.ui.login.LoginViewModel
+import com.squidsentry.mobile.ui.login.LoginViewModelFactory
 import com.squidsentry.mobile.ui.viewmodel.ThingSpeakViewModel
 
 
@@ -22,11 +27,16 @@ class MainActivity : AppCompatActivity() {
 
     //Note: can communicate between children fragments
     lateinit var thingspeakViewModel: ThingSpeakViewModel
+    lateinit var emailPhoneloginViewModel: EmailPhoneLoginViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
         thingspeakViewModel = ViewModelProvider(this)[ThingSpeakViewModel::class.java]
         thingspeakViewModel.defaultValues()
+
+        // for login
+        emailPhoneloginViewModel = ViewModelProvider(this,
+            EmailPhoneLoginViewModelFactory())[EmailPhoneLoginViewModel::class.java]
 
         super.onCreate(savedInstanceState)
 

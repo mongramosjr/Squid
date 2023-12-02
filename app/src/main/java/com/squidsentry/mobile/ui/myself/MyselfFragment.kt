@@ -24,9 +24,6 @@ class MyselfFragment : Fragment() {
 
     private var _binding: FragmentMyselfBinding? = null
 
-    private lateinit var loginViewModel: LoginViewModel
-
-
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
@@ -34,6 +31,7 @@ class MyselfFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        /*
         val navController = findNavController()
 
         val currentBackStackEntry = navController.currentBackStackEntry!!
@@ -49,6 +47,8 @@ class MyselfFragment : Fragment() {
                     print("TODO")
                 }
             })
+
+         */
     }
 
     override fun onCreateView(
@@ -74,22 +74,8 @@ class MyselfFragment : Fragment() {
             textView.text = it
         }
 
-        //test
-        //loginViewModel.logout()
 
         return root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        //val navController = findNavController()
-        //navController.navigate(R.id.navigation_login)
-
-        //view.findViewById<Button>(R.id.btn_to_login).setOnClickListener {
-        //    view.findNavController().navigate(R.id.action_navigation_myself_to_navigation_login)
-        //}
-        print("TODO")
-
     }
 
     override fun onDestroyView() {

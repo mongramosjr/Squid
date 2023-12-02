@@ -13,6 +13,8 @@
     <string name="welcome">"Welcome !"</string>
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
+    <string name="invalid_code">Not a valid number</string>
+    <string name="invalid_code_verification">Invalid code</string>
     <string name="login_failed">"Login failed"</string>
     <string name="squid_logo">SQUID logo</string>
     <string name="display_chart">Display Chart</string>
@@ -21,4 +23,8 @@
     <string name="timeframes_week">Week</string>
     <string name="timeframes_day">Day</string>
     <string name="sample_date">Wed, Nov 20</string>
+    <string name="prompt_email_or_mobile_phone_number">Email or Mobile Number</string>
+    <string name="verify_code">Verify Code</string>
+    <string name="prompt_code">Code</string>
+    <string name="title_activity_maps">MapsActivity</string>
 </resources>

@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("androidx.navigation.safeargs")
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
@@ -25,6 +26,8 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            applicationIdSuffix = ".squid"
+            versionNameSuffix = "prod"
         }
     }
     compileOptions {
@@ -39,6 +42,19 @@ android {
     }
     buildToolsVersion = "34.0.0"
     ndkVersion = "26.1.10909125"
+    flavorDimensions += listOf("prod")
+    productFlavors {
+        create("calamari") {
+            dimension = "prod"
+            targetSdk = 34
+            minSdk = 31
+            versionNameSuffix = "prod"
+            versionName = "Calamari"
+            versionCode = 202312
+            applicationIdSuffix = ".squid"
+            applicationId = "com.squidsentry.mobile"
+        }
+    }
 }
 
 dependencies {
@@ -52,6 +68,7 @@ dependencies {
     implementation("androidx.annotation:annotation:1.7.0")
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
     implementation("androidx.fragment:fragment-ktx:1.6.2")
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")

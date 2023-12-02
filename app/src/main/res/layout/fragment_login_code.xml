@@ -9,6 +9,7 @@
     android:paddingTop="@dimen/fragment_vertical_margin"
     android:paddingRight="@dimen/fragment_horizontal_margin"
     android:paddingBottom="@dimen/fragment_vertical_margin"
+    android:textAlignment="center"
     tools:context=".ui.login.LoginFragment">
 
     <ImageView
@@ -24,13 +25,13 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/emailorphone"
+        android:id="@+id/code"
         android:layout_width="0dp"
         android:layout_height="68dp"
         android:layout_marginTop="24dp"
-        android:autofillHints="@string/prompt_email_or_mobile_phone_number"
+        android:autofillHints="123456"
         android:background="?attr/colorPrimary"
-        android:hint="@string/prompt_email_or_mobile_phone_number"
+        android:hint="@string/prompt_code"
         android:inputType="text"
         android:selectAllOnFocus="true"
         android:textColor="?attr/colorOnPrimary"
@@ -40,18 +41,18 @@
         app:layout_constraintTop_toBottomOf="@+id/squidlogo" />
 
     <Button
-        android:id="@+id/login"
+        android:id="@+id/verify_code"
         android:layout_width="240dp"
         android:layout_height="84dp"
         android:layout_gravity="start"
         android:layout_marginTop="24dp"
         android:backgroundTint="@color/md_theme_light_primary"
         android:enabled="false"
-        android:text="@string/action_sign_in_short"
+        android:text="@string/verify_code"
         android:textColor="?attr/colorOnPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/emailorphone" />
+        app:layout_constraintTop_toBottomOf="@+id/code" />
 
     <ProgressBar
         android:id="@+id/loading"
@@ -64,8 +65,8 @@
         android:layout_marginBottom="64dp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/emailorphone"
-        app:layout_constraintStart_toStartOf="@+id/emailorphone"
+        app:layout_constraintEnd_toEndOf="@+id/code"
+        app:layout_constraintStart_toStartOf="@+id/code"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.3" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -17,14 +17,12 @@ import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.lifecycle.SavedStateHandle
-import androidx.navigation.Navigation
 import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
-import com.squidsentry.mobile.databinding.FragmentLoginBinding
+import com.squidsentry.mobile.databinding.FragmentLoginCodeBinding
 
 import com.squidsentry.mobile.R
-import com.squidsentry.mobile.ui.viewmodel.ThingSpeakViewModel
 
-class LoginFragment : Fragment() {
+class LoginCodeFragment : Fragment() {
 
     companion object {
         const val LOGIN_SUCCESSFUL: String = "LOGIN_SUCCESSFUL"
@@ -33,7 +31,7 @@ class LoginFragment : Fragment() {
     private lateinit var emailPhoneloginViewModel: EmailPhoneLoginViewModel
     private lateinit var savedStateHandle: SavedStateHandle
 
-    private var _binding: FragmentLoginBinding? = null
+    private var _binding: FragmentLoginCodeBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -45,7 +43,7 @@ class LoginFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        _binding = FragmentLoginBinding.inflate(inflater, container, false)
+        _binding = FragmentLoginCodeBinding.inflate(inflater, container, false)
         return binding.root
 
     }
@@ -58,29 +56,29 @@ class LoginFragment : Fragment() {
 
         emailPhoneloginViewModel = ViewModelProvider(requireActivity())[EmailPhoneLoginViewModel::class.java]
 
-        val emailorphoneEditText = binding.emailorphone
-        val loginButton = binding.login
+        val codeEditText = binding.code
+        val verifyCodeButton = binding.verifyCode
         val loadingProgressBar = binding.loading
 
-        emailPhoneloginViewModel.loginFormState.observe(viewLifecycleOwner,
-            Observer { loginFormState ->
-                if (loginFormState == null) {
+        emailPhoneloginViewModel.codeloginFormState.observe(viewLifecycleOwner,
+            Observer { codeloginFormState ->
+                if (codeloginFormState == null) {
                     return@Observer
                 }
-                loginButton.isEnabled = loginFormState.isDataValid
-                loginFormState.emailorphoneError?.let {
-                    emailorphoneEditText.error = getString(it)
+                verifyCodeButton.isEnabled = codeloginFormState.isDataValid
+                codeloginFormState.codeError?.let {
+                    codeEditText.error = getString(it)
                 }
             })
 
-        emailPhoneloginViewModel.loginResult.observe(viewLifecycleOwner,
-            Observer { loginResult ->
-                loginResult ?: return@Observer
+        emailPhoneloginViewModel.codeResult.observe(viewLifecycleOwner,
+            Observer { codeResult ->
+                codeResult ?: return@Observer
                 loadingProgressBar.visibility = View.GONE
-                loginResult.error?.let {
+                codeResult.error?.let {
                     showLoginFailed(it)
                 }
-                loginResult.success?.let {
+                codeResult.success?.let {
                     updateUiWithUser(it)
                 }
             })
@@ -95,17 +93,17 @@ class LoginFragment : Fragment() {
             }
 
             override fun afterTextChanged(s: Editable) {
-                emailPhoneloginViewModel.loginDataChanged(
-                    emailorphoneEditText.text.toString(),
+                emailPhoneloginViewModel.codeDataChanged(
+                    codeEditText.text.toString(),
                 )
             }
         }
-        emailorphoneEditText.addTextChangedListener(afterTextChangedListener)
+        codeEditText.addTextChangedListener(afterTextChangedListener)
 
-        loginButton.setOnClickListener {
+        verifyCodeButton.setOnClickListener {
             loadingProgressBar.visibility = View.VISIBLE
-            emailPhoneloginViewModel.login(
-                emailorphoneEditText.text.toString(),
+            emailPhoneloginViewModel.verifyCode(
+                codeEditText.text.toString(),
             )
         }
     }
@@ -118,7 +116,9 @@ class LoginFragment : Fragment() {
 
         //TEST
         savedStateHandle[LOGIN_SUCCESSFUL] = true
-        findNavController(this).navigate(R.id.action_loginFragment_to_loginCodeFragment)
+        //findNavController(this).popBackStack()
+        findNavController(this).navigate(R.id.action_loginCodeFragment_to_myselfFragment)
+
     }
 
     private fun showLoginFailed(@StringRes errorString: Int) {
