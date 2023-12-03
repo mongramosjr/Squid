@@ -53,25 +53,21 @@ class TimeframesYearFragment : Fragment() {
 
         // sync and get the data from parent fragment
         val thingspeakViewModel = ViewModelProvider(requireActivity())[ThingSpeakViewModel::class.java]
-        thingspeakViewModel.isDone.observe(viewLifecycleOwner){selectedDate ->
+        thingspeakViewModel.isDone.observe(viewLifecycleOwner){requestDone ->
             val water_parameter: String = timeframeViewModel.waterParameter.value.toString()
             val timeframesDate: LocalDate = timeframeViewModel.timeframesDate.value!!
-            Log.i(
-                "HHHHHHHHTIMEFRAMESYEAR",
-                "prepping to display graph" + selectedDate.toString()
-            )
+            val selectedDate: LocalDate = thingspeakViewModel.instantToLocalDate(requestDone.selectedDate)
             Log.i(
                 "HHHHHHHHTIMEFRAMESYEAR",
                 "water parameter" + timeframeViewModel.waterParameter.value.toString()
             )
             Log.i(
                 "HHHHHHHHTIMEFRAMESYEAR",
-                "displaying " + thingspeakViewModel.getSelectedWaterQualityData(water_parameter, timeframesDate).toString()
+                "displaying " + timeframesDate.toString()
             )
             Log.i(
                 "HHHHHHHHTIMEFRAMESYEAR",
-                "displaying measured " + thingspeakViewModel.getSelectedWaterQualityData(water_parameter, timeframesDate)
-                    ?.yearlyWaterQuality?.measured?.size.toString()
+                "prepping to display graph" + selectedDate.toString()
             )
             val yearList: List<FloatEntry>? =
                 thingspeakViewModel.getSelectedWaterQualityData(water_parameter, timeframesDate)?.yearlyWaterQuality?.measured?.toList()

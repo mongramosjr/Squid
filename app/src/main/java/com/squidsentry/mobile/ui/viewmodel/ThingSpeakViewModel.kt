@@ -28,7 +28,7 @@ const val YEARLY_TIMEFRAME: Int = 3
 const val PH: String = "pH"
 const val TEMPERATURE: String = "Temperature"
 const val DISSOLVED_OXYGEN: String = "Dissolved Oxygen"
-const val SALINITY: String = "SALINITY"
+const val SALINITY: String = "Salinity"
 const val TDS: String = "TDS"
 const val TURBIDITY: String = "Turbidity"
 
@@ -41,6 +41,9 @@ class ThingSpeakViewModel : ViewModel() {
 
     private val _lastDateEntry = MutableLiveData<Instant>()
     val lastDateEntry: LiveData<Instant> = _lastDateEntry
+
+    private val _lastDateEntryCount = MutableLiveData<Int>()
+    val lastDateEntryCount: LiveData<Int> = _lastDateEntryCount
 
     // List of above data based on date keys
     private val _waterQualityData =
@@ -56,12 +59,13 @@ class ThingSpeakViewModel : ViewModel() {
     private var errorMessage: String = ""
 
     // change to the selected date
-    private val _isDone = MutableLiveData<Instant>()
-    val isDone: LiveData<Instant> get() = _isDone
+    private val _isDone = MutableLiveData<RequestDone>()
+    val isDone: LiveData<RequestDone> get() = _isDone
 
     fun defaultValues()
     {
         _waterQualityData.value = WaterQualityData()
+        _lastDateEntryCount.value = 0
     }
 
     fun getLastWaterQuality(entries: Int =288){
@@ -84,7 +88,8 @@ class ThingSpeakViewModel : ViewModel() {
                     _isLoading.value = false
                     _thingSpeakData.value = responseBody
                     _lastDateEntry.value = dateLastEntry(responseBody)
-                    Log.i("ViewModelHHHHHHHH", "Processing Response from ThingSpeak")
+                    _lastDateEntryCount.value = 1 // NOTE: reset to always
+                    Log.d("HHHHHHHH", "getLastWaterQuality: Processing Response from ThingSpeak --> " + this.toString())
                 } else {
                     // Handle error
                     print("${response.errorBody()} ")
@@ -104,6 +109,10 @@ class ThingSpeakViewModel : ViewModel() {
     //@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private fun getWaterQualityAt(selectedDate: Instant = Instant.now(),
                         timeframe: Int = 0){
+
+        Log.d("HHHHHHHH", "getWaterQualityAt: Processing.. " + this.toString())
+
+
         _isLoading.value = true
         _isError.value = false
 
@@ -125,6 +134,22 @@ class ThingSpeakViewModel : ViewModel() {
             0
         }
 
+        var check_dates: MutableList<Pair<Int, LocalDate>> =
+            mutableListOf<Pair<Int,LocalDate>>().apply{}
+
+        if(_isDone.isInitialized) {
+            check_dates = _isDone.value!!.dates
+            Log.d("HHHHHHHH", "getWaterQualityAt: COUNT is " + check_dates.size.toString())
+            val date_timeframe: Pair<Int, LocalDate> = (timeframe to instantToLocalDate(selectedDate))
+            if(check_dates.contains(date_timeframe)){
+                Log.d("HHHHHHHH", "getWaterQualityAt: ALREADY HAS " + instantToLocalDate(selectedDate).toString())
+                _isDone.value = RequestDone(Instant.now(), selectedDate, check_dates)
+                return
+            }
+        }else{
+            Log.d("HHHHHHHH", "getWaterQualityAt: COUNT is 0")
+        }
+
         val client = ThingSpeakApiClient.apiService.getData(start, end, average)
 
         client.enqueue(object : Callback<ThingSpeak> {
@@ -138,19 +163,25 @@ class ThingSpeakViewModel : ViewModel() {
                         return
                     }
                     // save to the viewmodel
-                    Log.i("ViewModelHHHHHHHH", "getWaterQuality Size of feeds" + responseBody.feeds?.size.toString())
+                    Log.i("ViewModelHHHHHHHH", "getWaterQualityAt: Size of feeds: " + responseBody.feeds?.size.toString())
                     rearrangeData(responseBody, selectedDate, timeframe)
 
                     // store
-                    Log.i("ViewModelHHHHHHHH", "getWaterQuality: Processing Response from ThingSpeak")
+                    Log.i("ViewModelHHHHHHHH", "getWaterQualityAt: Processing Response from ThingSpeak")
                     _isLoading.value = false
                     // NOTE: always do this at the end of response to ensure
                     // right timing of sending updates to all receiver
-                    _isDone.postValue(Instant.now())
+                    var dates: MutableList<Pair<Int,LocalDate>> = mutableListOf<Pair<Int, LocalDate>>().apply{}
+
+                    if(_isDone.isInitialized) {
+                        dates = _isDone.value!!.dates
+                    }
+                    dates.add(timeframe to instantToLocalDate(selectedDate))
+                    _isDone.value = RequestDone(Instant.now(), selectedDate, dates)
                 } else {
                     // Handle error
                     print("${response.errorBody()} ")
-                    onError("getWaterQuality: Data Processing Error")
+                    onError("getWaterQualityAt: Data Processing Error")
                     return
                 }
             }
@@ -564,7 +595,7 @@ class ThingSpeakViewModel : ViewModel() {
         if(waterParameter==PH){
             tmp =  _waterQualityData.value?.pH?.get(date)
         }
-        if(waterParameter== TEMPERATURE){
+        if(waterParameter==TEMPERATURE){
             tmp =  _waterQualityData.value?.temperature?.get(date)
         }
         if(waterParameter== DISSOLVED_OXYGEN){
@@ -653,4 +684,14 @@ class ThingSpeakViewModel : ViewModel() {
         return _lastDateEntry.value
     }
 
+    fun setLastDateEntryCount(count: Int = 0){
+        var cnt: Int = 0
+        cnt = _lastDateEntryCount.value!!
+        _lastDateEntryCount.postValue(count  + cnt)
+    }
+
 }
+
+data class RequestDone( val updateAt: Instant,
+                        val selectedDate: Instant,
+                        val dates: MutableList<Pair<Int, LocalDate>>)

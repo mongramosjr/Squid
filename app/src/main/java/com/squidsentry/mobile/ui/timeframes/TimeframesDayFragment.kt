@@ -53,28 +53,24 @@ class TimeframesDayFragment : Fragment() {
 
         // sync and get the data from parent fragment
         val thingspeakViewModel = ViewModelProvider(requireActivity())[ThingSpeakViewModel::class.java]
-        thingspeakViewModel.isDone.observe(viewLifecycleOwner){selectedDate ->
+        thingspeakViewModel.isDone.observe(viewLifecycleOwner){requestDone ->
             val water_parameter: String = timeframeViewModel.waterParameter.value.toString()
             val timeframesDate: LocalDate = timeframeViewModel.timeframesDate.value!!
-            Log.i(
-                "HHHHHHHHTIMEFRAMESDAY",
-                "prepping to display graph" + selectedDate.toString()
-            )
+            val selectedDate: LocalDate = thingspeakViewModel.instantToLocalDate(requestDone.selectedDate)
             Log.i(
                 "HHHHHHHHTIMEFRAMESDAY",
                 "water parameter" + timeframeViewModel.waterParameter.value.toString()
             )
             Log.i(
                 "HHHHHHHHTIMEFRAMESDAY",
-                "displaying " + thingspeakViewModel.getSelectedWaterQualityData(water_parameter, timeframesDate).toString()
+                "displaying " + timeframesDate.toString()
             )
             Log.i(
-            "HHHHHHHHTIMEFRAMESDAY",
-            "displaying measured " + thingspeakViewModel.getSelectedWaterQualityData(water_parameter, timeframesDate)
-                ?.dailyWaterQuality?.measured?.size.toString()
+                "HHHHHHHHTIMEFRAMESDAY",
+                "prepping to display graph" + selectedDate.toString()
             )
             val dayList: List<FloatEntry>? =
-                thingspeakViewModel.getSelectedWaterQualityData(water_parameter, timeframesDate)?.dailyWaterQuality?.measured?.toList()
+                thingspeakViewModel.getSelectedWaterQualityData(water_parameter, selectedDate)?.dailyWaterQuality?.measured?.toList()
             val max_measured = dayList?.maxWithOrNull(Comparator.comparingDouble { it.y.toDouble() })
             val min_measured = dayList?.minWithOrNull(Comparator.comparingDouble { it.y.toDouble() })
             if (dayList != null) {

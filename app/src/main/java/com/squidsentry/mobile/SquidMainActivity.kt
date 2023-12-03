@@ -1,6 +1,9 @@
 package com.squidsentry.mobile
 
+import android.content.Context
+import android.content.pm.ApplicationInfo
 import android.os.Bundle
+import android.os.Debug
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -13,8 +16,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.squidsentry.mobile.databinding.ActivityMainSquidBinding
 import com.squidsentry.mobile.ui.login.EmailPhoneLoginViewModel
 import com.squidsentry.mobile.ui.login.EmailPhoneLoginViewModelFactory
-import com.squidsentry.mobile.ui.login.LoginViewModel
-import com.squidsentry.mobile.ui.login.LoginViewModelFactory
 import com.squidsentry.mobile.ui.viewmodel.ThingSpeakViewModel
 
 
@@ -31,8 +32,16 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
+        val isDebuggable = 0 != applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE
+        Log.d("HHHHHHHH", "onCreate --> " + this.toString())
+
+
+
+
         thingspeakViewModel = ViewModelProvider(this)[ThingSpeakViewModel::class.java]
         thingspeakViewModel.defaultValues()
+
+        Log.d("HHHHHHHH", thingspeakViewModel.toString() + " --> " + this.toString())
 
         // for login
         emailPhoneloginViewModel = ViewModelProvider(this,

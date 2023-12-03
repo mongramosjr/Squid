@@ -13,8 +13,8 @@ android {
         applicationId = "com.squidsentry.mobile"
         minSdk = 29
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 202304
+        versionName = "2023.04.06"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -26,8 +26,11 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            applicationIdSuffix = ".squid"
             versionNameSuffix = "prod"
+        }
+        getByName("debug") {
+            isDebuggable = true
+            versionNameSuffix = "debug"
         }
     }
     compileOptions {

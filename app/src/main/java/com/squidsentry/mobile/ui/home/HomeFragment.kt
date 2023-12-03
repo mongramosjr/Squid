@@ -43,13 +43,17 @@ class HomeFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.i("HOMEHHHHHHHH", "onCreate")
+        Log.d("HHHHHHHH", "onCreate --> " + this.toString())
 
         timeframeViewModel = ViewModelProvider(requireActivity())[TimeframeViewModel::class.java]
         thingspeakViewModel = ViewModelProvider(requireActivity())[ThingSpeakViewModel::class.java]
+        Log.d("HHHHHHHH", thingspeakViewModel.toString() + " --> " + this.toString())
 
         // Call the last entries in ThingSpeak
-        //thingspeakViewModel.getLastWaterQuality()
+        if(!thingspeakViewModel.lastDateEntry.isInitialized) {
+            Log.d("HHHHHHHH", "getLastWaterQuality --> " + this.toString())
+            thingspeakViewModel.getLastWaterQuality()
+        }
     }
 
 
@@ -59,7 +63,7 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        Log.i("HOMEHHHHHHHH", "onCreateView")
+        Log.d("HHHHHHHH", "onCreateView --> " + this.toString())
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val view: View = binding.root
         //val view = inflater.inflate(R.layout.fragment_home, container, false)
@@ -95,7 +99,7 @@ class HomeFragment : Fragment() {
         subscribe(view)
 
         // Call the last entries in ThingSpeak
-        thingspeakViewModel.getLastWaterQuality()
+        //thingspeakViewModel.getLastWaterQuality()
 
         return view
     }
@@ -132,11 +136,22 @@ class HomeFragment : Fragment() {
 
         thingspeakViewModel.thingSpeakData.observe(viewLifecycleOwner){thingSpeakData ->
             displayChart(thingSpeakData, root)
-            val lastDateEntry = thingspeakViewModel.lastDateEntry.value
-            if (lastDateEntry!=null) {
-                getWaterQualityLastEntries(lastDateEntry)
+            //thingspeakViewModel.setLastDateEntryCount(1)
+        }
+
+        thingspeakViewModel.lastDateEntryCount.observe(viewLifecycleOwner){lastDateEntryCount ->
+            if (lastDateEntryCount!=null) {
+                Log.i("HOMEHHHHHHHH", "COUNT DATE LAST ENTRY: " + lastDateEntryCount.toString())
+                if(lastDateEntryCount.equals(1)) {
+                    val lastDateEntry = thingspeakViewModel.lastDateEntry.value
+                    lastDateEntry?.let {
+                        getWaterQualityLastEntries(it)
+                        thingspeakViewModel.setLastDateEntryCount(1)
+                    }
+                }
             }
         }
+
     }
 
     private fun displayChart(thingSpeakData: ThingSpeak?, root: View){
@@ -288,6 +303,7 @@ class HomeFragment : Fragment() {
     }
 
     fun getWaterQualityLastEntries(dateNow: Instant = Instant.now()){
+        Log.d("HHHHHHHH", "getWaterQualityLastEntries --> " + this.toString())
         val timeframesDate = dateNow.atZone(ZoneId.systemDefault()).toLocalDate()
         thingspeakViewModel.getWaterQuality(dateNow, DAILY_TIMEFRAME, true)
         timeframeViewModel.selectedTimeframesDate(timeframesDate)
