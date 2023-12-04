@@ -93,6 +93,24 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/about_ph_cardview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    app:cardCornerRadius="15dp"
+                    app:contentPadding="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/different_timeframes_pager">
+                <TextView
+                    android:id="@+id/about_ph"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/about_ph_in_philippines"
+                     />
+                </androidx.cardview.widget.CardView>
+
                 <CalendarView
                     android:id="@+id/different_timeframes_calendar"
                     android:layout_width="wrap_content"
@@ -100,7 +118,7 @@
                     android:layout_marginTop="4dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/different_timeframes_pager" />
+                    app:layout_constraintTop_toBottomOf="@+id/about_ph_cardview" />
                 <CalendarView
                     android:id="@+id/different_timeframes_calendar2"
                     android:layout_width="wrap_content"

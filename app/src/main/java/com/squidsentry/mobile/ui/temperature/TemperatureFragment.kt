@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
@@ -77,6 +78,12 @@ class TemperatureFragment : Fragment() {
         tabLayout = binding.differentTimeframesTablayout
 
         timeframesSelectorButton =  binding.differentTimeframesDateSelector
+
+        binding.aboutTemperature.setText(
+            HtmlCompat.fromHtml(getString(R.string.about_temperature_in_philippines),
+                HtmlCompat.FROM_HTML_MODE_COMPACT
+            ))
+
 
         val datePicker = MaterialDatePicker.Builder.datePicker()
             .setTitleText("Select date")

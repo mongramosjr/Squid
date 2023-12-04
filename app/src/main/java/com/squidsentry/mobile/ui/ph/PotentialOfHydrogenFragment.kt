@@ -1,11 +1,14 @@
 package com.squidsentry.mobile.ui.ph
 
 import android.os.Bundle
+import android.text.Html
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.text.HtmlCompat
+import androidx.core.text.HtmlCompat.FROM_HTML_MODE_COMPACT
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
@@ -74,6 +77,8 @@ class PotentialOfHydrogenFragment : Fragment() {
         tabLayout = binding.differentTimeframesTablayout
 
         timeframesSelectorButton =  binding.differentTimeframesDateSelector
+
+        binding.aboutPh.setText(HtmlCompat.fromHtml(getString(R.string.about_ph_in_philippines), FROM_HTML_MODE_COMPACT))
 
         val datePicker = MaterialDatePicker.Builder.datePicker()
             .setTitleText("Select date")

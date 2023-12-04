@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_ph_in_philippines"><![CDATA[
+        <p>The pH level of coastal waters is an important factor that influences
+        the overall health and stability of the marine ecosystem. pH is a measure
+        of how acidic or alkaline a solution is and is measured on a scale from 0
+        to 14, with 7 being neutral. Values below 7 indicate acidity, while values
+        above 7 indicate alkalinity.</p><br/>
+        <p>In Manila Bay, average pH of water samples (7.84 ± 0.34) was significantly lower than
+        the average pH of Laguna de Bay (8.57) (Sumalapao et. al, 2016)</p><br/>
+        <p>A good pH level for coastal waters typically ranges between 7.5 and 8.4,
+        which is slightly alkaline to neutral. This range is considered optimal for
+        many marine organisms, including fish, shellfish, and various forms of
+        marine life. However, different species may have specific pH requirements,
+        so slight fluctuations within this range may not significantly impact the
+        ecosystem.</p><br/>
+
+<ol type="1">
+<li><b>Aquatic Life:</b> Many marine organisms, including fish, corals, and other
+aquatic creatures, have specific pH level requirements for survival and growth.
+Fluctuations in pH can stress or harm these organisms, disrupting the balance of
+the marine ecosystem.<br/></li>
+
+<li><b>Coral Reefs:</b> The Philippines is home to diverse and extensive coral reef
+systems. Corals are sensitive to changes in pH; an optimal pH level is crucial
+for their growth and calcification. Lower pH levels due to increased acidity in
+the water can negatively impact coral health and hinder reef development.<br/></li>
+
+<li><b>Water Quality:</b> pH affects the solubility and availability of nutrients and
+minerals in water. An appropriate pH level supports the presence of essential
+nutrients needed by marine life. Moreover, it influences the toxicity of certain
+substances; variations in pH can alter the toxicity of chemicals, affecting aquatic
+organisms differently.<br/></li>
+
+<li><b>Ecosystem Balance:</b> Coastal areas in the Philippines are rich in biodiversity.
+The pH level plays a role in maintaining the balance of the entire ecosystem,
+including the interactions between different species and their habitats.<br/></li>
+</ol>
+<br/>
+<p>Monitoring and maintaining an optimal pH level in coastal waters through proper
+management practices, reducing pollution, and mitigating factors contributing to pH
+changes are essential for preserving the health and sustainability of marine
+ecosystems in the Philippines.</p>
+<br/>
+<p>References:<br/>
+<small>Sumalapao, D. E., Cruz, L. L., Cua, S., Dauigoy, H. V., & De Leon, E. (2016).
+On the pH and Acid Neutralizing Capacity Profile of Manila Bay Coastal Water Samples
+in Manila, Philippines. Manila Journal of Science, 9(2), 104-113.</small>
+</p>
+
+    ]]>
+    </string>
+
+
+    <string name="about_temperature_in_philippines"><![CDATA[
+<p>Temperature in coastal waters is critical for marine life and ecosystem health.
+It influences the distribution, behavior, and physiological processes of marine
+organisms. Specific species may have temperature preferences within which they
+thrive, and fluctuations outside these ranges can stress or harm them.</p><br/>
+
+<p>The weather and climate patterns in the Philippines are significantly influenced
+by two main monsoon seasons: the southwest monsoon, prevailing roughly from May
+to October, and the northeast monsoon, lasting from November to April.
+During these periods, temperatures typically range from <b>21°C</b> to <b>32°C</b>.
+Analyzing temperature and precipitation records reveals the country\'s climate
+can be categorized into distinct seasons: the rainy season, spanning approximately
+from June to November, and the dry season, typically occurring from December to May.
+(Szekielda & Guzman, 2021)</p><br/>
+
+<p>Temperature significantly impacts coastal waters in several ways:</p><br/>
+
+<ol type="1">
+<li>
+<b>Aquatic Life:</b> Temperature plays a critical role in the growth, reproduction, and
+behavior of marine organisms. Different species have specific temperature ranges
+within which they thrive. Fluctuations in temperature can stress or harm marine life,
+ affecting their metabolism, growth rates, and survival.</li>
+
+<li>
+<b>Habitat and Ecosystems:</b> Changes in temperature can alter the physical and chemical
+properties of coastal waters, influencing the distribution of habitats and ecosystems.
+For example, coral reefs are sensitive to temperature changes; increases beyond
+certain thresholds can lead to coral bleaching and mortality, impacting the entire
+reef ecosystem.</li>
+
+<li>
+<b>Ocean Circulation and Currents:</b> Temperature gradients influence ocean currents
+and circulation patterns. Variations in coastal water temperature can affect the
+movement of currents, which, in turn, impacts nutrient transport, weather patterns,
+and the distribution of marine species.</li>
+
+<li>
+<b>Chemical and Biological Processes:</b> Temperature influences the solubility of gases
+and nutrients in water. Changes in temperature can affect oxygen levels, nutrient
+availability, and the rate of biological processes, which can impact the overall
+health of coastal ecosystems.</li>
+</ol>
+<br/>
+
+<p>References:
+<br/>
+<small>Szekielda, K., & Guzman, J. (2021). Changes in the Philippine Coastal Environment. International Journal of Geology,
+Earth & Environmental Sciences, 11(4), 198-207.</small>
+</p>
+    ]]></string>
+</resources>
