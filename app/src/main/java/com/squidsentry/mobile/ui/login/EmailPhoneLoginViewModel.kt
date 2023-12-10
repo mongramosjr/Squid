@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import android.util.Patterns
-import com.squidsentry.mobile.data.LoginRepository
 import com.squidsentry.mobile.data.Result
 
 import com.squidsentry.mobile.R
@@ -18,8 +17,8 @@ class EmailPhoneLoginViewModel(private val loginRepository: EmailPhoneLoginRepos
     private val _codeloginForm = MutableLiveData<CodeLoginFormState>()
     val codeloginFormState: LiveData<CodeLoginFormState> = _codeloginForm
 
-    private val _loginResult = MutableLiveData<LoginResult>()
-    val loginResult: LiveData<LoginResult> = _loginResult
+    private val _loginResult = MutableLiveData<EmailPhoneResult>()
+    val loginResult: LiveData<EmailPhoneResult> = _loginResult
 
     private val _codeResult = MutableLiveData<CodeResult>()
     val codeResult: LiveData<CodeResult> = _codeResult
@@ -30,9 +29,9 @@ class EmailPhoneLoginViewModel(private val loginRepository: EmailPhoneLoginRepos
 
         if (result is Result.Success) {
             _loginResult.value =
-                LoginResult(success = LoggedInUserView(displayName = result.data.displayName))
+                EmailPhoneResult(success = LoggedInUserView(displayName = result.data.displayName))
         } else {
-            _loginResult.value = LoginResult(error = R.string.login_failed)
+            _loginResult.value = EmailPhoneResult(error = R.string.login_failed)
         }
     }
 
@@ -50,7 +49,7 @@ class EmailPhoneLoginViewModel(private val loginRepository: EmailPhoneLoginRepos
 
     fun logout(){
         loginRepository.logout()
-        _loginResult.value = LoginResult(error = -1)
+        _loginResult.value = EmailPhoneResult(error = -1)
         _codeResult.value = CodeResult(error = -1)
     }
 

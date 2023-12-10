@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("androidx.navigation.safeargs")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -54,7 +55,6 @@ android {
             versionNameSuffix = "prod"
             versionName = "Calamari"
             versionCode = 202312
-            applicationIdSuffix = ".squid"
             applicationId = "com.squidsentry.mobile"
         }
     }
@@ -72,6 +72,8 @@ dependencies {
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
     implementation("androidx.fragment:fragment-ktx:1.6.2")
     implementation("com.google.android.gms:play-services-maps:18.2.0")
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+    implementation("androidx.credentials:credentials:1.2.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -92,15 +94,15 @@ dependencies {
 
     val vicoVersion = "1.13.0"
     // For Jetpack Compose.
-    implementation("com.patrykandpatrick.vico:compose:$vicoVersion")
+    implementation("com.patrykandpatrick.vico:compose:1.13.1")
     // For `compose`. Creates a `ChartStyle` based on an M2 Material Theme.
-    implementation("com.patrykandpatrick.vico:compose-m2:$vicoVersion")
+    implementation("com.patrykandpatrick.vico:compose-m2:1.13.1")
     // For `compose`. Creates a `ChartStyle` based on an M3 Material Theme.
-    implementation("com.patrykandpatrick.vico:compose-m3:$vicoVersion")
+    implementation("com.patrykandpatrick.vico:compose-m3:1.13.1")
     // Houses the core logic for charts and other elements. Included in all other modules.
-    implementation("com.patrykandpatrick.vico:core:$vicoVersion")
+    implementation("com.patrykandpatrick.vico:core:1.13.1")
     // For the view system.
-    implementation("com.patrykandpatrick.vico:views:$vicoVersion")
+    implementation("com.patrykandpatrick.vico:views:1.13.1")
 
     //implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
@@ -109,5 +111,19 @@ dependencies {
     implementation ("com.squareup.retrofit2:converter-gson:$retrofit2Version")
 
     implementation ("org.osmdroid:osmdroid-android:6.1.17")
+
+    // Import the BoM for the Firebase platform
+    implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
+    // Add the dependency for the Firebase Authentication library
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation("com.google.firebase:firebase-auth")
+    // Also add the dependency for the Google Play services library and specify its version
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+
+    // Required only if Facebook login support is required
+    // Find the latest Facebook SDK releases here: https://goo.gl/Ce5L94
+    implementation ("com.facebook.android:facebook-android-sdk:16.2.0")
+
+    implementation ("com.firebaseui:firebase-ui-auth:8.0.2")
 
 }

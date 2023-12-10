@@ -13,31 +13,128 @@
 
     <ImageView
         android:id="@+id/squidlogo"
-        android:layout_width="160dp"
-        android:layout_height="160dp"
-        android:layout_marginTop="120dp"
+        android:layout_width="128dp"
+        android:layout_height="128dp"
+        android:layout_marginTop="40dp"
         android:contentDescription="@string/squid_logo"
         android:src="@drawable/ic_launcher_round"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/emailorphone"
-        android:layout_width="0dp"
-        android:layout_height="68dp"
+    <TextView
+        android:id="@+id/login_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:autofillHints="@string/prompt_email_or_mobile_phone_number"
+        android:fontFamily="@font/inter_semibold"
+        android:text="Login"
+        android:textColor="?attr/colorSecondary"
+        android:textSize="19sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/squidlogo" />
+
+    <LinearLayout
+        android:id="@+id/socmed_signin_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:padding="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/login_title">
+
+        <ImageView
+            android:id="@+id/google_signin_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_weight="1"
+            android:contentDescription="@string/sign_in_with_google"
+            android:background="@drawable/rounded_edge_google_background"
+            android:padding="10dp"
+            android:src="@drawable/google_logo" />
+
+        <ImageView
+            android:id="@+id/twitter_signin_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_weight="1"
+            android:contentDescription="@string/sign_in_with_twitter"
+            android:background="@drawable/rounded_edge_x_background"
+            android:padding="10dp"
+            android:src="@drawable/x_logo" />
+
+        <ImageView
+            android:id="@+id/facebook_signin_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_weight="1"
+            android:background="@drawable/rounded_edge_facebook_background"
+            android:contentDescription="@string/sign_in_with_facebook"
+            android:padding="10dp"
+            android:src="@drawable/facebook_logo_secondary" />
+
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/login_or"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:fontFamily="@font/inter_semibold"
+        android:text="Or use your email account"
+        android:textColor="?attr/colorPrimaryInverse"
+        android:textSize="19sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/socmed_signin_container" />
+
+    <EditText
+        android:id="@+id/email"
+        android:layout_width="288dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="24dp"
+        android:autoSizeMaxTextSize="488dp"
+        android:autoSizeMinTextSize="20dp"
+        android:autofillHints="@string/prompt_email"
         android:background="?attr/colorPrimary"
-        android:hint="@string/prompt_email_or_mobile_phone_number"
-        android:inputType="text"
+        android:drawablePadding="10dp"
+        android:hint="@string/prompt_email"
+        android:inputType="textEmailAddress"
+        android:paddingHorizontal="12dp"
         android:selectAllOnFocus="true"
         android:textColor="?attr/colorOnPrimary"
         android:textColorHint="?attr/colorOnPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/squidlogo" />
+        app:layout_constraintTop_toBottomOf="@+id/login_or" />
+
+    <EditText
+        android:id="@+id/password"
+        android:layout_width="288dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="12dp"
+        android:autoSizeMaxTextSize="488dp"
+        android:autoSizeMinTextSize="20dp"
+        android:autofillHints="@string/prompt_email_or_mobile_phone_number"
+        android:background="?attr/colorPrimary"
+        android:hint="@string/prompt_password"
+        android:inputType="textPassword"
+        android:paddingHorizontal="12dp"
+        android:selectAllOnFocus="true"
+        android:textColor="?attr/colorOnPrimary"
+        android:textColorHint="?attr/colorOnPrimary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/email" />
 
     <Button
         android:id="@+id/login"
@@ -51,7 +148,11 @@
         android:textColor="?attr/colorOnPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/emailorphone" />
+        app:layout_constraintTop_toBottomOf="@+id/password" />
+
+
+
+
 
     <ProgressBar
         android:id="@+id/loading"
@@ -64,8 +165,10 @@
         android:layout_marginBottom="64dp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/emailorphone"
-        app:layout_constraintStart_toStartOf="@+id/emailorphone"
+        app:layout_constraintEnd_toEndOf="@+id/email"
+        app:layout_constraintStart_toStartOf="@+id/email"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.3" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -11,7 +11,7 @@ class EmailPhoneLoginDataSource {
     fun verifyCode(code: String): Result<LoggedInUser> {
         try {
             // TODO: handle loggedInUser authentication
-            val fakeUser = LoggedInUser(java.util.UUID.randomUUID().toString(), "Jane Doe")
+            val fakeUser = LoggedInUser(java.util.UUID.randomUUID().toString(), "Jane Doe", "MONGKY")
             return Result.Success(fakeUser)
         } catch (e: Throwable) {
             return Result.Error(IOException("Error logging in", e))
@@ -20,7 +20,7 @@ class EmailPhoneLoginDataSource {
     fun login(emailorphone: String): Result<LoggedInUser> {
         try {
             // TODO: handle loggedInUser authentication
-            val fakeUser = LoggedInUser(java.util.UUID.randomUUID().toString(), "Jane Doe")
+            val fakeUser = LoggedInUser(java.util.UUID.randomUUID().toString(), "Jane Doe", "MONGKY")
             return Result.Success(fakeUser)
         } catch (e: Throwable) {
             return Result.Error(IOException("Error logging in", e))

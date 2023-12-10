@@ -17,8 +17,6 @@ import androidx.navigation.fragment.findNavController
 import com.squidsentry.mobile.R
 import com.squidsentry.mobile.databinding.FragmentMyselfBinding
 import com.squidsentry.mobile.ui.login.LoginFragment
-import com.squidsentry.mobile.ui.login.LoginViewModel
-import com.squidsentry.mobile.ui.login.LoginViewModelFactory
 
 class MyselfFragment : Fragment() {
 

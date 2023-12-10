@@ -28,4 +28,13 @@
     <string name="prompt_code">Code</string>
     <string name="title_activity_maps">MapsActivity</string>
     <string name="empty_value">--</string>
+    <string name="sign_in_with_google">Sign in with Google</string>
+    <!-- Google. -->
+    <string name="default_web_client_id">889543018650-umblh51rgfuebm977a78rt5ki7d5eng7.apps.googleusercontent.com</string>
+    <!-- Facebook Application ID, prefixed by 'fb'. Enables Chrome Custom tabs. -->
+    <string name="facebook_application_id" translatable="false">APP_ID</string>
+    <!-- Facebook Application ID, prefixed by 'fb'. Enables Chrome Custom tabs. -->
+    <string name="facebook_login_protocol_scheme" translatable="false">fbAPP_ID</string>
+    <string name="sign_in_with_twitter">Sign in with X</string>
+    <string name="sign_in_with_facebook">Sign in with Facebook</string>
 </resources>

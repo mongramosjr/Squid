@@ -1,9 +1,9 @@
 package com.squidsentry.mobile.ui.login
 
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.annotation.StringRes
-import androidx.fragment.app.Fragment
+import androidx.appcompat.app.AppCompatActivity
+import android.app.Activity
+import android.app.Activity.RESULT_OK
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,33 +11,55 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.StringRes
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
-import androidx.navigation.Navigation
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
+import com.firebase.ui.auth.AuthUI
+import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
+import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.auth.api.signin.GoogleSignInResult
+import com.google.android.gms.common.api.ApiException
+import com.google.firebase.FirebaseApp
+import com.google.firebase.auth.ActionCodeSettings
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+import com.squidsentry.mobile.R
 import com.squidsentry.mobile.databinding.FragmentLoginBinding
 
-import com.squidsentry.mobile.R
-import com.squidsentry.mobile.ui.viewmodel.ThingSpeakViewModel
 
 class LoginFragment : Fragment() {
 
-    companion object {
-        const val LOGIN_SUCCESSFUL: String = "LOGIN_SUCCESSFUL"
-    }
-
-    private lateinit var emailPhoneloginViewModel: EmailPhoneLoginViewModel
-    private lateinit var savedStateHandle: SavedStateHandle
-
     private var _binding: FragmentLoginBinding? = null
-
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+
+    companion object {
+        const val LOGIN_SUCCESSFUL: String = "LOGIN_SUCCESSFUL"
+        private const val TAG = "GoogleActivity"
+        private const val RC_SIGN_IN = 9001
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+    }
+    // [START on_start_check_user]
+    override fun onStart() {
+        super.onStart()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,84 +68,20 @@ class LoginFragment : Fragment() {
     ): View {
 
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
-        return binding.root
 
+        val email = binding.email
+        val loginButton = binding.login
+        val loadingProgressBar = binding.loading
+
+        val googleSigninButton = binding.googleSigninButton
+
+        googleSigninButton.setOnClickListener {
+        }
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        savedStateHandle = findNavController(this).previousBackStackEntry!!.savedStateHandle
-        savedStateHandle[LOGIN_SUCCESSFUL] = false
-
-        emailPhoneloginViewModel = ViewModelProvider(requireActivity())[EmailPhoneLoginViewModel::class.java]
-
-        val emailorphoneEditText = binding.emailorphone
-        val loginButton = binding.login
-        val loadingProgressBar = binding.loading
-
-        emailPhoneloginViewModel.loginFormState.observe(viewLifecycleOwner,
-            Observer { loginFormState ->
-                if (loginFormState == null) {
-                    return@Observer
-                }
-                loginButton.isEnabled = loginFormState.isDataValid
-                loginFormState.emailorphoneError?.let {
-                    emailorphoneEditText.error = getString(it)
-                }
-            })
-
-        emailPhoneloginViewModel.loginResult.observe(viewLifecycleOwner,
-            Observer { loginResult ->
-                loginResult ?: return@Observer
-                loadingProgressBar.visibility = View.GONE
-                loginResult.error?.let {
-                    showLoginFailed(it)
-                }
-                loginResult.success?.let {
-                    updateUiWithUser(it)
-                }
-            })
-
-        val afterTextChangedListener = object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-                // ignore
-            }
-
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                // ignore
-            }
-
-            override fun afterTextChanged(s: Editable) {
-                emailPhoneloginViewModel.loginDataChanged(
-                    emailorphoneEditText.text.toString(),
-                )
-            }
-        }
-        emailorphoneEditText.addTextChangedListener(afterTextChangedListener)
-
-        loginButton.setOnClickListener {
-            loadingProgressBar.visibility = View.VISIBLE
-            emailPhoneloginViewModel.login(
-                emailorphoneEditText.text.toString(),
-            )
-        }
-    }
-
-    private fun updateUiWithUser(model: LoggedInUserView) {
-        val welcome = getString(R.string.welcome) + model.displayName
-        // TODO : initiate successful logged in experience
-        val appContext = context?.applicationContext ?: return
-        Toast.makeText(appContext, welcome, Toast.LENGTH_LONG).show()
-
-        //TEST
-        savedStateHandle[LOGIN_SUCCESSFUL] = true
-        findNavController(this).navigate(R.id.action_loginFragment_to_loginCodeFragment)
-    }
-
-    private fun showLoginFailed(@StringRes errorString: Int) {
-        val appContext = context?.applicationContext ?: return
-        Toast.makeText(appContext, errorString, Toast.LENGTH_LONG).show()
     }
 
     override fun onDestroyView() {

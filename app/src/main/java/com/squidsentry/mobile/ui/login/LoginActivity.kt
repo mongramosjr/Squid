@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.Toast
 import com.squidsentry.mobile.databinding.ActivityLoginBinding
@@ -18,7 +17,7 @@ import com.squidsentry.mobile.R
 
 class LoginActivity : AppCompatActivity() {
 
-    private lateinit var loginViewModel: LoginViewModel
+    //private lateinit var googleLoginViewModel: GoogleLoginViewModel
     private lateinit var binding: ActivityLoginBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,10 +31,11 @@ class LoginActivity : AppCompatActivity() {
         val login = binding.login
         val loading = binding.loading
 
-        loginViewModel = ViewModelProvider(this, LoginViewModelFactory())
-            .get(LoginViewModel::class.java)
+        /*
+        googleLoginViewModel = ViewModelProvider(this, GoogleLoginViewModelFactory())
+            .get(GoogleLoginViewModel::class.java)
 
-        loginViewModel.loginFormState.observe(this@LoginActivity, Observer {
+        googleLoginViewModel.googleLoginFormState.observe(this@LoginActivity, Observer {
             val loginState = it ?: return@Observer
 
             // disable login button unless both username / password is valid
@@ -49,7 +49,7 @@ class LoginActivity : AppCompatActivity() {
             }
         })
 
-        loginViewModel.loginResult.observe(this@LoginActivity, Observer {
+        googleLoginViewModel.googleResult.observe(this@LoginActivity, Observer {
             val loginResult = it ?: return@Observer
 
             loading.visibility = View.GONE
@@ -66,7 +66,7 @@ class LoginActivity : AppCompatActivity() {
         })
 
         username.afterTextChanged {
-            loginViewModel.loginDataChanged(
+            googleLoginViewModel.loginDataChanged(
                 username.text.toString(),
                 password.text.toString()
             )
@@ -74,28 +74,32 @@ class LoginActivity : AppCompatActivity() {
 
         password.apply {
             afterTextChanged {
-                loginViewModel.loginDataChanged(
+                googleLoginViewModel.loginDataChanged(
                     username.text.toString(),
                     password.text.toString()
                 )
             }
 
+            /*
             setOnEditorActionListener { _, actionId, _ ->
                 when (actionId) {
                     EditorInfo.IME_ACTION_DONE ->
-                        loginViewModel.login(
+                        googleLoginViewModel.login(
                             username.text.toString(),
                             password.text.toString()
                         )
                 }
                 false
             }
+             */
 
             login.setOnClickListener {
                 loading.visibility = View.VISIBLE
-                loginViewModel.login(username.text.toString(), password.text.toString())
+                //googleLoginViewModel.login(username.text.toString(), password.text.toString())
             }
         }
+
+         */
     }
 
     private fun updateUiWithUser(model: LoggedInUserView) {

@@ -4,8 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.squidsentry.mobile.data.EmailPhoneLoginDataSource
 import com.squidsentry.mobile.data.EmailPhoneLoginRepository
-import com.squidsentry.mobile.data.LoginDataSource
-import com.squidsentry.mobile.data.LoginRepository
 
 /**
  * ViewModel provider factory to instantiate LoginViewModel.
