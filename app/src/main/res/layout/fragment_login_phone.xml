@@ -25,14 +25,14 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/code"
+        android:id="@+id/phone_number"
         android:layout_width="0dp"
         android:layout_height="68dp"
         android:layout_marginTop="24dp"
         android:autofillHints="123456"
         android:background="?attr/colorPrimary"
-        android:hint="@string/prompt_code"
-        android:inputType="text"
+        android:hint="@string/phone_number"
+        android:inputType="phone"
         android:selectAllOnFocus="true"
         android:textColor="?attr/colorOnPrimary"
         android:textColorHint="?attr/colorOnPrimary"
@@ -52,7 +52,7 @@
         android:textColor="?attr/colorOnPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/code" />
+        app:layout_constraintTop_toBottomOf="@+id/phone_number" />
 
     <ProgressBar
         android:id="@+id/loading"
@@ -65,8 +65,8 @@
         android:layout_marginBottom="64dp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/code"
-        app:layout_constraintStart_toStartOf="@+id/code"
+        app:layout_constraintEnd_toEndOf="@+id/phone_number"
+        app:layout_constraintStart_toStartOf="@+id/phone_number"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.3" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -27,9 +27,9 @@
         android:id="@+id/login_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="12dp"
         android:fontFamily="@font/inter_semibold"
-        android:text="Login"
+        android:text="@string/login_title"
         android:textColor="?attr/colorSecondary"
         android:textSize="19sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -54,7 +54,7 @@
             android:layout_height="48dp"
             android:layout_marginHorizontal="20dp"
             android:layout_weight="1"
-            android:background="@drawable/rounded_edge_google_background"
+            android:background="@drawable/rounded_edge_white_with_border"
             android:clickable="true"
             android:contentDescription="@string/sign_in_with_google"
             android:padding="10dp"
@@ -78,11 +78,11 @@
             android:layout_height="48dp"
             android:layout_marginHorizontal="20dp"
             android:layout_weight="1"
-            android:background="@drawable/rounded_edge_facebook_background"
+            android:background="@drawable/rounded_edge_x_background"
             android:clickable="true"
             android:contentDescription="@string/sign_in_with_facebook"
-            android:padding="10dp"
-            android:src="@drawable/facebook_logo_secondary" />
+            android:padding="1dp"
+            android:src="@drawable/facebook_logo" />
 
 
     </LinearLayout>
@@ -93,9 +93,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:fontFamily="@font/inter_semibold"
-        android:text="Or use your email account"
+        android:text="@string/or_use_your_email_account"
         android:textColor="?attr/colorPrimaryInverse"
-        android:textSize="19sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/socmed_signin_container" />
@@ -104,7 +103,7 @@
         android:id="@+id/email"
         android:layout_width="288dp"
         android:layout_height="48dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="36dp"
         android:autoSizeMaxTextSize="488dp"
         android:autoSizeMinTextSize="20dp"
         android:autofillHints="@string/prompt_email"
@@ -143,7 +142,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:clickable="true"
         android:fontFamily="@font/inter_semibold"
         android:text="@string/forgot_your_password"
         android:textColor="?attr/colorPrimaryInverse"
@@ -187,7 +185,6 @@
             android:id="@+id/create_link"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:clickable="true"
             android:fontFamily="@font/inter_black"
             android:text="@string/create_link"
             android:textColor="?attr/colorPrimaryInverse" />

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_signup.xml"
+    app:startDestination="@id/signUpFragment">
+    <fragment
+        android:id="@+id/signUpFragment"
+        android:name="com.squidsentry.mobile.ui.signup.SignupFragment"
+        android:label="fragment_sign_up"
+        tools:layout="@layout/fragment_signup" >
+        <action
+            android:id="@+id/action_signUpFragment_to_signUpPhoneFragment"
+            app:destination="@id/signUpPhoneFragment" />
+        <action
+            android:id="@+id/action_signUpFragment_to_mainActivity"
+            app:destination="@id/mainActivity" />
+    </fragment>
+    <fragment
+        android:id="@+id/signUpPhoneFragment"
+        android:name="com.squidsentry.mobile.ui.signup.SignupPhoneFragment"
+        android:label="fragment_sign_up_phone"
+        tools:layout="@layout/fragment_signup_phone" />
+    <activity
+        android:id="@+id/mainActivity"
+        android:name="com.squidsentry.mobile.MainActivity"
+        android:label="MainActivity" />
+</navigation>

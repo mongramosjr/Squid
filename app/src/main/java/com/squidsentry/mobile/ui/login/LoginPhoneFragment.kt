@@ -7,22 +7,17 @@ import androidx.fragment.app.Fragment
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
-import com.squidsentry.mobile.databinding.FragmentLoginCodeBinding
+import com.squidsentry.mobile.databinding.FragmentLoginPhoneBinding
 
 import com.squidsentry.mobile.R
 
-class LoginCodeFragment : Fragment() {
+class LoginPhoneFragment : Fragment() {
 
     companion object {
         const val LOGIN_SUCCESSFUL: String = "LOGIN_SUCCESSFUL"
@@ -31,7 +26,7 @@ class LoginCodeFragment : Fragment() {
     private lateinit var emailPhoneloginViewModel: EmailPhoneLoginViewModel
     private lateinit var savedStateHandle: SavedStateHandle
 
-    private var _binding: FragmentLoginCodeBinding? = null
+    private var _binding: FragmentLoginPhoneBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -43,7 +38,7 @@ class LoginCodeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        _binding = FragmentLoginCodeBinding.inflate(inflater, container, false)
+        _binding = FragmentLoginPhoneBinding.inflate(inflater, container, false)
         return binding.root
 
     }
@@ -56,7 +51,7 @@ class LoginCodeFragment : Fragment() {
 
         emailPhoneloginViewModel = ViewModelProvider(requireActivity())[EmailPhoneLoginViewModel::class.java]
 
-        val codeEditText = binding.code
+        val phoneNumberEditText = binding.phoneNumber
         val verifyCodeButton = binding.verifyCode
         val loadingProgressBar = binding.loading
 
@@ -67,7 +62,7 @@ class LoginCodeFragment : Fragment() {
                 }
                 verifyCodeButton.isEnabled = codeloginFormState.isDataValid
                 codeloginFormState.codeError?.let {
-                    codeEditText.error = getString(it)
+                    phoneNumberEditText.error = getString(it)
                 }
             })
 
@@ -94,16 +89,16 @@ class LoginCodeFragment : Fragment() {
 
             override fun afterTextChanged(s: Editable) {
                 emailPhoneloginViewModel.codeDataChanged(
-                    codeEditText.text.toString(),
+                    phoneNumberEditText.text.toString(),
                 )
             }
         }
-        codeEditText.addTextChangedListener(afterTextChangedListener)
+        phoneNumberEditText.addTextChangedListener(afterTextChangedListener)
 
         verifyCodeButton.setOnClickListener {
             loadingProgressBar.visibility = View.VISIBLE
             emailPhoneloginViewModel.verifyCode(
-                codeEditText.text.toString(),
+                phoneNumberEditText.text.toString(),
             )
         }
     }
@@ -117,7 +112,7 @@ class LoginCodeFragment : Fragment() {
         //TEST
         savedStateHandle[LOGIN_SUCCESSFUL] = true
         //findNavController(this).popBackStack()
-        findNavController(this).navigate(R.id.action_loginCodeFragment_to_myselfFragment)
+        //findNavController(this).navigate(R.id.action_loginCodeFragment_to_myselfFragment)
 
     }
 
