@@ -1,29 +1,26 @@
-package com.squidsentry.mobile.ui.login
+package com.squidsentry.mobile.ui.signup
 
-import android.app.Activity
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.View
 import android.widget.EditText
 import android.widget.Toast
-import com.squidsentry.mobile.databinding.ActivityLoginBinding
+import com.squidsentry.mobile.databinding.ActivitySignupBinding
 
 import com.squidsentry.mobile.R
+import com.squidsentry.mobile.ui.login.LoggedInUserView
 
-class LoginActivity : AppCompatActivity() {
+class SignupActivity : AppCompatActivity() {
 
     //private lateinit var googleLoginViewModel: GoogleLoginViewModel
-    private lateinit var binding: ActivityLoginBinding
+    private lateinit var binding: ActivitySignupBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityLoginBinding.inflate(layoutInflater)
+        binding = ActivitySignupBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         val username = binding.username
@@ -35,7 +32,7 @@ class LoginActivity : AppCompatActivity() {
         googleLoginViewModel = ViewModelProvider(this, GoogleLoginViewModelFactory())
             .get(GoogleLoginViewModel::class.java)
 
-        googleLoginViewModel.googleLoginFormState.observe(this@LoginActivity, Observer {
+        googleLoginViewModel.googleLoginFormState.observe(this@SignupActivity, Observer {
             val loginState = it ?: return@Observer
 
             // disable login button unless both username / password is valid
@@ -49,7 +46,7 @@ class LoginActivity : AppCompatActivity() {
             }
         })
 
-        googleLoginViewModel.googleResult.observe(this@LoginActivity, Observer {
+        googleLoginViewModel.googleResult.observe(this@SignupActivity, Observer {
             val loginResult = it ?: return@Observer
 
             loading.visibility = View.GONE

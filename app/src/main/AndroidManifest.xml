@@ -24,7 +24,7 @@
             android:value="${MAPS_API_KEY}" />
 
         <activity
-            android:name=".ui.login.LoginActivity"
+            android:name=".ui.signup.SignupActivity"
             android:exported="false"
             android:label="@string/title_activity_login" />
         <activity
