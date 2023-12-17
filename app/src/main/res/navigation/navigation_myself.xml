@@ -21,20 +21,43 @@
         android:label="Login"
         tools:layout="@layout/fragment_login">
         <action
-            android:id="@+id/action_loginFragment_to_signupActivity"
-            app:destination="@id/signupActivity" />
-        <action
             android:id="@+id/action_loginFragment_to_loginPhoneFragment"
             app:destination="@id/loginPhoneFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_signupFragment"
+            app:destination="@id/signupFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_multiFactorSignInFragment"
+            app:destination="@id/multiFactorSignInFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_myselfFragment"
+            app:destination="@id/myselfFragment" />
     </fragment>
-    <activity
-        android:id="@+id/signupActivity"
-        android:name="com.squidsentry.mobile.ui.signup.SignupActivity"
-        android:label="activity_signup"
-        tools:layout="@layout/activity_signup" />
     <fragment
         android:id="@+id/loginPhoneFragment"
         android:name="com.squidsentry.mobile.ui.login.LoginPhoneFragment"
         android:label="LoginPhoneFragment" />
+
+    <fragment
+        android:id="@+id/signupFragment"
+        android:name="com.squidsentry.mobile.ui.signup.SignupFragment"
+        android:label="fragment_signup"
+        tools:layout="@layout/fragment_signup" >
+        <action
+            android:id="@+id/action_signupFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_signupFragment_to_myselfFragment"
+            app:destination="@id/myselfFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/multiFactorSignInFragment"
+        android:name="com.squidsentry.mobile.ui.login.MultiFactorSignInFragment"
+        android:label="fragment_multi_factor_sign_in"
+        tools:layout="@layout/fragment_multi_factor_sign_in" >
+        <action
+            android:id="@+id/action_multiFactorSignInFragment_to_myselfFragment"
+            app:destination="@id/myselfFragment" />
+    </fragment>
 
 </navigation>

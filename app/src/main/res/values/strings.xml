@@ -6,10 +6,6 @@
     <string name="thingspeak_channel">2210889</string>
     <string name="thingspeak_test_channel">2319797</string>
     <string name="title_activity_login">LoginActivity</string>
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
     <string name="welcome">"Welcome !"</string>
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
@@ -23,29 +19,44 @@
     <string name="timeframes_week">Week</string>
     <string name="timeframes_day">Day</string>
     <string name="sample_date">Wed, Nov 20</string>
-    <string name="prompt_email_or_mobile_phone_number">Email or Mobile Number</string>
+
     <string name="verify_code">Verify Code</string>
     <string name="prompt_code">Code</string>
     <string name="title_activity_maps">MapsActivity</string>
     <string name="empty_value">--</string>
-    <string name="sign_in_with_google">Sign in with Google</string>
     <!-- Google. -->
     <string name="default_web_client_id">889543018650-umblh51rgfuebm977a78rt5ki7d5eng7.apps.googleusercontent.com</string>
     <!-- Facebook Application ID, prefixed by 'fb'. Enables Chrome Custom tabs. -->
     <string name="facebook_application_id" translatable="false">APP_ID</string>
     <!-- Facebook Application ID, prefixed by 'fb'. Enables Chrome Custom tabs. -->
     <string name="facebook_login_protocol_scheme" translatable="false">fbAPP_ID</string>
+
     <string name="sign_in_with_twitter">Sign in with X</string>
     <string name="sign_in_with_facebook">Sign in with Facebook</string>
-    <string name="don_t_have_an_account">Don\'t have an account?</string>
-    <string name="create_link">Create</string>
-    <string name="forgot_your_password">Forgot your password?</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="login_title">Login</string>
-    <string name="or_use_your_email_account">Or use your email account</string>
-    <string name="have_an_account">Have an account?</string>
+    <string name="sign_in_with_google">Sign in with Google</string>
+
+    <string name="or_use_your_email_account">or use your email account</string>
+
+    <string name="signin_title">Login</string>
     <string name="signup_title">Sign Up</string>
-    <string name="confirm_password">Confirm Password</string>
-    <string name="phone_number">Phone Number</string>
+
+    <string name="have_an_account">Have an account?</string>
+    <string name="don_t_have_an_account">Don\'t have an account?</string>
+    <string name="forgot_your_password">Forgot your password?</string>
+    <string name="create_account_link">Create</string>
+
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="prompt_confirm_password">Confirm Password</string>
+    <string name="prompt_phone_number">Phone Number</string>
+
+    <string name="action_signin">Login</string>
+    <string name="action_signup">Sign up</string>
+
+    <string name="hint_verification_code">Verification Code</string>
+    <string name="phone_auth_verify">Verify</string>
+    <string name="phone_auth_start">Start</string>
+    <string name="phone_auth_resend">Resend</string>
+    <string name="action_signout">Logout</string>
+
 </resources>

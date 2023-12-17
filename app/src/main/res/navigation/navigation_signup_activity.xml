@@ -2,22 +2,22 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/navigation_signup.xml"
-    app:startDestination="@id/signUpFragment">
+    android:id="@+id/navigation_signup_activity"
+    app:startDestination="@id/signUpFragment2">
     <fragment
-        android:id="@+id/signUpFragment"
+        android:id="@+id/signUpFragment2"
         android:name="com.squidsentry.mobile.ui.signup.SignupFragment"
         android:label="fragment_sign_up"
         tools:layout="@layout/fragment_signup" >
         <action
-            android:id="@+id/action_signUpFragment_to_signUpPhoneFragment"
-            app:destination="@id/signUpPhoneFragment" />
+            android:id="@+id/action_signUpFragment2_to_signUpPhoneFragment2"
+            app:destination="@id/signUpPhoneFragment2" />
         <action
             android:id="@+id/action_signUpFragment_to_mainActivity"
             app:destination="@id/mainActivity" />
     </fragment>
     <fragment
-        android:id="@+id/signUpPhoneFragment"
+        android:id="@+id/signUpPhoneFragment2"
         android:name="com.squidsentry.mobile.ui.signup.SignupPhoneFragment"
         android:label="fragment_sign_up_phone"
         tools:layout="@layout/fragment_signup_phone" />
