@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    app:cardCornerRadius="15dp"
-    app:contentPadding="4dp">
-
-    <androidx.constraintlayout.widget.ConstraintLayout
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -20,8 +14,7 @@
             android:id="@+id/title_status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Water seems"
+            android:text="@string/water_seems"
             android:textColor="?attr/colorOnSurface"
             android:textStyle="italic"
             app:layout_constraintEnd_toEndOf="parent"
@@ -48,7 +41,7 @@
                 android:layout_marginBottom="10dp"
                 android:padding="22dp"
                 app:srcCompat="@drawable/water_droplet_"
-                android:contentDescription="Water Drop" />
+                android:contentDescription="@string/water_drop" />
 
             <TextView
                 android:id="@+id/last_measure_status"
@@ -59,13 +52,9 @@
                 android:layout_marginBottom="10dp"
                 android:fontFamily="@font/inter_black"
                 android:gravity="center_vertical"
-                android:text="Very Good"
+                android:text="@string/status_very_good"
                 android:textColor="@color/md_theme_light_onTertiaryContainer"
                 android:textSize="46sp"
                 android:textStyle="bold" />
         </LinearLayout>
-
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-</androidx.cardview.widget.CardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

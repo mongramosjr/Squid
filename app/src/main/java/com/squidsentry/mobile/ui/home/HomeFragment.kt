@@ -41,17 +41,20 @@ class HomeFragment : Fragment() {
     lateinit var thingspeakViewModel: ThingSpeakViewModel
     lateinit var timeframeViewModel: TimeframeViewModel
 
+    companion object {
+        private const val TAG = "HomeTab"
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("HHHHHHHH", "onCreate --> " + this.toString())
+        Log.d(TAG, "onCreate --> " + this.toString())
 
         timeframeViewModel = ViewModelProvider(requireActivity())[TimeframeViewModel::class.java]
         thingspeakViewModel = ViewModelProvider(requireActivity())[ThingSpeakViewModel::class.java]
-        Log.d("HHHHHHHH", thingspeakViewModel.toString() + " --> " + this.toString())
+        Log.d(TAG, thingspeakViewModel.toString() + " --> " + this.toString())
 
         // Call the last entries in ThingSpeak
         if(!thingspeakViewModel.lastDateEntry.isInitialized) {
-            Log.d("HHHHHHHH", "getLastWaterQuality --> " + this.toString())
+            Log.d(TAG, "getLastWaterQuality --> " + this.toString())
             thingspeakViewModel.getLastWaterQuality()
         }
     }
@@ -63,7 +66,7 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        Log.d("HHHHHHHH", "onCreateView --> " + this.toString())
+        Log.d(TAG, "onCreateView --> " + this.toString())
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val view: View = binding.root
         //val view = inflater.inflate(R.layout.fragment_home, container, false)
@@ -104,6 +107,15 @@ class HomeFragment : Fragment() {
         return view
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.aiQuery.setOnClickListener{
+            // open dialog box with ChatGPT seach query with default interpretation
+            // of the current water quality data
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -130,7 +142,7 @@ class HomeFragment : Fragment() {
             // Hide display image and set the result text to the error message
             if (isError) {
                 //TODO: display error message
-                Log.i("HOMEHHHHHHHH", "TODO: display error message")
+                Log.i(TAG, "TODO: display error message")
             }
         }
 
@@ -141,7 +153,7 @@ class HomeFragment : Fragment() {
 
         thingspeakViewModel.lastDateEntryCount.observe(viewLifecycleOwner){lastDateEntryCount ->
             if (lastDateEntryCount!=null) {
-                Log.i("HOMEHHHHHHHH", "COUNT DATE LAST ENTRY: " + lastDateEntryCount.toString())
+                Log.i(TAG, "COUNT DATE LAST ENTRY: " + lastDateEntryCount.toString())
                 if(lastDateEntryCount.equals(1)) {
                     val lastDateEntry = thingspeakViewModel.lastDateEntry.value
                     lastDateEntry?.let {
@@ -292,7 +304,7 @@ class HomeFragment : Fragment() {
             }
 
         }else{
-            Log.i("HOMEHHHHHHHH", "no displayChart")
+            Log.i(TAG, "no displayChart")
         }
     }
 
@@ -303,7 +315,7 @@ class HomeFragment : Fragment() {
     }
 
     fun getWaterQualityLastEntries(dateNow: Instant = Instant.now()){
-        Log.d("HHHHHHHH", "getWaterQualityLastEntries --> " + this.toString())
+        Log.d(TAG, "getWaterQualityLastEntries --> " + this.toString())
         val timeframesDate = dateNow.atZone(ZoneId.systemDefault()).toLocalDate()
         thingspeakViewModel.getWaterQuality(dateNow, DAILY_TIMEFRAME, true)
         timeframeViewModel.selectedTimeframesDate(timeframesDate)

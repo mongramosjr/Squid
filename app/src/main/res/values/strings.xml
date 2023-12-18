@@ -58,5 +58,11 @@
     <string name="phone_auth_start">Start</string>
     <string name="phone_auth_resend">Resend</string>
     <string name="action_signout">Logout</string>
+    <string name="seawave_background">seawave</string>
+    <string name="water_seems">Water seems...</string>
+    <string name="water_drop">Water Drop</string>
+    <string name="status_very_good">Very Good</string>
+    <string name="status_unusual">Unsual</string>
+    <string name="button_for_ai_query">dialog box for AI query</string>
 
 </resources>
