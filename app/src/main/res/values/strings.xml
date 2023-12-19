@@ -24,8 +24,9 @@
     <string name="prompt_code">Code</string>
     <string name="title_activity_maps">MapsActivity</string>
     <string name="empty_value">--</string>
+
     <!-- Google. -->
-    <string name="default_web_client_id">889543018650-umblh51rgfuebm977a78rt5ki7d5eng7.apps.googleusercontent.com</string>
+    <string name="default_web_client_id">889543018650-85pmi3i4ioc65tni45jofsag86bgj4vb.apps.googleusercontent.com</string>
     <!-- Facebook Application ID, prefixed by 'fb'. Enables Chrome Custom tabs. -->
     <string name="facebook_application_id" translatable="false">APP_ID</string>
     <!-- Facebook Application ID, prefixed by 'fb'. Enables Chrome Custom tabs. -->

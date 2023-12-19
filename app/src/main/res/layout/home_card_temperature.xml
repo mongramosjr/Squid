@@ -2,10 +2,10 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cardview_temperature"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clickable="true"
-    android:id="@+id/cardview_temperature"
     app:cardCornerRadius="15dp"
     app:contentPadding="4dp">
 
@@ -64,10 +64,10 @@
             android:layout_marginTop="4dp"
             android:forceDarkAllowed="false"
             app:chart="line"
-            app:lineChartStyle="@style/ChartTemperatureLineChartStyle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/last_measure_temperature_holder"
+            app:lineChartStyle="@style/ChartTemperatureLineChartStyle"
             app:showBottomAxis="false"
             app:showStartAxis="false" />
 

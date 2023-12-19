@@ -5,8 +5,8 @@
     android:id="@+id/navigation_main_activity"
     app:startDestination="@+id/navigation_home">
 
-    <include app:graph="@navigation/navigation_home"/>
-    <include app:graph="@navigation/navigation_devices"/>
-    <include app:graph="@navigation/navigation_myself"/>
+    <include app:graph="@navigation/navigation_home" />
+    <include app:graph="@navigation/navigation_devices" />
+    <include app:graph="@navigation/navigation_myself" />
 
 </navigation>

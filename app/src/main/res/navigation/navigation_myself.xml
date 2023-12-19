@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<navigation
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation_myself"
@@ -8,16 +7,16 @@
 
     <fragment
         android:id="@+id/myselfFragment"
-        android:name="com.squidsentry.mobile.ui.myself.MyselfFragment"
+        android:name="app.sthenoteuthis.mobile.ui.myself.MyselfFragment"
         android:label="@string/title_myself"
-        tools:layout="@layout/fragment_myself" >
+        tools:layout="@layout/fragment_myself">
         <action
             android:id="@+id/action_myselfFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.squidsentry.mobile.ui.login.LoginFragment"
+        android:name="app.sthenoteuthis.mobile.ui.login.LoginFragment"
         android:label="Login"
         tools:layout="@layout/fragment_login">
         <action
@@ -35,14 +34,14 @@
     </fragment>
     <fragment
         android:id="@+id/loginPhoneFragment"
-        android:name="com.squidsentry.mobile.ui.login.LoginPhoneFragment"
+        android:name="app.sthenoteuthis.mobile.ui.login.LoginPhoneFragment"
         android:label="LoginPhoneFragment" />
 
     <fragment
         android:id="@+id/signupFragment"
-        android:name="com.squidsentry.mobile.ui.signup.SignupFragment"
+        android:name="app.sthenoteuthis.mobile.ui.signup.SignupFragment"
         android:label="fragment_signup"
-        tools:layout="@layout/fragment_signup" >
+        tools:layout="@layout/fragment_signup">
         <action
             android:id="@+id/action_signupFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
@@ -52,9 +51,9 @@
     </fragment>
     <fragment
         android:id="@+id/multiFactorSignInFragment"
-        android:name="com.squidsentry.mobile.ui.login.MultiFactorSignInFragment"
+        android:name="app.sthenoteuthis.mobile.ui.login.MultiFactorSignInFragment"
         android:label="fragment_multi_factor_sign_in"
-        tools:layout="@layout/fragment_multi_factor_sign_in" >
+        tools:layout="@layout/fragment_multi_factor_sign_in">
         <action
             android:id="@+id/action_multiFactorSignInFragment_to_myselfFragment"
             app:destination="@id/myselfFragment" />

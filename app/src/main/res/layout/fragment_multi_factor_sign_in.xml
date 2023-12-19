@@ -11,46 +11,46 @@
     tools:context=".ui.login.MultiFactorSignInFragment">
 
     <Button
+        android:id="@+id/phoneFactor1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/phoneFactor1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
+        android:id="@+id/phoneFactor2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:id="@+id/phoneFactor2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/phoneFactor1" />
 
     <Button
+        android:id="@+id/phoneFactor3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:id="@+id/phoneFactor3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/phoneFactor2" />
 
     <Button
+        android:id="@+id/phoneFactor4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:id="@+id/phoneFactor4"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/phoneFactor3" />
 
     <Button
+        android:id="@+id/phoneFactor5"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:id="@+id/phoneFactor5"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/phoneFactor4" />
@@ -60,21 +60,21 @@
         android:id="@+id/smsCode"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/hint_verification_code"
         android:layout_marginTop="36dp"
+        android:autofillHints="numberSigned|number"
+        android:hint="@string/hint_verification_code"
+        android:inputType="numberSigned|number"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/phoneFactor5"
-        android:autofillHints="numberSigned|number"
-        android:inputType="numberSigned|number" />
+        app:layout_constraintTop_toBottomOf="@+id/phoneFactor5" />
 
     <Button
+        android:id="@+id/finishMfaSignIn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:id="@+id/finishMfaSignIn"
-        android:text="@string/phone_auth_verify"
         android:clickable="false"
+        android:text="@string/phone_auth_verify"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/smsCode" />
