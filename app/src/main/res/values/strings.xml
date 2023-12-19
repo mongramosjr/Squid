@@ -26,9 +26,9 @@
     <string name="empty_value">--</string>
 
     <!-- Google. -->
-    <string name="default_web_client_id">889543018650-85pmi3i4ioc65tni45jofsag86bgj4vb.apps.googleusercontent.com</string>
+    <string name="default_web_client_id">411735479356-v8f0t5p203sign3105mgrt69uf35le77.apps.googleusercontent.com</string>
     <!-- Facebook Application ID, prefixed by 'fb'. Enables Chrome Custom tabs. -->
-    <string name="facebook_application_id" translatable="false">APP_ID</string>
+    <string name="facebook_application_id" translatable="false">307054292317676</string>
     <!-- Facebook Application ID, prefixed by 'fb'. Enables Chrome Custom tabs. -->
     <string name="facebook_login_protocol_scheme" translatable="false">fbAPP_ID</string>
 
