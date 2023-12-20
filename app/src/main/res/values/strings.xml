@@ -27,10 +27,11 @@
 
     <!-- Google. -->
     <string name="default_web_client_id">411735479356-v8f0t5p203sign3105mgrt69uf35le77.apps.googleusercontent.com</string>
-    <!-- Facebook Application ID, prefixed by 'fb'. Enables Chrome Custom tabs. -->
-    <string name="facebook_application_id" translatable="false">307054292317676</string>
-    <!-- Facebook Application ID, prefixed by 'fb'. Enables Chrome Custom tabs. -->
+
     <string name="facebook_login_protocol_scheme" translatable="false">fbAPP_ID</string>
+    <string name="facebook_app_id">307054292317676</string>
+    <string name="facebook_application_id">307054292317676</string>
+    <string name="facebook_client_token">ec813d43f7a71c87e455f859b4ca052b</string>
 
     <string name="sign_in_with_twitter">Sign in with X</string>
     <string name="sign_in_with_facebook">Sign in with Facebook</string>
@@ -60,7 +61,7 @@
     <string name="phone_auth_resend">Resend</string>
     <string name="action_signout">Logout</string>
     <string name="seawave_background">seawave</string>
-    <string name="water_seems">Water seems...</string>
+    <string name="water_seems">Water seems…</string>
     <string name="water_drop">Water Drop</string>
     <string name="status_very_good">Very Good</string>
     <string name="status_unusual">Unsual</string>

@@ -26,6 +26,17 @@ import app.sthenoteuthis.mobile.R
 import app.sthenoteuthis.mobile.databinding.FragmentLoginBinding
 import app.sthenoteuthis.mobile.ui.ProgressFragment
 import app.sthenoteuthis.mobile.ui.viewmodel.FirebaseViewModel
+import com.facebook.AccessToken
+import com.facebook.CallbackManager
+import com.facebook.login.LoginManager
+import com.facebook.login.widget.LoginButton
+import com.facebook.FacebookCallback
+import com.facebook.FacebookException
+import com.facebook.login.LoginResult
+
+
+import com.google.firebase.auth.FacebookAuthProvider
+import com.google.firebase.auth.oAuthProvider
 
 
 class LoginFragment : ProgressFragment() {
@@ -39,15 +50,22 @@ class LoginFragment : ProgressFragment() {
 
     private lateinit var googleSignInClient: SignInClient
     private val googleSignInLauncher = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
-        googleHandleSignInResult(result.data)
+        signinResultGoogle(result.data)
     }
 
-
+    private lateinit var fbCallbackManager: CallbackManager
 
     companion object {
         const val LOGIN_SUCCESSFUL: String = "LOGIN_SUCCESSFUL"
         private const val RC_MULTI_FACTOR = 9005
-        private const val TAG = "EmailPasswordLogin"
+        private const val TAG = "SquidLogin"
+
+        private val PROVIDER_MAP = mapOf(
+            "Apple" to "apple.com",
+            "Microsoft" to "microsoft.com",
+            "Yahoo" to "yahoo.com",
+            "Twitter" to "twitter.com",
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,6 +73,7 @@ class LoginFragment : ProgressFragment() {
 
         Log.d(TAG, "onCreate ")
         firebaseViewModel = ViewModelProvider(requireActivity())[FirebaseViewModel::class.java]
+        //fbCallbackManager = CallbackManager.Factory.create()
 
     }
 
@@ -78,22 +97,48 @@ class LoginFragment : ProgressFragment() {
         val twitterSigninButton = binding.twitterSigninButton
         val facebookSigninButton = binding.facebookSigninButton
 
+        // Initialize Facebook Login button
+        fbCallbackManager = CallbackManager.Factory.create()
 
         // Configure Google Sign In
         googleSignInClient = Identity.getSignInClient(requireContext())
 
         googleSigninButton.setOnClickListener {
-            signIn()
+            signInGoogle()
         }
         twitterSigninButton.setOnClickListener {
+            signInTwitter()
         }
         facebookSigninButton.setOnClickListener {
+            LoginManager.getInstance().logInWithReadPermissions(this,
+                fbCallbackManager, listOf("email", "public_profile"))
         }
+
+        LoginManager.getInstance().registerCallback(
+        //facebookSigninButton.registerCallback(
+            fbCallbackManager,
+            object : FacebookCallback<LoginResult> {
+                override fun onSuccess(result: LoginResult) {
+                    Log.d(TAG, "facebook:onSuccess:$result")
+                    firebaseAuthWithFacebook(result.accessToken)
+                }
+
+                override fun onCancel() {
+                    Log.d(TAG, "facebook:onCancel")
+                    //updateUI(null)
+                }
+
+                override fun onError(error: FacebookException) {
+                    Log.d(TAG, "facebook:onError", error)
+                    //updateUI(null)
+                }
+            },
+        )
 
         binding.login.setOnClickListener {
             val email = binding.email.text.toString()
             val password = binding.password.text.toString()
-            signIn(email, password)
+            signInEmailPassword(email, password)
         }
 
         binding.createLink.setOnClickListener {
@@ -108,9 +153,9 @@ class LoginFragment : ProgressFragment() {
         _binding = null
     }
 
-    private fun signIn(email: String, password: String) {
+    private fun signInEmailPassword(email: String, password: String) {
         Log.d(TAG, "signIn:$email")
-        if (!validateForm()) {
+        if (!validateFormEmailPassword()) {
             return
         }
 
@@ -161,7 +206,7 @@ class LoginFragment : ProgressFragment() {
 
 
 
-    private fun validateForm(): Boolean {
+    private fun validateFormEmailPassword(): Boolean {
         var valid = true
 
         val email = binding.email.text.toString()
@@ -184,20 +229,20 @@ class LoginFragment : ProgressFragment() {
         return valid
     }
 
-    private fun signIn() {
+    private fun signInGoogle() {
         val signInRequest = GetSignInIntentRequest.builder()
             .setServerClientId(getString(R.string.default_web_client_id))
             .build()
 
         googleSignInClient.getSignInIntent(signInRequest)
             .addOnSuccessListener { pendingIntent ->
-                launchSignIn(pendingIntent)
+                launchSignInGoogle(pendingIntent)
             }
             .addOnFailureListener { e ->
                 Log.e(TAG, "Google Sign-in failed", e)
             }
     }
-    private fun oneTapSignIn() {
+    private fun oneTapSignInGoogle() {
         // Configure One Tap UI
         val oneTapRequest = BeginSignInRequest.builder()
             .setGoogleIdTokenRequestOptions(
@@ -212,15 +257,16 @@ class LoginFragment : ProgressFragment() {
         // Display the One Tap UI
         googleSignInClient.beginSignIn(oneTapRequest)
             .addOnSuccessListener { result ->
-                launchSignIn(result.pendingIntent)
+                launchSignInGoogle(result.pendingIntent)
             }
             .addOnFailureListener { e ->
                 // No saved credentials found. Launch the One Tap sign-up flow, or
                 // do nothing and continue presenting the signed-out UI.
+                Log.e(TAG, "Google Sign-in failed", e)
             }
     }
 
-    private fun launchSignIn(pendingIntent: PendingIntent) {
+    private fun launchSignInGoogle(pendingIntent: PendingIntent) {
         try {
             val intentSenderRequest = IntentSenderRequest.Builder(pendingIntent)
                 .build()
@@ -230,7 +276,7 @@ class LoginFragment : ProgressFragment() {
         }
     }
 
-    private fun googleHandleSignInResult(data: Intent?) {
+    private fun signinResultGoogle(data: Intent?) {
         // Result returned from launching the Sign In PendingIntent
         try {
             // Google Sign In was successful, authenticate with Firebase
@@ -281,5 +327,69 @@ class LoginFragment : ProgressFragment() {
                 hideProgressBar()
             }
     }
+    fun onFacebookLoginClick(view: android.view.View) {
+        LoginManager.getInstance().logInWithReadPermissions(this, fbCallbackManager, listOf("email", "public_profile"))
+    }
+    private fun firebaseAuthWithFacebook(token: AccessToken) {
+        Log.d(TAG, "firebaseAuthWithFacebook:$token")
+        showProgressBar()
+
+        val credential = FacebookAuthProvider.getCredential(token.token)
+        firebaseViewModel.auth?.signInWithCredential(credential)
+            ?.addOnCompleteListener(requireActivity()) { task ->
+                if (task.isSuccessful) {
+                    // Sign in success, update UI with the signed-in user's information
+                    Log.d(TAG, "signInWithCredential:success")
+                    //val user = auth.currentUser
+                    //updateUI(user)
+                } else {
+                    // If sign in fails, display a message to the user.
+                    Log.w(TAG, "signInWithCredential:failure", task.exception)
+                    Toast.makeText(
+                        context,
+                        "Authentication failed.",
+                        Toast.LENGTH_SHORT,
+                    ).show()
+                    //updateUI(null)
+                }
+
+                hideProgressBar()
+            }
+    }
+
+    private fun signInTwitter() {
+        // Could add custom scopes here
+        val customScopes = ArrayList<String>()
+
+        // Examples of provider ID: apple.com (Apple), microsoft.com (Microsoft), yahoo.com (Yahoo)
+        val providerId = getProviderId()
+
+        firebaseViewModel.auth?.startActivityForSignInWithProvider(
+            requireActivity(),
+            oAuthProvider(providerId, firebaseViewModel.auth!!) {
+                scopes = customScopes
+            },
+        )
+            ?.addOnSuccessListener { authResult ->
+                Log.d(TAG, "signInTwitter:onSuccess:${authResult.user}")
+                //updateUI(authResult.user)
+            }
+            ?.addOnFailureListener { e ->
+                Log.w(TAG, "signInTwitter:onFailure", e)
+                Toast.makeText(
+                    context,
+                    "Twitter Authentication failed.",
+                    Toast.LENGTH_SHORT,
+                ).show()
+            }
+    }
+
+    private fun getProviderId(): String {
+        val providerName = "Twitter" //spinnerAdapter.getItem(binding.providerSpinner.selectedItemPosition)
+        return PROVIDER_MAP[providerName!!] ?: error("No provider selected")
+    }
+
+
+
 
 }
