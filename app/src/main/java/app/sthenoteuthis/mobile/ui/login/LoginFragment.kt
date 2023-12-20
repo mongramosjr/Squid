@@ -1,5 +1,6 @@
 package app.sthenoteuthis.mobile.ui.login
 
+
 import android.app.PendingIntent
 import android.content.Intent
 import android.content.IntentSender
@@ -15,27 +16,24 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
-import com.google.android.gms.auth.api.identity.BeginSignInRequest
-import com.google.android.gms.auth.api.identity.GetSignInIntentRequest
-import com.google.android.gms.auth.api.identity.Identity
-import com.google.android.gms.auth.api.identity.SignInClient
-import com.google.android.gms.common.api.ApiException
-import com.google.firebase.auth.FirebaseAuthMultiFactorException
-import com.google.firebase.auth.GoogleAuthProvider
 import app.sthenoteuthis.mobile.R
 import app.sthenoteuthis.mobile.databinding.FragmentLoginBinding
 import app.sthenoteuthis.mobile.ui.ProgressFragment
 import app.sthenoteuthis.mobile.ui.viewmodel.FirebaseViewModel
 import com.facebook.AccessToken
 import com.facebook.CallbackManager
-import com.facebook.login.LoginManager
-import com.facebook.login.widget.LoginButton
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
+import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
-
-
+import com.google.android.gms.auth.api.identity.BeginSignInRequest
+import com.google.android.gms.auth.api.identity.GetSignInIntentRequest
+import com.google.android.gms.auth.api.identity.Identity
+import com.google.android.gms.auth.api.identity.SignInClient
+import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FacebookAuthProvider
+import com.google.firebase.auth.FirebaseAuthMultiFactorException
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.oAuthProvider
 
 
@@ -147,6 +145,27 @@ class LoginFragment : ProgressFragment() {
 
 
     }
+    override fun onStart() {
+        super.onStart()
+        // Check if user is signed in (non-null) and update UI accordingly.
+        val currentUser = firebaseViewModel.auth?.currentUser
+        //updateUI(currentUser)
+
+        // Look for a pending auth result
+        val pending = firebaseViewModel.auth?.pendingAuthResult
+        if (pending != null) {
+            pending.addOnSuccessListener { authResult ->
+                Log.d(TAG, "checkPending:onSuccess:$authResult")
+                //updateUI(authResult.user)
+            }.addOnFailureListener { e ->
+                Log.w(TAG, "checkPending:onFailure", e)
+            }
+        } else {
+            Log.d(TAG, "checkPending: null")
+        }
+    }
+
+
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -239,7 +258,12 @@ class LoginFragment : ProgressFragment() {
                 launchSignInGoogle(pendingIntent)
             }
             .addOnFailureListener { e ->
-                Log.e(TAG, "Google Sign-in failed", e)
+                Log.e(TAG, "signInGoogle Sign-in failed", e)
+                Toast.makeText(
+                    context,
+                    "Google Authentication Failed",
+                    Toast.LENGTH_SHORT,
+                ).show()
             }
     }
     private fun oneTapSignInGoogle() {
@@ -262,7 +286,12 @@ class LoginFragment : ProgressFragment() {
             .addOnFailureListener { e ->
                 // No saved credentials found. Launch the One Tap sign-up flow, or
                 // do nothing and continue presenting the signed-out UI.
-                Log.e(TAG, "Google Sign-in failed", e)
+                Log.e(TAG, "oneTapSignInGoogle Sign-in failed", e)
+                Toast.makeText(
+                    context,
+                    "Google Authentication Failed",
+                    Toast.LENGTH_SHORT,
+                ).show()
             }
     }
 
@@ -272,7 +301,12 @@ class LoginFragment : ProgressFragment() {
                 .build()
             googleSignInLauncher.launch(intentSenderRequest)
         } catch (e: IntentSender.SendIntentException) {
-            Log.e(TAG, "Couldn't start Sign In: ${e.localizedMessage}")
+            Log.e(TAG, "launchSignInGoogle couldn't start Sign In: ${e.localizedMessage}")
+            Toast.makeText(
+                context,
+                "Google Authentication Failed",
+                Toast.LENGTH_SHORT,
+            ).show()
         }
     }
 
@@ -283,7 +317,7 @@ class LoginFragment : ProgressFragment() {
             val credential = googleSignInClient.getSignInCredentialFromIntent(data)
             val idToken = credential.googleIdToken
             if (idToken != null) {
-                Log.d(TAG, "firebaseAuthWithGoogle: ${credential.id}")
+                Log.d(TAG, "signinResultGoogle: ${credential.id}")
                 firebaseAuthWithGoogle(idToken)
             } else {
                 // Shouldn't happen.
@@ -291,7 +325,12 @@ class LoginFragment : ProgressFragment() {
             }
         } catch (e: ApiException) {
             // Google Sign In failed, update UI appropriately
-            Log.w(TAG, "Google sign in failed", e)
+            Log.w(TAG, "signinResultGoogle sign in failed", e)
+            Toast.makeText(
+                context,
+                "Google Authentication Failed",
+                Toast.LENGTH_SHORT,
+            ).show()
             //updateUI(null)
         }
     }
@@ -303,7 +342,7 @@ class LoginFragment : ProgressFragment() {
             ?.addOnCompleteListener(requireActivity()) { task ->
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
-                    Log.d(TAG, "signInWithCredential:success")
+                    Log.d(TAG, "firebaseAuthWithGoogle:success")
                     val user = firebaseViewModel.auth?.currentUser
                     Toast.makeText(
                         context,
@@ -313,13 +352,13 @@ class LoginFragment : ProgressFragment() {
                     //updateUI(user)
                 } else {
                     // If sign in fails, display a message to the user.
-                    Log.w(TAG, "signInWithCredential:failure", task.exception)
+                    Log.w(TAG, "firebaseAuthWithGoogle:failure", task.exception)
                     //val view = binding.mainLayout
                     //Snackbar.make(view, "Authentication Failed.", Snackbar.LENGTH_SHORT).show()
                     //updateUI(null)
                     Toast.makeText(
                         context,
-                        "Authentication Failed",
+                        "Google Authentication Failed",
                         Toast.LENGTH_SHORT,
                     ).show()
                 }

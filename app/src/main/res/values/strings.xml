@@ -28,10 +28,13 @@
     <!-- Google. -->
     <string name="default_web_client_id">411735479356-v8f0t5p203sign3105mgrt69uf35le77.apps.googleusercontent.com</string>
 
-    <string name="facebook_login_protocol_scheme" translatable="false">fbAPP_ID</string>
+    <string name="facebook_login_protocol_scheme" translatable="false">fb307054292317676</string>
     <string name="facebook_app_id">307054292317676</string>
     <string name="facebook_application_id">307054292317676</string>
     <string name="facebook_client_token">ec813d43f7a71c87e455f859b4ca052b</string>
+
+    <string name="twitter_consumer_key" translatable="false">hsk8T6anzH3CJPvvtgHz4Exea</string>
+    <string name="twitter_consumer_secret" translatable="false">1FPUOkuf6Bbw7MYiJpAXuWKqMlTbx6aQwEUerwZpZ2iwhUmUne</string>
 
     <string name="sign_in_with_twitter">Sign in with X</string>
     <string name="sign_in_with_facebook">Sign in with Facebook</string>
@@ -54,6 +57,11 @@
 
     <string name="action_signin">Login</string>
     <string name="action_signup">Sign up</string>
+    <string name="action_logout">Logout</string>
+    <string name="account_title_away">Oops! Your Account\'s Gone for a Coffee Break</string>
+    <string name="account_title">Your Account Details</string>
+
+    <string name="firebaseui_status_fmt">Squid User: %s</string>
 
     <string name="hint_verification_code">Verification Code</string>
     <string name="phone_auth_verify">Verify</string>
@@ -66,5 +74,6 @@
     <string name="status_very_good">Very Good</string>
     <string name="status_unusual">Unsual</string>
     <string name="button_for_ai_query">dialog box for AI query</string>
+
 
 </resources>
