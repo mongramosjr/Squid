@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import app.sthenoteuthis.mobile.R
 import app.sthenoteuthis.mobile.databinding.FragmentMyselfBinding
 import app.sthenoteuthis.mobile.ui.ProgressFragment
+import app.sthenoteuthis.mobile.ui.login.LoginFragment
 import app.sthenoteuthis.mobile.ui.viewmodel.FirebaseViewModel
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.BuildConfig
@@ -40,7 +41,7 @@ class MyselfFragment : ProgressFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        Log.w(TAG, "onCreate")
         firebaseViewModel = ViewModelProvider(requireActivity())[FirebaseViewModel::class.java]
 
     }
@@ -54,7 +55,7 @@ class MyselfFragment : ProgressFragment() {
         // Inflate the layout for this fragment
         //val view = inflater.inflate(R.layout.fragment_myself, container, false)
         _binding = FragmentMyselfBinding.inflate(inflater, container, false)
-
+        Log.w(TAG, "onCreateView")
         hideButtons()
 
         return binding.root
@@ -62,18 +63,23 @@ class MyselfFragment : ProgressFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        Log.w(TAG, "onViewCreated")
         binding.btnToLogin.setOnClickListener { startSignIn() }
         binding.btnToLogout.setOnClickListener { signOut() }
     }
 
     override fun onStart() {
         super.onStart()
+        Log.w(TAG, "onStart")
         // Check if user is signed in (non-null) and update UI accordingly.
         val currentUser = firebaseViewModel.auth?.currentUser
         if (currentUser != null) {
             reload()
+            updateUI(currentUser)
+        }else{
+            updateUI(null)
         }
+
     }
 
     override fun onDestroyView() {
