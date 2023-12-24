@@ -11,7 +11,6 @@ import androidx.lifecycle.ViewModelProvider
 import app.sthenoteuthis.mobile.R
 import app.sthenoteuthis.mobile.databinding.FragmentMyselfBinding
 import app.sthenoteuthis.mobile.ui.ProgressFragment
-import app.sthenoteuthis.mobile.ui.login.LoginFragment
 import app.sthenoteuthis.mobile.ui.viewmodel.FirebaseViewModel
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.BuildConfig
@@ -75,7 +74,6 @@ class MyselfFragment : ProgressFragment() {
         val currentUser = firebaseViewModel.auth?.currentUser
         if (currentUser != null) {
             reload()
-            updateUI(currentUser)
         }else{
             updateUI(null)
         }
@@ -142,10 +140,11 @@ class MyselfFragment : ProgressFragment() {
         firebaseViewModel.auth?.currentUser!!.reload().addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 updateUI(firebaseViewModel.auth?.currentUser!!)
-                Toast.makeText(context, "Reload successful!", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(context, "Reload successful!", Toast.LENGTH_SHORT).show()
             } else {
                 Log.e(TAG, "reload", task.exception)
-                Toast.makeText(context, "Failed to reload user.", Toast.LENGTH_SHORT).show()
+                updateUI(null)
+                //Toast.makeText(context, "Failed to reload user.", Toast.LENGTH_SHORT).show()
             }
         }
     }

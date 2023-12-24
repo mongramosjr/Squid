@@ -59,7 +59,8 @@
     <string name="action_signup">Sign up</string>
     <string name="action_logout">Logout</string>
     <string name="account_title_away">Oops! Your Account\'s Gone for a Coffee Break</string>
-    <string name="account_title">Your Account Details</string>
+    <string name="account_title">Your Account\'s Tentacular Tales</string>
+    <string name="account_title_new">Create an Account: Because Squid Wants to Know You</string>
 
     <string name="firebaseui_status_fmt">Squid User: %s</string>
 

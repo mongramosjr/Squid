@@ -4,6 +4,7 @@ import android.content.pm.ApplicationInfo
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
@@ -11,31 +12,52 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupWithNavController
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import androidx.room.Room
+import app.sthenoteuthis.mobile.data.SquidDatabase
 import app.sthenoteuthis.mobile.databinding.ActivityMainSquidBinding
 import app.sthenoteuthis.mobile.ui.login.EmailPhoneLoginViewModel
 import app.sthenoteuthis.mobile.ui.login.EmailPhoneLoginViewModelFactory
-import app.sthenoteuthis.mobile.R
 import app.sthenoteuthis.mobile.ui.viewmodel.FirebaseViewModel
 import app.sthenoteuthis.mobile.ui.viewmodel.ThingSpeakViewModel
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.toList
 
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainSquidBinding
 
+    // NavController
     private lateinit var navController: NavController
+    // AppBarConfiguration
     private lateinit var appBarConfiguration: AppBarConfiguration
+    // Bottom Bar Navigation
+    private lateinit var navViewSquid: BottomNavigationView
 
     //Note: can communicate between children fragments
     lateinit var thingspeakViewModel: ThingSpeakViewModel
-    lateinit var firebaseViewModel: FirebaseViewModel
+    private lateinit var firebaseViewModel: FirebaseViewModel
+
+    // RoomDatabase
+    private val applicationScope = CoroutineScope(SupervisorJob())
+    // Using by lazy so the database and the repository are only created when they're needed
+    // rather than when the application starts
+    val database by lazy { SquidDatabase.getDatabase(this, applicationScope) }
 
 
 
-    lateinit var emailPhoneloginViewModel: EmailPhoneLoginViewModel
-    lateinit var navViewSquid: BottomNavigationView
 
+
+    // TODO: remove emailPhoneloginViewModel
+    private lateinit var emailPhoneloginViewModel: EmailPhoneLoginViewModel
+
+
+
+    companion object {
+        private const val TAG = "MainActivity"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -47,7 +69,6 @@ class MainActivity : AppCompatActivity() {
 
         firebaseViewModel = ViewModelProvider(this)[FirebaseViewModel::class.java]
         firebaseViewModel.initFirebaseAuth()
-
 
         Log.d("HHHHHHHH", thingspeakViewModel.toString() + " --> " + this.toString())
 
@@ -117,10 +138,23 @@ class MainActivity : AppCompatActivity() {
 
     public override fun onStart() {
         super.onStart()
+        Log.w(TAG, "onStart")
+        Log.i(TAG, database.loggedInAccountDao().getAll().toString())
+
         // Check if user is signed in (non-null) and update UI accordingly.
         val currentUser = firebaseViewModel.auth?.currentUser
         if (currentUser != null) {
-            //reload()
+            reload()
+        }
+    }
+
+    private fun reload() {
+        firebaseViewModel.auth?.currentUser!!.reload().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Toast.makeText(this.applicationContext, "Reload successful!", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this.applicationContext, "Failed to reload user.", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
