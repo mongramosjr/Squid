@@ -4,15 +4,20 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
+import app.sthenoteuthis.mobile.data.model.FeedEntity
+import app.sthenoteuthis.mobile.data.model.FeedEntityDao
+import app.sthenoteuthis.mobile.data.model.InstantStringConverter
 import app.sthenoteuthis.mobile.data.model.LoggedInAccount
 import app.sthenoteuthis.mobile.data.model.LoggedInAccountDao
 import kotlinx.coroutines.CoroutineScope
 
 
-@Database(entities = [LoggedInAccount::class], version = 1)
+@Database(entities = [LoggedInAccount::class, FeedEntity::class], version = 1)
 abstract class SquidDatabase: RoomDatabase()  {
 
     abstract fun loggedInAccountDao(): LoggedInAccountDao
+    abstract fun feedEntityDao(): FeedEntityDao
 
     companion object {
         @Volatile

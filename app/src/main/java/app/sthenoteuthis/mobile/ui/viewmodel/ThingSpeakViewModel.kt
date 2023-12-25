@@ -4,9 +4,11 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.patrykandpatrick.vico.core.entry.FloatEntry
-import app.sthenoteuthis.mobile.ThingSpeak
-import app.sthenoteuthis.mobile.ThingSpeakApiClient
+import app.sthenoteuthis.mobile.data.model.ThingSpeak
+import app.sthenoteuthis.mobile.data.ThingSpeakApiClient
+import app.sthenoteuthis.mobile.data.ThingSpeakRepository
 import app.sthenoteuthis.mobile.data.model.WaterQualityData
 import app.sthenoteuthis.mobile.data.model.WaterQualityTimeframe
 import retrofit2.Call
@@ -33,7 +35,7 @@ const val TDS: String = "TDS"
 const val TURBIDITY: String = "Turbidity"
 
 
-class ThingSpeakViewModel : ViewModel() {
+class ThingSpeakViewModel(private val repository: ThingSpeakRepository) : ViewModel() {
 
     // Response body from thingspeak
     private val _thingSpeakData = MutableLiveData<ThingSpeak?>()
@@ -62,6 +64,7 @@ class ThingSpeakViewModel : ViewModel() {
     private val _isDone = MutableLiveData<RequestDone>()
     val isDone: LiveData<RequestDone> get() = _isDone
 
+
     fun defaultValues()
     {
         _waterQualityData.value = WaterQualityData()
@@ -73,8 +76,8 @@ class ThingSpeakViewModel : ViewModel() {
         _isLoading.value = true
         _isError.value = false
 
-        val client = ThingSpeakApiClient.apiService.getLast(entries)
-
+        //val client = ThingSpeakApiClient.apiService.getLast(entries)
+        val client = repository.fetchLastFeeds(entries)
         client.enqueue(object : Callback<ThingSpeak> {
 
             override fun onResponse(call: Call<ThingSpeak>,
@@ -150,7 +153,8 @@ class ThingSpeakViewModel : ViewModel() {
             Log.d("HHHHHHHH", "getWaterQualityAt: COUNT is 0")
         }
 
-        val client = ThingSpeakApiClient.apiService.getData(start, end, average)
+        //val client = ThingSpeakApiClient.apiService.getData(start, end, average)
+        val client = repository.fetchFeeds(start, end, average)
 
         client.enqueue(object : Callback<ThingSpeak> {
 
@@ -166,7 +170,8 @@ class ThingSpeakViewModel : ViewModel() {
                     Log.i("ViewModelHHHHHHHH", "getWaterQualityAt: Size of feeds: " + responseBody.feeds?.size.toString())
                     rearrangeData(responseBody, selectedDate, timeframe)
 
-                    // store
+                    // TODO: store to local database
+
                     Log.i("ViewModelHHHHHHHH", "getWaterQualityAt: Processing Response from ThingSpeak")
                     _isLoading.value = false
                     // NOTE: always do this at the end of response to ensure
@@ -695,3 +700,13 @@ class ThingSpeakViewModel : ViewModel() {
 data class RequestDone( val updateAt: Instant,
                         val selectedDate: Instant,
                         val dates: MutableList<Pair<Int, LocalDate>>)
+
+class ThingSpeakViewModelFactory(private val repository: ThingSpeakRepository) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(ThingSpeakViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return ThingSpeakViewModel(repository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
+}

@@ -1,8 +1,22 @@
-package app.sthenoteuthis.mobile
+package app.sthenoteuthis.mobile.data.model
 
+import androidx.room.ColumnInfo
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Entity
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.PrimaryKey
+import androidx.room.Query
+import androidx.room.Update
 import com.google.gson.annotations.Expose
 
 import com.google.gson.annotations.SerializedName
+import kotlinx.coroutines.flow.Flow
+import java.time.Instant
+import java.util.Date
+import androidx.room.TypeConverter
+import androidx.room.TypeConverters
 
 data class Channel(
     @SerializedName("id")
@@ -112,4 +126,56 @@ data class ThingSpeak(
     @SerializedName("feeds")
     @Expose
     val feeds: List<Feed>? = null
+}
+
+
+@Entity(tableName = "water_quality_feed")
+@TypeConverters(InstantStringConverter::class)
+data class FeedEntity(
+    @PrimaryKey @ColumnInfo(name = "entry_id") val entryId: String,
+    @ColumnInfo(name = "created_at") val createdAt: Instant,
+    @ColumnInfo(name = "field1") val pH: Float? = null,
+    @ColumnInfo(name = "field2") val temperature: Float? = null,
+    @ColumnInfo(name = "field3") val salinity: Float? = null,
+    @ColumnInfo(name = "field4") val dissolvedOxygen: Float? = null,
+    @ColumnInfo(name = "field5") val tds: Float? = null,
+    @ColumnInfo(name = "field6") val turbidity: Float? = null
+)
+
+@Dao
+interface FeedEntityDao {
+    @Query("SELECT * FROM water_quality_feed")
+    fun getAll(): Flow<List<FeedEntity>>
+
+    @Query("SELECT * FROM water_quality_feed WHERE created_at >= :dateSince AND created_at <= :dateUntil")
+    fun findByDateRange(dateSince: String, dateUntil: String): Flow<List<FeedEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insert(feed: FeedEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertFeeds(vararg feeds: FeedEntity)
+
+    @Update
+    suspend fun updateFeeds(vararg feeds: FeedEntity)
+
+    @Delete
+    suspend fun delete(feeds: FeedEntity)
+}
+
+
+
+
+object InstantStringConverter {
+    @TypeConverter
+    @JvmStatic
+    fun fromInstant(instant: Instant?): String? {
+        return instant?.toString()
+    }
+
+    @TypeConverter
+    @JvmStatic
+    fun toInstant(instantString: String?): Instant? {
+        return instantString?.let { Instant.parse(it) }
+    }
 }

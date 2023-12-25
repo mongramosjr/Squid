@@ -1,6 +1,7 @@
-package app.sthenoteuthis.mobile
+package app.sthenoteuthis.mobile.data
 
 
+import app.sthenoteuthis.mobile.data.model.ThingSpeakService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 

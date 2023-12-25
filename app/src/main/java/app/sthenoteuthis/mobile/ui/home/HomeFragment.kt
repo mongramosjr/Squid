@@ -15,9 +15,9 @@ import com.patrykandpatrick.vico.core.entry.FloatEntry
 import com.patrykandpatrick.vico.core.entry.entriesOf
 import com.patrykandpatrick.vico.core.entry.entryModelOf
 import com.patrykandpatrick.vico.views.chart.ChartView
-import app.sthenoteuthis.mobile.Feed
+import app.sthenoteuthis.mobile.data.model.Feed
 import app.sthenoteuthis.mobile.R
-import app.sthenoteuthis.mobile.ThingSpeak
+import app.sthenoteuthis.mobile.data.model.ThingSpeak
 import app.sthenoteuthis.mobile.databinding.FragmentHomeBinding
 import app.sthenoteuthis.mobile.ui.viewmodel.DAILY_TIMEFRAME
 import app.sthenoteuthis.mobile.ui.viewmodel.ThingSpeakViewModel

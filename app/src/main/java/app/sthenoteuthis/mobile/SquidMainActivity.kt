@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
@@ -14,11 +15,14 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupWithNavController
 import androidx.room.Room
 import app.sthenoteuthis.mobile.data.SquidDatabase
+import app.sthenoteuthis.mobile.data.ThingSpeakApiRepository
+import app.sthenoteuthis.mobile.data.ThingSpeakRepository
 import app.sthenoteuthis.mobile.databinding.ActivityMainSquidBinding
 import app.sthenoteuthis.mobile.ui.login.EmailPhoneLoginViewModel
 import app.sthenoteuthis.mobile.ui.login.EmailPhoneLoginViewModelFactory
 import app.sthenoteuthis.mobile.ui.viewmodel.FirebaseViewModel
 import app.sthenoteuthis.mobile.ui.viewmodel.ThingSpeakViewModel
+import app.sthenoteuthis.mobile.ui.viewmodel.ThingSpeakViewModelFactory
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -37,7 +41,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navViewSquid: BottomNavigationView
 
     //Note: can communicate between children fragments
-    lateinit var thingspeakViewModel: ThingSpeakViewModel
     private lateinit var firebaseViewModel: FirebaseViewModel
 
     // RoomDatabase
@@ -46,6 +49,13 @@ class MainActivity : AppCompatActivity() {
     // rather than when the application starts
     val database by lazy { SquidDatabase.getDatabase(this, applicationScope) }
 
+    // ThingSpeakViewModel
+    //lateinit var thingspeakViewModel: ThingSpeakViewModel
+    private val thingSpeakViewModelFactory: ThingSpeakViewModelFactory by lazy {
+        val repository = ThingSpeakRepository(database.feedEntityDao(), ThingSpeakApiRepository()) // Initialize your repository here
+        ThingSpeakViewModelFactory(repository)
+    }
+    private val thingspeakViewModel: ThingSpeakViewModel by viewModels { thingSpeakViewModelFactory }
 
 
 
@@ -64,7 +74,7 @@ class MainActivity : AppCompatActivity() {
         val isDebuggable = 0 != applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE
         Log.d("HHHHHHHH", "onCreate --> " + this.toString())
 
-        thingspeakViewModel = ViewModelProvider(this)[ThingSpeakViewModel::class.java]
+        //thingspeakViewModel = ViewModelProvider(this)[ThingSpeakViewModel::class.java]
         thingspeakViewModel.defaultValues()
 
         firebaseViewModel = ViewModelProvider(this)[FirebaseViewModel::class.java]

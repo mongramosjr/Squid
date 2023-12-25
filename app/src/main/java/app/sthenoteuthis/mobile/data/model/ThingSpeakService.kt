@@ -1,5 +1,6 @@
-package app.sthenoteuthis.mobile
+package app.sthenoteuthis.mobile.data.model
 
+import app.sthenoteuthis.mobile.data.model.ThingSpeak
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
