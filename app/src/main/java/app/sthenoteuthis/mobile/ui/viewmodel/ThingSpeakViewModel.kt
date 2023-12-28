@@ -5,12 +5,17 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.patrykandpatrick.vico.core.entry.FloatEntry
 import app.sthenoteuthis.mobile.data.model.ThingSpeak
 import app.sthenoteuthis.mobile.data.ThingSpeakApiClient
 import app.sthenoteuthis.mobile.data.ThingSpeakRepository
 import app.sthenoteuthis.mobile.data.model.WaterQualityData
 import app.sthenoteuthis.mobile.data.model.WaterQualityTimeframe
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.count
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -71,10 +76,26 @@ class ThingSpeakViewModel(private val repository: ThingSpeakRepository) : ViewMo
         _lastDateEntryCount.value = 0
     }
 
+    suspend fun countFeedsLocal(): Int{
+        return repository.size()
+    }
+
     fun getLastWaterQuality(entries: Int =288){
 
         _isLoading.value = true
         _isError.value = false
+
+        // TODO: Remove this test
+        viewModelScope.launch {
+
+            withContext(Dispatchers.IO) {
+                try {
+                    Log.d("HAHAHAHAMONGCOUNT", countFeedsLocal().toString())
+                } catch (e: Exception) {
+                    Log.e("HAHAHAHAMONGCOUNT", e.toString() )
+                }
+            }
+        }
 
         //val client = ThingSpeakApiClient.apiService.getLast(entries)
         val client = repository.fetchLastFeeds(entries)
@@ -92,6 +113,7 @@ class ThingSpeakViewModel(private val repository: ThingSpeakRepository) : ViewMo
                     _thingSpeakData.value = responseBody
                     _lastDateEntry.value = dateLastEntry(responseBody)
                     _lastDateEntryCount.value = 1 // NOTE: reset to always
+                    // TODO: store responseBody to local database FeedsEntity
                     Log.d("HHHHHHHH", "getLastWaterQuality: Processing Response from ThingSpeak --> " + this.toString())
                 } else {
                     // Handle error
@@ -170,8 +192,16 @@ class ThingSpeakViewModel(private val repository: ThingSpeakRepository) : ViewMo
                     Log.i("ViewModelHHHHHHHH", "getWaterQualityAt: Size of feeds: " + responseBody.feeds?.size.toString())
                     rearrangeData(responseBody, selectedDate, timeframe)
 
-                    // TODO: store to local database
-
+                    // store responseBody to local database FeedsEntity
+                    viewModelScope.launch {
+                        withContext(Dispatchers.IO) {
+                            try {
+                                repository.insertFeeds(responseBody)
+                            } catch (e: Exception) {
+                                Log.e("HHHHHHHHMONG", e.toString() )
+                            }
+                        }
+                    }
                     Log.i("ViewModelHHHHHHHH", "getWaterQualityAt: Processing Response from ThingSpeak")
                     _isLoading.value = false
                     // NOTE: always do this at the end of response to ensure
@@ -275,32 +305,32 @@ class ThingSpeakViewModel(private val repository: ThingSpeakRepository) : ViewMo
                 val item_date = Instant.parse(e.createdAt)
 
                 if(e.field1!=null) {
-                    pH.add(idx_ph, FloatEntry(idx_ph.toFloat(), e.field1.toFloat()))
+                    pH.add(idx_ph, FloatEntry(idx_ph.toFloat(), e.field1!!.toFloat()))
                     pH_date.add(item_date)
                     idx_ph++
                 }
                 if(e.field2!=null) {
-                    temperature.add(idx_temperature, FloatEntry(idx_temperature.toFloat(), e.field2.toFloat()))
+                    temperature.add(idx_temperature, FloatEntry(idx_temperature.toFloat(), e.field2!!.toFloat()))
                     temperature_date.add(item_date)
                     idx_temperature++
                 }
                 if(e.field3!=null) {
-                    salinity.add(idx_salinity, FloatEntry(idx_salinity.toFloat(), e.field3.toFloat()))
+                    salinity.add(idx_salinity, FloatEntry(idx_salinity.toFloat(), e.field3!!.toFloat()))
                     salinity_date.add(item_date)
                     idx_salinity++
                 }
                 if(e.field4!=null) {
-                    dissolvedoxygen.add(idx_dissolvedoxygen, FloatEntry(idx_dissolvedoxygen.toFloat(), e.field4.toFloat()))
+                    dissolvedoxygen.add(idx_dissolvedoxygen, FloatEntry(idx_dissolvedoxygen.toFloat(), e.field4!!.toFloat()))
                     dissolvedoxygen_date.add(item_date)
                     idx_dissolvedoxygen++
                 }
                 if(e.field5!=null) {
-                    tds.add(idx_tds, FloatEntry(idx_tds.toFloat(), e.field5.toFloat()))
+                    tds.add(idx_tds, FloatEntry(idx_tds.toFloat(), e.field5!!.toFloat()))
                     tds_date.add(item_date)
                     idx_tds++
                 }
                 if(e.field6!=null) {
-                    turbidity.add(idx_turbidity, FloatEntry(idx_turbidity.toFloat(), e.field6.toFloat()))
+                    turbidity.add(idx_turbidity, FloatEntry(idx_turbidity.toFloat(), e.field6!!.toFloat()))
                     turbidity_date.add(item_date)
                     idx_turbidity++
                 }

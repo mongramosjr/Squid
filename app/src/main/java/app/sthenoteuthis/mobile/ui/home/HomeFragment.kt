@@ -212,38 +212,38 @@ class HomeFragment : Fragment() {
                     val e = feeds.next()
 
                     if(e.field1!=null) {
-                        pH.add(idx_ph, FloatEntry(idx_ph.toFloat(), e.field1.toFloat()))
-                        last_measure_pH = e.field1.toFloat()
+                        pH.add(idx_ph, FloatEntry(idx_ph.toFloat(), e.field1!!.toFloat()))
+                        last_measure_pH = e.field1!!.toFloat()
                         date_last_pH = OffsetDateTime.parse(e.createdAt).toLocalDateTime()
                         idx_ph++
                     }
                     if(e.field2!=null) {
-                        temperature.add(idx_temperature, FloatEntry(idx_temperature.toFloat(), e.field2.toFloat()))
-                        last_measure_temperature = e.field2.toFloat()
+                        temperature.add(idx_temperature, FloatEntry(idx_temperature.toFloat(), e.field2!!.toFloat()))
+                        last_measure_temperature = e.field2!!.toFloat()
                         date_last_temperature = OffsetDateTime.parse(e.createdAt).toLocalDateTime()
                         idx_temperature++
                     }
                     if(e.field3!=null) {
-                        salinity.add(idx_salinity, FloatEntry(idx_salinity.toFloat(), e.field3.toFloat()))
-                        last_measure_salinity = e.field3.toFloat()
+                        salinity.add(idx_salinity, FloatEntry(idx_salinity.toFloat(), e.field3!!.toFloat()))
+                        last_measure_salinity = e.field3!!.toFloat()
                         date_last_salinity = OffsetDateTime.parse(e.createdAt).toLocalDateTime()
                         idx_salinity++
                     }
                     if(e.field4!=null) {
-                        dissolvedoxygen.add(idx_dissolvedoxygen, FloatEntry(idx_dissolvedoxygen.toFloat(), e.field4.toFloat()))
-                        last_measure_dissolvedoxygen = e.field4.toFloat()
+                        dissolvedoxygen.add(idx_dissolvedoxygen, FloatEntry(idx_dissolvedoxygen.toFloat(), e.field4!!.toFloat()))
+                        last_measure_dissolvedoxygen = e.field4!!.toFloat()
                         date_last_dissolvedoxygen = OffsetDateTime.parse(e.createdAt).toLocalDateTime()
                         idx_dissolvedoxygen++
                     }
                     if(e.field5!=null) {
-                        tds.add(idx_tds, FloatEntry(idx_tds.toFloat(), e.field5.toFloat()))
-                        last_measure_tds = e.field5.toFloat()
+                        tds.add(idx_tds, FloatEntry(idx_tds.toFloat(), e.field5!!.toFloat()))
+                        last_measure_tds = e.field5!!.toFloat()
                         date_last_tds = OffsetDateTime.parse(e.createdAt).toLocalDateTime()
                         idx_tds++
                     }
                     if(e.field6!=null) {
-                        turbidity.add(idx_turbidity, FloatEntry(idx_turbidity.toFloat(), e.field6.toFloat()))
-                        last_measure_turbidity = e.field6.toFloat()
+                        turbidity.add(idx_turbidity, FloatEntry(idx_turbidity.toFloat(), e.field6!!.toFloat()))
+                        last_measure_turbidity = e.field6!!.toFloat()
                         date_last_turbidity = OffsetDateTime.parse(e.createdAt).toLocalDateTime()
                         idx_turbidity++
                     }

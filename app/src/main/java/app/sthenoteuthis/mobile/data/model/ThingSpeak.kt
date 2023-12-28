@@ -1,5 +1,6 @@
 package app.sthenoteuthis.mobile.data.model
 
+import android.util.Log
 import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Delete
@@ -25,59 +26,63 @@ data class Channel(
 {
     @SerializedName("name")
     @Expose
-    val name: String? = null
+    var name: String? = null
 
     @SerializedName("description")
     @Expose
-    val description: String? = null
+    var description: String? = null
 
     @SerializedName("latitude")
     @Expose
-    val latitude: String? = null
+    var latitude: String? = null
 
     @SerializedName("longitude")
     @Expose
-    val longitude: String? = null
+    var longitude: String? = null
 
     @SerializedName("field1")
     @Expose
-    val field1: String? = null
+    var field1: String? = null
 
     @SerializedName("field2")
     @Expose
-    val field2: String? = null
+    var field2: String? = null
 
     @SerializedName("field3")
     @Expose
-    val field3: String? = null
+    var field3: String? = null
 
     @SerializedName("field4")
     @Expose
-    val field4: String? = null
+    var field4: String? = null
 
     @SerializedName("field5")
     @Expose
-    val field5: String? = null
+    var field5: String? = null
 
     @SerializedName("field6")
     @Expose
-    val field6: String? = null
+    var field6: String? = null
 
     @SerializedName("field7")
     @Expose
-    val field7: String? = null
+    var field7: String? = null
+
+    @SerializedName("field8")
+    @Expose
+    var field8: String? = null
 
     @SerializedName("created_at")
     @Expose
-    val createdAt: String? = null
+    var createdAt: String? = null
 
     @SerializedName("updated_at")
     @Expose
-    val updatedAt: String? = null
+    var updatedAt: String? = null
 
     @SerializedName("last_entry_id")
     @Expose
-    val lastEntryId: Int? = null
+    var lastEntryId: Int? = null
 }
 
 data class Feed(
@@ -87,46 +92,50 @@ data class Feed(
 ) {
     @SerializedName("created_at")
     @Expose
-    val createdAt: String? = null
+    var createdAt: String? = null
 
     @SerializedName("field1")
     @Expose
-    val field1: Float? = null
+    var field1: Float? = null
 
     @SerializedName("field2")
     @Expose
-    val field2: Float? = null
+    var field2: Float? = null
 
     @SerializedName("field3")
     @Expose
-    val field3: Float? = null
+    var field3: Float? = null
 
     @SerializedName("field4")
     @Expose
-    val field4: Float? = null
+    var field4: Float? = null
 
     @SerializedName("field5")
     @Expose
-    val field5: Float? = null
+    var field5: Float? = null
 
     @SerializedName("field6")
     @Expose
-    val field6: Float? = null
+    var field6: Float? = null
 
     @SerializedName("field7")
     @Expose
-    val field7: Float? = null
+    var field7: Float? = null
+
+    @SerializedName("field8")
+    @Expose
+    var field8: Float? = null
 }
 
 data class ThingSpeak(
     @SerializedName("channel")
     @Expose
-    val channel: Channel? = null
-) {
+    val channel: Channel? = null,
+
     @SerializedName("feeds")
     @Expose
     val feeds: List<Feed>? = null
-}
+)
 
 
 @Entity(tableName = "water_quality_feed")
@@ -150,21 +159,39 @@ interface FeedEntityDao {
     @Query("SELECT * FROM water_quality_feed WHERE created_at >= :dateSince AND created_at <= :dateUntil")
     fun findByDateRange(dateSince: String, dateUntil: String): Flow<List<FeedEntity>>
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(feed: FeedEntity)
+    @Query("SELECT COUNT(*) FROM water_quality_feed WHERE created_at >= :dateSince AND created_at <= :dateUntil")
+    suspend fun size(dateSince: String, dateUntil: String): Int
+
+    @Query("SELECT COUNT(*) FROM water_quality_feed")
+    suspend fun size(): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertFeeds(vararg feeds: FeedEntity)
+    suspend fun insert(feed: FeedEntity)
 
     @Update
-    suspend fun updateFeeds(vararg feeds: FeedEntity)
+    suspend fun update(feed: FeedEntity)
 
     @Delete
     suspend fun delete(feeds: FeedEntity)
 }
 
+fun Feed.toFeedEntity(): FeedEntity {
+    return FeedEntity(this.entryId.toString(), Instant.parse(this.createdAt),
+        this.field1, this.field2, this.field3, this.field4, this.field5, this.field6)
+}
 
+fun FeedEntity.toFeed(): Feed {
+    val feed = Feed(this.entryId.toInt())
+    feed.createdAt = this.createdAt.toString()
+    feed.field1 = this.pH
+    feed.field2 = this.temperature
+    feed.field3 = this.salinity
+    feed.field4 = this.dissolvedOxygen
+    feed.field5 = this.tds
+    feed.field6 = this.turbidity
 
+    return feed
+}
 
 object InstantStringConverter {
     @TypeConverter

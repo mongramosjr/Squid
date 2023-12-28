@@ -25,8 +25,10 @@ import app.sthenoteuthis.mobile.ui.viewmodel.ThingSpeakViewModel
 import app.sthenoteuthis.mobile.ui.viewmodel.ThingSpeakViewModelFactory
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
 
 
 class MainActivity : AppCompatActivity() {
@@ -47,10 +49,10 @@ class MainActivity : AppCompatActivity() {
     private val applicationScope = CoroutineScope(SupervisorJob())
     // Using by lazy so the database and the repository are only created when they're needed
     // rather than when the application starts
-    val database by lazy { SquidDatabase.getDatabase(this, applicationScope) }
+    // note this is a singleton instance
+    private val database by lazy { SquidDatabase.getDatabase(this, applicationScope) }
 
     // ThingSpeakViewModel
-    //lateinit var thingspeakViewModel: ThingSpeakViewModel
     private val thingSpeakViewModelFactory: ThingSpeakViewModelFactory by lazy {
         val repository = ThingSpeakRepository(database.feedEntityDao(), ThingSpeakApiRepository()) // Initialize your repository here
         ThingSpeakViewModelFactory(repository)
@@ -59,10 +61,8 @@ class MainActivity : AppCompatActivity() {
 
 
 
-
     // TODO: remove emailPhoneloginViewModel
     private lateinit var emailPhoneloginViewModel: EmailPhoneLoginViewModel
-
 
 
     companion object {
@@ -74,7 +74,6 @@ class MainActivity : AppCompatActivity() {
         val isDebuggable = 0 != applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE
         Log.d("HHHHHHHH", "onCreate --> " + this.toString())
 
-        //thingspeakViewModel = ViewModelProvider(this)[ThingSpeakViewModel::class.java]
         thingspeakViewModel.defaultValues()
 
         firebaseViewModel = ViewModelProvider(this)[FirebaseViewModel::class.java]
@@ -144,12 +143,17 @@ class MainActivity : AppCompatActivity() {
 
         }
 
+        // TODO: Remove this test
+        // Use IO instead of MAIN dispatcher
+        CoroutineScope(Dispatchers.IO).launch {
+            Log.d("HAHAHAHAMONGCOUNT", thingspeakViewModel.countFeedsLocal().toString())
+        }
+
     }
 
     public override fun onStart() {
         super.onStart()
         Log.w(TAG, "onStart")
-        Log.i(TAG, database.loggedInAccountDao().getAll().toString())
 
         // Check if user is signed in (non-null) and update UI accordingly.
         val currentUser = firebaseViewModel.auth?.currentUser
