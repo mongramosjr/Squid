@@ -17,6 +17,7 @@ import com.patrykandpatrick.vico.core.entry.entryModelOf
 import com.patrykandpatrick.vico.views.chart.ChartView
 import app.sthenoteuthis.mobile.data.model.Feed
 import app.sthenoteuthis.mobile.R
+import app.sthenoteuthis.mobile.SquidUtils
 import app.sthenoteuthis.mobile.data.model.ThingSpeak
 import app.sthenoteuthis.mobile.databinding.FragmentHomeBinding
 import app.sthenoteuthis.mobile.ui.viewmodel.DAILY_TIMEFRAME
@@ -135,7 +136,6 @@ class HomeFragment : Fragment() {
                 displayEmptyChart(root, R.id.chart_view_dissolvedoxygen, 7f)
                 displayEmptyChart(root, R.id.chart_view_salinity, 7f)
             }
-
         }
 
         thingspeakViewModel.isError.observe(viewLifecycleOwner) { isError ->
@@ -143,12 +143,15 @@ class HomeFragment : Fragment() {
             if (isError) {
                 //TODO: display error message
                 Log.i(TAG, "TODO: display error message")
+                // use the feeds stored locally, but first check the network
+                if(SquidUtils.isDeviceOffline(requireContext())){
+                    displayChart(root)
+                }
             }
         }
 
         thingspeakViewModel.thingSpeakData.observe(viewLifecycleOwner){thingSpeakData ->
             displayChart(thingSpeakData, root)
-            //thingspeakViewModel.setLastDateEntryCount(1)
         }
 
         thingspeakViewModel.lastDateEntryCount.observe(viewLifecycleOwner){lastDateEntryCount ->
@@ -165,146 +168,177 @@ class HomeFragment : Fragment() {
         }
 
     }
+    fun displayChart(root: View){
+        //TODO: query local database
+        var feeds: ListIterator<Feed>? = null
+
+        if (feeds != null) {
+            displayChart(feeds, root)
+        }else{
+            Log.i(TAG, "no displayChart")
+        }
+    }
 
     private fun displayChart(thingSpeakData: ThingSpeak?, root: View){
 
-        // inject pH data
-        var feeds: ListIterator<Feed>?
+        var feeds: ListIterator<Feed>? = null
+
+        if (thingSpeakData != null) {
+            feeds = thingSpeakData.feeds?.listIterator()
+            if(feeds != null){
+                displayChart(feeds, root)
+            }else{
+                Log.i(TAG, "no displayChart")
+            }
+        }else{
+            Log.i(TAG, "no displayChart")
+        }
+
+    }
+
+    private fun displayChart(feeds: ListIterator<Feed>, root: View){
 
         val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         //2023-04-06T00:13:00Z
         //val format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ssX")
 
-        if (thingSpeakData != null) {
-            feeds = thingSpeakData.feeds?.listIterator()
 
-            var pH = mutableListOf <FloatEntry>().apply {  }
-            var temperature = mutableListOf <FloatEntry>().apply {  }
-            var salinity = mutableListOf <FloatEntry>().apply {  }
-            var dissolvedoxygen = mutableListOf <FloatEntry>().apply {  }
-            var tds = mutableListOf <FloatEntry>().apply {  }
-            var turbidity = mutableListOf <FloatEntry>().apply {  }
 
-            var last_measure_pH: Float = 0f
-            var last_measure_temperature: Float = 0f
-            var last_measure_salinity: Float = 0f
-            var last_measure_dissolvedoxygen: Float = 0f
-            var last_measure_tds: Float = 0f
-            var last_measure_turbidity: Float = 0f
+        var pH = mutableListOf <FloatEntry>().apply {  }
+        var temperature = mutableListOf <FloatEntry>().apply {  }
+        var salinity = mutableListOf <FloatEntry>().apply {  }
+        var dissolvedoxygen = mutableListOf <FloatEntry>().apply {  }
+        var tds = mutableListOf <FloatEntry>().apply {  }
+        var turbidity = mutableListOf <FloatEntry>().apply {  }
 
-            var date_last_pH: LocalDateTime? = null
-            var date_last_temperature: LocalDateTime? = null
-            var date_last_salinity: LocalDateTime? = null
-            var date_last_dissolvedoxygen: LocalDateTime? = null
-            var date_last_tds: LocalDateTime? = null
-            var date_last_turbidity: LocalDateTime? = null
+        var last_measure_pH: Float = 0f
+        var last_measure_temperature: Float = 0f
+        var last_measure_salinity: Float = 0f
+        var last_measure_dissolvedoxygen: Float = 0f
+        var last_measure_tds: Float = 0f
+        var last_measure_turbidity: Float = 0f
 
-            if(feeds!=null) {
-                
-                var idx_ph: Int = 0
-                var idx_temperature: Int = 0
-                var idx_salinity: Int = 0
-                var idx_dissolvedoxygen: Int = 0
-                var idx_tds: Int = 0
-                var idx_turbidity: Int = 0
+        var date_last_pH: LocalDateTime? = null
+        var date_last_temperature: LocalDateTime? = null
+        var date_last_salinity: LocalDateTime? = null
+        var date_last_dissolvedoxygen: LocalDateTime? = null
+        var date_last_tds: LocalDateTime? = null
+        var date_last_turbidity: LocalDateTime? = null
 
-                while (feeds.hasNext()) {
-                    val e = feeds.next()
+        var last_feed: Feed? = null
 
-                    if(e.field1!=null) {
-                        pH.add(idx_ph, FloatEntry(idx_ph.toFloat(), e.field1!!.toFloat()))
-                        last_measure_pH = e.field1!!.toFloat()
-                        date_last_pH = OffsetDateTime.parse(e.createdAt).toLocalDateTime()
-                        idx_ph++
-                    }
-                    if(e.field2!=null) {
-                        temperature.add(idx_temperature, FloatEntry(idx_temperature.toFloat(), e.field2!!.toFloat()))
-                        last_measure_temperature = e.field2!!.toFloat()
-                        date_last_temperature = OffsetDateTime.parse(e.createdAt).toLocalDateTime()
-                        idx_temperature++
-                    }
-                    if(e.field3!=null) {
-                        salinity.add(idx_salinity, FloatEntry(idx_salinity.toFloat(), e.field3!!.toFloat()))
-                        last_measure_salinity = e.field3!!.toFloat()
-                        date_last_salinity = OffsetDateTime.parse(e.createdAt).toLocalDateTime()
-                        idx_salinity++
-                    }
-                    if(e.field4!=null) {
-                        dissolvedoxygen.add(idx_dissolvedoxygen, FloatEntry(idx_dissolvedoxygen.toFloat(), e.field4!!.toFloat()))
-                        last_measure_dissolvedoxygen = e.field4!!.toFloat()
-                        date_last_dissolvedoxygen = OffsetDateTime.parse(e.createdAt).toLocalDateTime()
-                        idx_dissolvedoxygen++
-                    }
-                    if(e.field5!=null) {
-                        tds.add(idx_tds, FloatEntry(idx_tds.toFloat(), e.field5!!.toFloat()))
-                        last_measure_tds = e.field5!!.toFloat()
-                        date_last_tds = OffsetDateTime.parse(e.createdAt).toLocalDateTime()
-                        idx_tds++
-                    }
-                    if(e.field6!=null) {
-                        turbidity.add(idx_turbidity, FloatEntry(idx_turbidity.toFloat(), e.field6!!.toFloat()))
-                        last_measure_turbidity = e.field6!!.toFloat()
-                        date_last_turbidity = OffsetDateTime.parse(e.createdAt).toLocalDateTime()
-                        idx_turbidity++
-                    }
-                }
+
+
+        var idx_ph: Int = 0
+        var idx_temperature: Int = 0
+        var idx_salinity: Int = 0
+        var idx_dissolvedoxygen: Int = 0
+        var idx_tds: Int = 0
+        var idx_turbidity: Int = 0
+
+        while (feeds.hasNext()) {
+            val e = feeds.next()
+
+            last_feed = e
+
+            if(e.pH!=null) {
+                pH.add(idx_ph, FloatEntry(idx_ph.toFloat(), e.pH!!.toFloat()))
+                last_measure_pH = e.pH!!.toFloat()
+                date_last_pH = OffsetDateTime.parse(e.createdAt).toLocalDateTime()
+                idx_ph++
             }
-
-            /* NOTE: another way of showing graph
-            val phList: List<FloatEntry> = pH.toList()
-            root.findViewById<ChartView>(R.id.chart_view_pH)
-                .setModel(entryModelOf(phList))
-            */
-            val phList: List<FloatEntry> = pH.toList()
-            val phProducer = ChartEntryModelProducer(phList)
-            root.findViewById<ChartView>(R.id.chart_view_pH).entryProducer = phProducer
-            if (date_last_pH != null) {
-                root.findViewById<TextView>(R.id.date_last_measure_pH).text = date_last_pH.format(dateTimeFormatter).toString()
-                root.findViewById<TextView>(R.id.last_measure_pH).text = last_measure_pH.toString()
+            if(e.temperature!=null) {
+                temperature.add(idx_temperature, FloatEntry(idx_temperature.toFloat(), e.temperature!!.toFloat()))
+                last_measure_temperature = e.temperature!!.toFloat()
+                date_last_temperature = OffsetDateTime.parse(e.createdAt).toLocalDateTime()
+                idx_temperature++
             }
-
-            val temperatureList: List<FloatEntry> = temperature.toList()
-            val temperatureProducer = ChartEntryModelProducer(temperatureList)
-            root.findViewById<ChartView>(R.id.chart_view_temperature).entryProducer = temperatureProducer
-            if (date_last_temperature != null) {
-                root.findViewById<TextView>(R.id.date_last_measure_temperature).text = date_last_temperature.format(dateTimeFormatter).toString()
-                root.findViewById<TextView>(R.id.last_measure_temperature).text = last_measure_temperature.toString()
+            if(e.salinity!=null) {
+                salinity.add(idx_salinity, FloatEntry(idx_salinity.toFloat(), e.salinity!!.toFloat()))
+                last_measure_salinity = e.salinity!!.toFloat()
+                date_last_salinity = OffsetDateTime.parse(e.createdAt).toLocalDateTime()
+                idx_salinity++
             }
-
-            val salinityList: List<FloatEntry> = salinity.toList()
-            val salinityProducer = ChartEntryModelProducer(salinityList)
-            root.findViewById<ChartView>(R.id.chart_view_salinity).entryProducer = salinityProducer
-            if (date_last_salinity != null) {
-                root.findViewById<TextView>(R.id.date_last_measure_salinity).text = date_last_salinity.format(dateTimeFormatter).toString()
-                root.findViewById<TextView>(R.id.last_measure_salinity).text = last_measure_salinity.toString()
+            if(e.dissolvedOxygen!=null) {
+                dissolvedoxygen.add(idx_dissolvedoxygen, FloatEntry(idx_dissolvedoxygen.toFloat(), e.dissolvedOxygen!!.toFloat()))
+                last_measure_dissolvedoxygen = e.dissolvedOxygen!!.toFloat()
+                date_last_dissolvedoxygen = OffsetDateTime.parse(e.createdAt).toLocalDateTime()
+                idx_dissolvedoxygen++
             }
-
-            val dissolvedoxygenList: List<FloatEntry> = dissolvedoxygen.toList()
-            val dissolvedoxygenProducer = ChartEntryModelProducer(dissolvedoxygenList)
-            root.findViewById<ChartView>(R.id.chart_view_dissolvedoxygen).entryProducer = dissolvedoxygenProducer
-            if (date_last_dissolvedoxygen != null) {
-                root.findViewById<TextView>(R.id.date_last_measure_dissolvedoxygen).text = date_last_dissolvedoxygen.format(dateTimeFormatter).toString()
-                root.findViewById<TextView>(R.id.last_measure_dissolvedoxygen).text = last_measure_dissolvedoxygen.toString()
+            if(e.tds!=null) {
+                tds.add(idx_tds, FloatEntry(idx_tds.toFloat(), e.tds!!.toFloat()))
+                last_measure_tds = e.tds!!.toFloat()
+                date_last_tds = OffsetDateTime.parse(e.createdAt).toLocalDateTime()
+                idx_tds++
             }
-
-            val tdsList: List<FloatEntry> = tds.toList()
-            val tdsProducer = ChartEntryModelProducer(tdsList)
-            root.findViewById<ChartView>(R.id.chart_view_tds).entryProducer = tdsProducer
-            if (date_last_tds != null) {
-                root.findViewById<TextView>(R.id.date_last_measure_tds).text = date_last_tds.format(dateTimeFormatter).toString()
-                root.findViewById<TextView>(R.id.last_measure_tds).text = last_measure_tds.toString()
+            if(e.turbidity!=null) {
+                turbidity.add(idx_turbidity, FloatEntry(idx_turbidity.toFloat(), e.turbidity!!.toFloat()))
+                last_measure_turbidity = e.turbidity!!.toFloat()
+                date_last_turbidity = OffsetDateTime.parse(e.createdAt).toLocalDateTime()
+                idx_turbidity++
             }
+        }
 
-            val turbidityList: List<FloatEntry> = turbidity.toList()
-            val turbidityProducer = ChartEntryModelProducer(turbidityList)
-            root.findViewById<ChartView>(R.id.chart_view_turbidity).entryProducer = turbidityProducer
-            if (date_last_turbidity != null) {
-                root.findViewById<TextView>(R.id.date_last_measure_turbidity).text = date_last_turbidity.format(dateTimeFormatter).toString()
-                root.findViewById<TextView>(R.id.last_measure_turbidity).text = last_measure_turbidity.toString()
-            }
 
+        /* NOTE: another way of showing graph
+        val phList: List<FloatEntry> = pH.toList()
+        root.findViewById<ChartView>(R.id.chart_view_pH)
+            .setModel(entryModelOf(phList))
+        */
+        val phList: List<FloatEntry> = pH.toList()
+        val phProducer = ChartEntryModelProducer(phList)
+        root.findViewById<ChartView>(R.id.chart_view_pH).entryProducer = phProducer
+        if (date_last_pH != null) {
+            root.findViewById<TextView>(R.id.date_last_measure_pH).text = date_last_pH.format(dateTimeFormatter).toString()
+            root.findViewById<TextView>(R.id.last_measure_pH).text = last_measure_pH.toString()
+        }
+
+        val temperatureList: List<FloatEntry> = temperature.toList()
+        val temperatureProducer = ChartEntryModelProducer(temperatureList)
+        root.findViewById<ChartView>(R.id.chart_view_temperature).entryProducer = temperatureProducer
+        if (date_last_temperature != null) {
+            root.findViewById<TextView>(R.id.date_last_measure_temperature).text = date_last_temperature.format(dateTimeFormatter).toString()
+            root.findViewById<TextView>(R.id.last_measure_temperature).text = last_measure_temperature.toString()
+        }
+
+        val salinityList: List<FloatEntry> = salinity.toList()
+        val salinityProducer = ChartEntryModelProducer(salinityList)
+        root.findViewById<ChartView>(R.id.chart_view_salinity).entryProducer = salinityProducer
+        if (date_last_salinity != null) {
+            root.findViewById<TextView>(R.id.date_last_measure_salinity).text = date_last_salinity.format(dateTimeFormatter).toString()
+            root.findViewById<TextView>(R.id.last_measure_salinity).text = last_measure_salinity.toString()
+        }
+
+        val dissolvedoxygenList: List<FloatEntry> = dissolvedoxygen.toList()
+        val dissolvedoxygenProducer = ChartEntryModelProducer(dissolvedoxygenList)
+        root.findViewById<ChartView>(R.id.chart_view_dissolvedoxygen).entryProducer = dissolvedoxygenProducer
+        if (date_last_dissolvedoxygen != null) {
+            root.findViewById<TextView>(R.id.date_last_measure_dissolvedoxygen).text = date_last_dissolvedoxygen.format(dateTimeFormatter).toString()
+            root.findViewById<TextView>(R.id.last_measure_dissolvedoxygen).text = last_measure_dissolvedoxygen.toString()
+        }
+
+        val tdsList: List<FloatEntry> = tds.toList()
+        val tdsProducer = ChartEntryModelProducer(tdsList)
+        root.findViewById<ChartView>(R.id.chart_view_tds).entryProducer = tdsProducer
+        if (date_last_tds != null) {
+            root.findViewById<TextView>(R.id.date_last_measure_tds).text = date_last_tds.format(dateTimeFormatter).toString()
+            root.findViewById<TextView>(R.id.last_measure_tds).text = last_measure_tds.toString()
+        }
+
+        val turbidityList: List<FloatEntry> = turbidity.toList()
+        val turbidityProducer = ChartEntryModelProducer(turbidityList)
+        root.findViewById<ChartView>(R.id.chart_view_turbidity).entryProducer = turbidityProducer
+        if (date_last_turbidity != null) {
+            root.findViewById<TextView>(R.id.date_last_measure_turbidity).text = date_last_turbidity.format(dateTimeFormatter).toString()
+            root.findViewById<TextView>(R.id.last_measure_turbidity).text = last_measure_turbidity.toString()
+        }
+
+        if(last_feed?.let { SquidUtils.isWaterQualityGood(it) } == true) {
+            root.findViewById<TextView>(R.id.last_measure_status).text =
+                getString(R.string.status_very_good)
         }else{
-            Log.i(TAG, "no displayChart")
+            root.findViewById<TextView>(R.id.last_measure_status).text =
+                getString(R.string.status_unusual)
         }
     }
 

@@ -8,12 +8,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.patrykandpatrick.vico.core.entry.FloatEntry
 import app.sthenoteuthis.mobile.data.model.ThingSpeak
-import app.sthenoteuthis.mobile.data.ThingSpeakApiClient
 import app.sthenoteuthis.mobile.data.ThingSpeakRepository
 import app.sthenoteuthis.mobile.data.model.WaterQualityData
 import app.sthenoteuthis.mobile.data.model.WaterQualityTimeframe
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Call
@@ -304,33 +302,33 @@ class ThingSpeakViewModel(private val repository: ThingSpeakRepository) : ViewMo
 
                 val item_date = Instant.parse(e.createdAt)
 
-                if(e.field1!=null) {
-                    pH.add(idx_ph, FloatEntry(idx_ph.toFloat(), e.field1!!.toFloat()))
+                if(e.pH!=null) {
+                    pH.add(idx_ph, FloatEntry(idx_ph.toFloat(), e.pH!!.toFloat()))
                     pH_date.add(item_date)
                     idx_ph++
                 }
-                if(e.field2!=null) {
-                    temperature.add(idx_temperature, FloatEntry(idx_temperature.toFloat(), e.field2!!.toFloat()))
+                if(e.temperature!=null) {
+                    temperature.add(idx_temperature, FloatEntry(idx_temperature.toFloat(), e.temperature!!.toFloat()))
                     temperature_date.add(item_date)
                     idx_temperature++
                 }
-                if(e.field3!=null) {
-                    salinity.add(idx_salinity, FloatEntry(idx_salinity.toFloat(), e.field3!!.toFloat()))
+                if(e.salinity!=null) {
+                    salinity.add(idx_salinity, FloatEntry(idx_salinity.toFloat(), e.salinity!!.toFloat()))
                     salinity_date.add(item_date)
                     idx_salinity++
                 }
-                if(e.field4!=null) {
-                    dissolvedoxygen.add(idx_dissolvedoxygen, FloatEntry(idx_dissolvedoxygen.toFloat(), e.field4!!.toFloat()))
+                if(e.dissolvedOxygen!=null) {
+                    dissolvedoxygen.add(idx_dissolvedoxygen, FloatEntry(idx_dissolvedoxygen.toFloat(), e.dissolvedOxygen!!.toFloat()))
                     dissolvedoxygen_date.add(item_date)
                     idx_dissolvedoxygen++
                 }
-                if(e.field5!=null) {
-                    tds.add(idx_tds, FloatEntry(idx_tds.toFloat(), e.field5!!.toFloat()))
+                if(e.tds!=null) {
+                    tds.add(idx_tds, FloatEntry(idx_tds.toFloat(), e.tds!!.toFloat()))
                     tds_date.add(item_date)
                     idx_tds++
                 }
-                if(e.field6!=null) {
-                    turbidity.add(idx_turbidity, FloatEntry(idx_turbidity.toFloat(), e.field6!!.toFloat()))
+                if(e.turbidity!=null) {
+                    turbidity.add(idx_turbidity, FloatEntry(idx_turbidity.toFloat(), e.turbidity!!.toFloat()))
                     turbidity_date.add(item_date)
                     idx_turbidity++
                 }

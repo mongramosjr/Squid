@@ -1,6 +1,5 @@
 package app.sthenoteuthis.mobile.data.model
 
-import android.util.Log
 import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Delete
@@ -15,7 +14,6 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import kotlinx.coroutines.flow.Flow
 import java.time.Instant
-import java.util.Date
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 
@@ -96,27 +94,27 @@ data class Feed(
 
     @SerializedName("field1")
     @Expose
-    var field1: Float? = null
+    var pH: Float? = null
 
     @SerializedName("field2")
     @Expose
-    var field2: Float? = null
+    var temperature: Float? = null
 
     @SerializedName("field3")
     @Expose
-    var field3: Float? = null
+    var salinity: Float? = null
 
     @SerializedName("field4")
     @Expose
-    var field4: Float? = null
+    var dissolvedOxygen: Float? = null
 
     @SerializedName("field5")
     @Expose
-    var field5: Float? = null
+    var tds: Float? = null
 
     @SerializedName("field6")
     @Expose
-    var field6: Float? = null
+    var turbidity: Float? = null
 
     @SerializedName("field7")
     @Expose
@@ -143,12 +141,12 @@ data class ThingSpeak(
 data class FeedEntity(
     @PrimaryKey @ColumnInfo(name = "entry_id") val entryId: String,
     @ColumnInfo(name = "created_at") val createdAt: Instant,
-    @ColumnInfo(name = "field1") val pH: Float? = null,
-    @ColumnInfo(name = "field2") val temperature: Float? = null,
-    @ColumnInfo(name = "field3") val salinity: Float? = null,
-    @ColumnInfo(name = "field4") val dissolvedOxygen: Float? = null,
-    @ColumnInfo(name = "field5") val tds: Float? = null,
-    @ColumnInfo(name = "field6") val turbidity: Float? = null
+    @ColumnInfo(name = "ph") val pH: Float? = null,
+    @ColumnInfo(name = "temperature") val temperature: Float? = null,
+    @ColumnInfo(name = "salinity") val salinity: Float? = null,
+    @ColumnInfo(name = "dissolved_oxygen") val dissolvedOxygen: Float? = null,
+    @ColumnInfo(name = "tds") val tds: Float? = null,
+    @ColumnInfo(name = "turbidity") val turbidity: Float? = null
 )
 
 @Dao
@@ -177,18 +175,23 @@ interface FeedEntityDao {
 
 fun Feed.toFeedEntity(): FeedEntity {
     return FeedEntity(this.entryId.toString(), Instant.parse(this.createdAt),
-        this.field1, this.field2, this.field3, this.field4, this.field5, this.field6)
+        this.pH, this.temperature, this.salinity, this.dissolvedOxygen, this.tds, this.turbidity)
+}
+
+fun Feed.isGood(): Boolean{
+    //TODO: check the status
+    return true
 }
 
 fun FeedEntity.toFeed(): Feed {
     val feed = Feed(this.entryId.toInt())
     feed.createdAt = this.createdAt.toString()
-    feed.field1 = this.pH
-    feed.field2 = this.temperature
-    feed.field3 = this.salinity
-    feed.field4 = this.dissolvedOxygen
-    feed.field5 = this.tds
-    feed.field6 = this.turbidity
+    feed.pH = this.pH
+    feed.temperature = this.temperature
+    feed.salinity = this.salinity
+    feed.dissolvedOxygen = this.dissolvedOxygen
+    feed.tds = this.tds
+    feed.turbidity = this.turbidity
 
     return feed
 }
