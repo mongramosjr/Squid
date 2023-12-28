@@ -149,6 +149,10 @@ class MainActivity : AppCompatActivity() {
             Log.d("HAHAHAHAMONGCOUNT", thingspeakViewModel.countFeedsLocal().toString())
         }
 
+        CoroutineScope(Dispatchers.IO).launch {
+            Log.d("HAHAHAHAMONGCOUNTUSER", database.loggedInAccountDao().size().toString())
+        }
+
     }
 
     public override fun onStart() {

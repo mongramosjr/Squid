@@ -25,7 +25,7 @@ abstract class SquidDatabase: RoomDatabase()  {
 
         fun getDatabase(
             context: Context,
-            scope: CoroutineScope
+            scope: CoroutineScope? = null
         ): SquidDatabase {
             // if the INSTANCE is not null, then return it,
             // if it is, then create the database

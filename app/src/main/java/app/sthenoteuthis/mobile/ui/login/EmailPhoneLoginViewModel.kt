@@ -29,7 +29,7 @@ class EmailPhoneLoginViewModel(private val loginRepository: EmailPhoneLoginRepos
 
         if (result is Result.Success) {
             _loginResult.value =
-                EmailPhoneResult(success = LoggedInUserView(displayName = result.data.displayName))
+                EmailPhoneResult(success = LoggedInUserView(displayName = result.data.displayName!!))
         } else {
             _loginResult.value = EmailPhoneResult(error = R.string.login_failed)
         }
@@ -41,7 +41,7 @@ class EmailPhoneLoginViewModel(private val loginRepository: EmailPhoneLoginRepos
 
         if (result is Result.Success) {
             _codeResult.value =
-                CodeResult(success = LoggedInUserView(displayName = result.data.displayName))
+                CodeResult(success = LoggedInUserView(displayName = result.data.displayName!!))
         } else {
             _codeResult.value = CodeResult(error = R.string.login_failed)
         }

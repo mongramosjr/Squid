@@ -8,7 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import app.sthenoteuthis.mobile.R
+import app.sthenoteuthis.mobile.data.SquidDatabase
+import app.sthenoteuthis.mobile.data.model.LoggedInAccountDao
+import app.sthenoteuthis.mobile.data.model.toLoggedInAccount
 import app.sthenoteuthis.mobile.databinding.FragmentMyselfBinding
 import app.sthenoteuthis.mobile.ui.ProgressFragment
 import app.sthenoteuthis.mobile.ui.viewmodel.FirebaseViewModel
@@ -17,6 +21,9 @@ import com.firebase.ui.auth.BuildConfig
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.google.firebase.auth.FirebaseUser
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MyselfFragment : ProgressFragment() {
 
@@ -28,11 +35,15 @@ class MyselfFragment : ProgressFragment() {
 
     private lateinit var firebaseViewModel: FirebaseViewModel
 
+    private lateinit var loggedInAccountDao: LoggedInAccountDao
+
     // Build FirebaseUI sign in intent. For documentation on this operation and all
     // possible customization see: https://github.com/firebase/firebaseui-android
     private val signInLauncher = registerForActivityResult(
         FirebaseAuthUIActivityResultContract(),
     ) { result -> this.onSignInResult(result) }
+
+    private var beenHere: Boolean = false
 
     companion object {
         private const val TAG = "SquidMultipleLogin"
@@ -42,6 +53,11 @@ class MyselfFragment : ProgressFragment() {
         super.onCreate(savedInstanceState)
         Log.w(TAG, "onCreate")
         firebaseViewModel = ViewModelProvider(requireActivity())[FirebaseViewModel::class.java]
+
+        val database = SquidDatabase.getDatabase(requireContext())
+        loggedInAccountDao = database.loggedInAccountDao()
+
+        hasBeenHere()
 
     }
 
@@ -89,6 +105,8 @@ class MyselfFragment : ProgressFragment() {
         if (result.resultCode == Activity.RESULT_OK) {
             // Sign in succeeded
             updateUI(firebaseViewModel.auth?.currentUser)
+            // Store to the local userdatabase
+            firebaseViewModel.auth?.currentUser?.let { saveNewLogin(it) }
         } else {
             // Sign in failed
             Toast.makeText(context, "Sign In Failed", Toast.LENGTH_SHORT).show()
@@ -122,8 +140,12 @@ class MyselfFragment : ProgressFragment() {
             binding.btnToLogin.visibility = View.GONE
             binding.btnToLogout.visibility = View.VISIBLE
         } else {
-            // Signed out
-            binding.textMyself.text = getString(R.string.account_title_away)
+            if(beenHere) { // Signed out
+                binding.textMyself.text = getString(R.string.account_title_away)
+            }else{ // no account has been login
+                binding.textMyself.text = getString(R.string.account_title_new)
+            }
+
             binding.squidAccountId.text = null
 
             binding.btnToLogin.visibility = View.VISIBLE
@@ -140,11 +162,9 @@ class MyselfFragment : ProgressFragment() {
         firebaseViewModel.auth?.currentUser!!.reload().addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 updateUI(firebaseViewModel.auth?.currentUser!!)
-                //Toast.makeText(context, "Reload successful!", Toast.LENGTH_SHORT).show()
             } else {
                 Log.e(TAG, "reload", task.exception)
                 updateUI(null)
-                //Toast.makeText(context, "Failed to reload user.", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -153,4 +173,22 @@ class MyselfFragment : ProgressFragment() {
         binding.btnToLogin.visibility = View.GONE
         binding.btnToLogout.visibility = View.GONE
     }
+
+    // Example usage of the userDao to perform database operations within the Fragment
+    private fun hasBeenHere() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val count = loggedInAccountDao.size()
+            if(count>0){
+                beenHere = true
+            }
+        }
+    }
+
+    private fun saveNewLogin(firebaseUser: FirebaseUser){
+        lifecycleScope.launch {
+            val loggedInAccount = firebaseUser.toLoggedInAccount()
+            loggedInAccountDao.insert(loggedInAccount)
+        }
+    }
+
 }

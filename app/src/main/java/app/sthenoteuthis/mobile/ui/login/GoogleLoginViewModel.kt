@@ -11,6 +11,7 @@ import com.google.android.gms.tasks.Task
 import app.sthenoteuthis.mobile.R
 import app.sthenoteuthis.mobile.data.model.LoggedInUser
 import android.util.Log
+import java.util.UUID
 
 
 class GoogleLoginViewModel: ViewModel() {
@@ -28,10 +29,13 @@ class GoogleLoginViewModel: ViewModel() {
             val googleUserName = account?.displayName // Get user's display name
             val googleEmail = account?.email // Get user's email
 
-            val googleUser = LoggedInUser(googleEmail!!, googleUserName!!, googleToken!!)
+            val googleUser = LoggedInUser(googleToken!!)
+            val fakeUser = LoggedInUser(UUID.randomUUID().toString())
+            googleUser.displayName = googleUserName
+            googleUser.email = googleEmail
 
             _googleResult.value =
-                GoogleResult(success = LoggedInUserView(displayName = googleUser.displayName))
+                GoogleResult(success = LoggedInUserView(displayName = googleUser.displayName!!))
 
             // Perform your actions after successful Google Sign-In
             // Example: You might want to send the Google token to your server for authentication
