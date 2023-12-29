@@ -52,11 +52,26 @@ class ThingSpeakRepository(
         return feedEntityDao.size(dateSinceString, dateUntilString)
     }
 
-    fun findByDateRange(dateSince: Instant, dateUntil: Instant): Flow<List<FeedEntity>> {
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
+    suspend fun findByDateRange(dateSince: Instant, dateUntil: Instant): List<FeedEntity> {
         val dateSinceString = InstantStringConverter.fromInstant(dateSince).toString()
         val dateUntilString = InstantStringConverter.fromInstant(dateUntil).toString()
         return feedEntityDao.findByDateRange(dateSinceString, dateUntilString)
     }
+
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
+    suspend fun findByDateRange(dateSince: String, dateUntil: String): List<FeedEntity> {
+        return feedEntityDao.findByDateRange(dateSince, dateUntil)
+    }
+
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
+    suspend fun findLastFeeds(): List<FeedEntity> {
+        return feedEntityDao.findMostRecent()
+    }
+
 
     fun fetchLastFeeds(entries: Int = 288): Call<ThingSpeak> {
         return thingSpeakApiRepository.getLast(entries)

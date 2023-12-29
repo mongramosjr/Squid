@@ -1,13 +1,25 @@
 package app.sthenoteuthis.mobile.data.model
 
-import app.sthenoteuthis.mobile.data.model.ThingSpeak
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
 
+const val ThingSpeakDailyResult: Int = 288
+const val ThingSpeakWeeklyResult: Int = 504
+const val ThingSpeakMonthlylyResult: Int = 720
+const val ThingSpeakYearlyResult: Int = 876
+const val ThingSpeakMaximumResult: Int = 8000
+
+const val ThingSpeakDailyAverage: Int = 0
+const val ThingSpeakWeeklyAverage: Int = 4
+const val ThingSpeakMonthlyAverage: Int = 12
+const val ThingSpeakYearlyAverage: Int = 120
+
+
+
 interface ThingSpeakService {
     @GET("/channels/2210889/feeds.json")
-    fun getLast(@Query("results") entries: Int = 288): Call<ThingSpeak>
+    fun getLast(@Query("results") entries: Int = ThingSpeakDailyResult): Call<ThingSpeak>
 
     
     /*
@@ -28,5 +40,5 @@ interface ThingSpeakService {
     fun getData(@Query("start") start: String,
                 @Query("end") end: String,
                 @Query("average") ave: Int = 0,
-                @Query("results") entries: Int = 8000): Call<ThingSpeak>
+                @Query("results") entries: Int = ThingSpeakMaximumResult): Call<ThingSpeak>
 }

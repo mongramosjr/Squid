@@ -113,7 +113,7 @@ class SalinityFragment : Fragment() {
             // getWaterQuality(selected_date, timeframe)
             // #1. query ThingSpeak
             // #2. send changes in date
-            thingspeakViewModel.getWaterQuality(Instant.ofEpochMilli(it), viewPager.currentItem, true)
+            thingspeakViewModel.fetchWaterQuality(Instant.ofEpochMilli(it), viewPager.currentItem, true)
             timeframeViewModel.selectedTimeframesDate(timeframesDate)
         }
 

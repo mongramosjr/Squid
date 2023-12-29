@@ -6,11 +6,20 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import app.sthenoteuthis.mobile.SquidUtils
 import com.patrykandpatrick.vico.core.entry.FloatEntry
 import app.sthenoteuthis.mobile.data.model.ThingSpeak
 import app.sthenoteuthis.mobile.data.ThingSpeakRepository
+import app.sthenoteuthis.mobile.data.model.Feed
+import app.sthenoteuthis.mobile.data.model.ThingSpeakDailyAverage
+import app.sthenoteuthis.mobile.data.model.ThingSpeakDailyResult
+import app.sthenoteuthis.mobile.data.model.ThingSpeakMonthlyAverage
+import app.sthenoteuthis.mobile.data.model.ThingSpeakWeeklyAverage
+import app.sthenoteuthis.mobile.data.model.ThingSpeakYearlyAverage
 import app.sthenoteuthis.mobile.data.model.WaterQualityData
 import app.sthenoteuthis.mobile.data.model.WaterQualityTimeframe
+import app.sthenoteuthis.mobile.data.model.toFeed
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -40,9 +49,9 @@ const val TURBIDITY: String = "Turbidity"
 
 class ThingSpeakViewModel(private val repository: ThingSpeakRepository) : ViewModel() {
 
-    // Response body from thingspeak
-    private val _thingSpeakData = MutableLiveData<ThingSpeak?>()
-    val thingSpeakData: LiveData<ThingSpeak?> get() = _thingSpeakData
+    // Response from thingspeak
+    private val _thingSpeakData = MutableLiveData<List<Feed>>()
+    val thingSpeakData: LiveData<List<Feed>> get() = _thingSpeakData
 
     private val _lastDateEntry = MutableLiveData<Instant>()
     val lastDateEntry: LiveData<Instant> = _lastDateEntry
@@ -50,7 +59,10 @@ class ThingSpeakViewModel(private val repository: ThingSpeakRepository) : ViewMo
     private val _lastDateEntryCount = MutableLiveData<Int>()
     val lastDateEntryCount: LiveData<Int> = _lastDateEntryCount
 
-    // List of above data based on date keys
+    // List of water quality feeds from remote
+    // based on the hierarchical structure of water parameters, dates and timeframe
+    // date-timeframe is one-to-many relationship
+    // parameters-date is one-to-many relationship
     private val _waterQualityData =
         MutableLiveData<WaterQualityData>()
     val waterQualityData: LiveData<WaterQualityData> get() = _waterQualityData
@@ -63,7 +75,8 @@ class ThingSpeakViewModel(private val repository: ThingSpeakRepository) : ViewMo
 
     private var errorMessage: String = ""
 
-    // change to the selected date
+    // store all that the dates queried
+    // if date is already in the list, do not fetch feeds from remote
     private val _isDone = MutableLiveData<RequestDone>()
     val isDone: LiveData<RequestDone> get() = _isDone
 
@@ -78,7 +91,7 @@ class ThingSpeakViewModel(private val repository: ThingSpeakRepository) : ViewMo
         return repository.size()
     }
 
-    fun getLastWaterQuality(entries: Int =288){
+    fun fetchLastWaterQuality(entries: Int = ThingSpeakDailyResult){
 
         _isLoading.value = true
         _isError.value = false
@@ -108,9 +121,15 @@ class ThingSpeakViewModel(private val repository: ThingSpeakRepository) : ViewMo
                         return
                     }
                     _isLoading.value = false
-                    _thingSpeakData.value = responseBody
-                    _lastDateEntry.value = dateLastEntry(responseBody)
-                    _lastDateEntryCount.value = 1 // NOTE: reset to always
+
+                    if (responseBody.feeds != null) {
+                        val feeds: List<Feed> = responseBody.feeds
+                        // broadcast these three variables
+                        _thingSpeakData.value = feeds
+                        _lastDateEntry.value = pickDateLastEntry(feeds)
+                        _lastDateEntryCount.value = 1 // NOTE: reset to always
+                    }
+
                     // TODO: store responseBody to local database FeedsEntity
                     Log.d("HHHHHHHH", "getLastWaterQuality: Processing Response from ThingSpeak --> " + this.toString())
                 } else {
@@ -130,17 +149,17 @@ class ThingSpeakViewModel(private val repository: ThingSpeakRepository) : ViewMo
 
 
     //@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    private fun getWaterQualityAt(selectedDate: Instant = Instant.now(),
-                        timeframe: Int = 0){
+    private fun fetchWaterQualityAt(selectedDate: Instant = Instant.now(),
+                                    timeframe: Int = 0){
 
-        Log.d("HHHHHHHH", "getWaterQualityAt: Processing.. " + this.toString())
+        Log.d("HHHHHHHH", "fetchWaterQualityAt: Processing.. $this")
 
 
         _isLoading.value = true
         _isError.value = false
 
         //compute the start and end
-        val (start, end) = computeTimeframe(selectedDate, timeframe)
+        val (start, end) = SquidUtils.computeTimeframe(selectedDate, timeframe)
 
         var average: Int = 0
         //daily average = 0 = 288 results
@@ -148,17 +167,16 @@ class ThingSpeakViewModel(private val repository: ThingSpeakRepository) : ViewMo
         //monthly average = 12 = 720 results
         //yearly average = 120 = 876 results
         average = if(timeframe== YEARLY_TIMEFRAME) {
-            120
+            ThingSpeakYearlyAverage
         } else if(timeframe== MONTHLY_TIMEFRAME){
-            12
+            ThingSpeakMonthlyAverage
         }else if(timeframe== WEEKLY_TIMEFRAME){
-            4
+            ThingSpeakWeeklyAverage
         }else{
-            0
+            ThingSpeakDailyAverage
         }
 
-        var check_dates: MutableList<Pair<Int, LocalDate>> =
-            mutableListOf<Pair<Int,LocalDate>>().apply{}
+        var check_dates: MutableList<Pair<Int, LocalDate>> = mutableListOf<Pair<Int,LocalDate>>().apply{}
 
         if(_isDone.isInitialized) {
             check_dates = _isDone.value!!.dates
@@ -188,29 +206,27 @@ class ThingSpeakViewModel(private val repository: ThingSpeakRepository) : ViewMo
                     }
                     // save to the viewmodel
                     Log.i("ViewModelHHHHHHHH", "getWaterQualityAt: Size of feeds: " + responseBody.feeds?.size.toString())
-                    rearrangeData(responseBody, selectedDate, timeframe)
+                    if (responseBody.feeds != null) {
+                        val feeds: List<Feed> = responseBody.feeds
 
-                    // store responseBody to local database FeedsEntity
-                    viewModelScope.launch {
-                        withContext(Dispatchers.IO) {
-                            try {
-                                repository.insertFeeds(responseBody)
-                            } catch (e: Exception) {
-                                Log.e("HHHHHHHHMONG", e.toString() )
+                        rearrangeData(feeds, selectedDate, timeframe)
+                        setRequestDone(selectedDate, timeframe)
+
+                    }
+
+                    if (responseBody.feeds != null) {
+                        // store responseBody to local database FeedsEntity
+                        viewModelScope.launch {
+                            withContext(Dispatchers.IO) {
+                                try {
+                                    repository.insertFeeds(responseBody)
+                                } catch (e: Exception) {
+                                    Log.e("HHHHHHHHMONG", e.toString() )
+                                }
                             }
                         }
                     }
-                    Log.i("ViewModelHHHHHHHH", "getWaterQualityAt: Processing Response from ThingSpeak")
-                    _isLoading.value = false
-                    // NOTE: always do this at the end of response to ensure
-                    // right timing of sending updates to all receiver
-                    var dates: MutableList<Pair<Int,LocalDate>> = mutableListOf<Pair<Int, LocalDate>>().apply{}
 
-                    if(_isDone.isInitialized) {
-                        dates = _isDone.value!!.dates
-                    }
-                    dates.add(timeframe to instantToLocalDate(selectedDate))
-                    _isDone.value = RequestDone(Instant.now(), selectedDate, dates)
                 } else {
                     // Handle error
                     print("${response.errorBody()} ")
@@ -226,19 +242,73 @@ class ThingSpeakViewModel(private val repository: ThingSpeakRepository) : ViewMo
         })
     }
 
-    fun getWaterQuality(selectedDate: Instant = Instant.now(),
-                        timeframe: Int = DAILY_TIMEFRAME, isAll: Boolean = false)
+
+    fun fetchWaterQuality(selectedDate: Instant = Instant.now(),
+                          timeframe: Int = DAILY_TIMEFRAME, isAll: Boolean = false)
     {
         if(isAll){
-            getWaterQualityAt(selectedDate, DAILY_TIMEFRAME)
-            getWaterQualityAt(selectedDate, WEEKLY_TIMEFRAME)
-            getWaterQualityAt(selectedDate, MONTHLY_TIMEFRAME)
-            getWaterQualityAt(selectedDate, YEARLY_TIMEFRAME)
+            fetchWaterQualityAt(selectedDate, DAILY_TIMEFRAME)
+            fetchWaterQualityAt(selectedDate, WEEKLY_TIMEFRAME)
+            fetchWaterQualityAt(selectedDate, MONTHLY_TIMEFRAME)
+            fetchWaterQualityAt(selectedDate, YEARLY_TIMEFRAME)
         }else{
-            getWaterQualityAt(selectedDate, timeframe)
+            fetchWaterQualityAt(selectedDate, timeframe)
         }
     }
 
+    fun queryLastFeeds(){
+        CoroutineScope(Dispatchers.IO).launch {
+            Log.d("HAHAHAMONG", "queryRecentFeeds")
+            val recentfeedentities = repository.findLastFeeds()
+            val feedentities = recentfeedentities.listIterator()
+            val feeds: MutableList<Feed> = mutableListOf()
+            Log.d("HAHAHAMONGFeeds", recentfeedentities.size.toString())
+            while (feedentities.hasNext()) {
+                val e = feedentities.next()
+                feeds.add(e.toFeed())
+            }
+
+            val lastfeedentity = recentfeedentities.last()
+            val dateLastEntry = lastfeedentity.createdAt
+
+            setThingSpeakData(feeds.toList())
+            setLastDateEntry(dateLastEntry)
+            setLastDateEntryCount(1)
+        }
+    }
+
+    fun queryFeedsAt(selectedDate: Instant = Instant.now(), timeframe: Int = DAILY_TIMEFRAME){
+        CoroutineScope(Dispatchers.IO).launch {
+            Log.d("HAHAHAMONGqueryFeedsAt", "queryFeedsAt")
+            val (start, end) = SquidUtils.computeTimeframe(selectedDate, timeframe)
+
+            val recentfeedentities = repository.findByDateRange(start, end)
+            val feedentities = recentfeedentities.listIterator()
+            val feeds: MutableList<Feed> = mutableListOf()
+            val size = recentfeedentities.size
+            Log.d("HAHAHAMONGqueryFeedsAt", "queryFeedsAt $size $start to $end")
+            while (feedentities.hasNext()) {
+                val e = feedentities.next()
+                feeds.add(e.toFeed())
+            }
+            // save to mutablelivedata
+            rearrangeData(feeds.toList(), selectedDate, timeframe)
+            setRequestDone(selectedDate, timeframe)
+        }
+    }
+
+    fun queryFeeds(selectedDate: Instant = Instant.now(),
+                        timeframe: Int = DAILY_TIMEFRAME, isAll: Boolean = false)
+    {
+        if(isAll){
+            queryFeedsAt(selectedDate, DAILY_TIMEFRAME)
+            queryFeedsAt(selectedDate, WEEKLY_TIMEFRAME)
+            queryFeedsAt(selectedDate, MONTHLY_TIMEFRAME)
+            queryFeedsAt(selectedDate, YEARLY_TIMEFRAME)
+        }else{
+            queryFeedsAt(selectedDate, timeframe)
+        }
+    }
 
     private fun onError(inputMessage: String?) {
 
@@ -252,9 +322,9 @@ class ThingSpeakViewModel(private val repository: ThingSpeakRepository) : ViewMo
         _isLoading.value = false
     }
 
-    fun rearrangeData(responseBody: ThingSpeak,
+    fun rearrangeData(responseBody: List<Feed>,
                       selectedDate: Instant = Instant.now(),
-                      timeframe: Int = 0){
+                      timeframe: Int = DAILY_TIMEFRAME){
 
         //val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         //2023-04-06T00:13:00Z
@@ -272,7 +342,7 @@ class ThingSpeakViewModel(private val repository: ThingSpeakRepository) : ViewMo
         var tdsData: MutableMap<LocalDate, WaterQualityTimeframe>? = _waterQualityData.value?.tds
         var turbidityData: MutableMap<LocalDate, WaterQualityTimeframe>? = _waterQualityData.value?.turbidity
 
-        val feeds = responseBody.feeds?.listIterator()
+        val feeds = responseBody.listIterator()
 
         var pH = mutableListOf <FloatEntry>().apply {  }
         var temperature = mutableListOf <FloatEntry>().apply {  }
@@ -700,15 +770,13 @@ class ThingSpeakViewModel(private val repository: ThingSpeakRepository) : ViewMo
         return Pair(start, end)
     }
 
-    private fun dateLastEntry(lastEntry: ThingSpeak): Instant{
+    private fun pickDateLastEntry(feeds: List<Feed>): Instant{
         var dateLastEntry: Instant
-        val size = lastEntry.feeds?.size
+        val size = feeds.size
         dateLastEntry = Instant.now()
-        if (size != null) {
-            if(size > 0){
-                val createdAt = lastEntry.feeds.last().createdAt
-                dateLastEntry = OffsetDateTime.parse(createdAt).toInstant()
-            }
+        if(size > 0){
+            val createdAt = feeds.last().createdAt
+            dateLastEntry = OffsetDateTime.parse(createdAt).toInstant()
         }
         return dateLastEntry
     }
@@ -717,10 +785,33 @@ class ThingSpeakViewModel(private val repository: ThingSpeakRepository) : ViewMo
         return _lastDateEntry.value
     }
 
+    fun setLastDateEntry(date: Instant){
+        _lastDateEntry.postValue(date)
+    }
+
     fun setLastDateEntryCount(count: Int = 0){
         var cnt: Int = 0
         cnt = _lastDateEntryCount.value!!
         _lastDateEntryCount.postValue(count  + cnt)
+    }
+
+    fun setThingSpeakData(feeds: List<Feed>){
+        _thingSpeakData.postValue(feeds)
+    }
+
+    fun setRequestDone(selectedDate: Instant = Instant.now(),
+                       timeframe: Int = DAILY_TIMEFRAME){
+        Log.i("ViewModelHHHHHHHH", "getWaterQualityAt: Processing Response from ThingSpeak")
+        _isLoading.postValue(false)
+        // NOTE: always do this at the end of response to ensure
+        // right timing of sending updates to all receiver
+        var dates: MutableList<Pair<Int,LocalDate>> = mutableListOf<Pair<Int, LocalDate>>().apply{}
+
+        if(_isDone.isInitialized) {
+            dates = _isDone.value!!.dates
+        }
+        dates.add(timeframe to instantToLocalDate(selectedDate))
+        _isDone.postValue(RequestDone(Instant.now(), selectedDate, dates))
     }
 
 }

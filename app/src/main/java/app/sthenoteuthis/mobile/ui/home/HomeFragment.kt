@@ -18,7 +18,8 @@ import com.patrykandpatrick.vico.views.chart.ChartView
 import app.sthenoteuthis.mobile.data.model.Feed
 import app.sthenoteuthis.mobile.R
 import app.sthenoteuthis.mobile.SquidUtils
-import app.sthenoteuthis.mobile.data.model.ThingSpeak
+import app.sthenoteuthis.mobile.data.SquidDatabase
+import app.sthenoteuthis.mobile.data.model.FeedEntityDao
 import app.sthenoteuthis.mobile.databinding.FragmentHomeBinding
 import app.sthenoteuthis.mobile.ui.viewmodel.DAILY_TIMEFRAME
 import app.sthenoteuthis.mobile.ui.viewmodel.ThingSpeakViewModel
@@ -39,8 +40,16 @@ class HomeFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
+    // remote database
     lateinit var thingspeakViewModel: ThingSpeakViewModel
+
+    // local database
+    private var feeds: MutableList<Feed> = mutableListOf()
+    private lateinit var feedEntityDao: FeedEntityDao
+
+
     lateinit var timeframeViewModel: TimeframeViewModel
+
 
     companion object {
         private const val TAG = "HomeTab"
@@ -53,11 +62,18 @@ class HomeFragment : Fragment() {
         thingspeakViewModel = ViewModelProvider(requireActivity())[ThingSpeakViewModel::class.java]
         Log.d(TAG, thingspeakViewModel.toString() + " --> " + this.toString())
 
-        // Call the last entries in ThingSpeak
-        if(!thingspeakViewModel.lastDateEntry.isInitialized) {
-            Log.d(TAG, "getLastWaterQuality --> " + this.toString())
-            thingspeakViewModel.getLastWaterQuality()
+        val database = SquidDatabase.getDatabase(requireContext())
+        feedEntityDao = database.feedEntityDao()
+
+        // use the feeds stored locally, but first check the network
+        if(SquidUtils.isDeviceOffline(requireContext())){
+            queryRecentFeeds()
+        }else{
+            // Call the last entries in ThingSpeak
+            fetchRecentWaterQuality()
         }
+
+
     }
 
 
@@ -71,10 +87,6 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val view: View = binding.root
         //val view = inflater.inflate(R.layout.fragment_home, container, false)
-
-        //TODO: Do I need to rerun?
-        // Call the ThingSpeak API
-        //thingspeakViewModel.getLastWaterQuality()
 
         // click to open the detailed graph of each parameters
         // (using findById instead of databinding)
@@ -100,10 +112,8 @@ class HomeFragment : Fragment() {
             Navigation.findNavController(view).navigate(R.id.action_homeFragment_to_turbidityFragment)
         }
 
-        subscribe(view)
-
-        // Call the last entries in ThingSpeak
-        //thingspeakViewModel.getLastWaterQuality()
+        //fetch feeds remotely and display chart asyncronously
+        fetchFeedsDisplayChart(view)
 
         return view
     }
@@ -112,7 +122,7 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.aiQuery.setOnClickListener{
-            // open dialog box with ChatGPT seach query with default interpretation
+            // TODO: open dialog box with ChatGPT seach query with default interpretation
             // of the current water quality data
         }
     }
@@ -122,7 +132,7 @@ class HomeFragment : Fragment() {
         _binding = null
     }
 
-    private fun subscribe(root: View) {
+    private fun fetchFeedsDisplayChart(root: View) {
 
         thingspeakViewModel.isLoading.observe(viewLifecycleOwner){isLoading->
             // Set the result text to Loading
@@ -143,10 +153,6 @@ class HomeFragment : Fragment() {
             if (isError) {
                 //TODO: display error message
                 Log.i(TAG, "TODO: display error message")
-                // use the feeds stored locally, but first check the network
-                if(SquidUtils.isDeviceOffline(requireContext())){
-                    displayChart(root)
-                }
             }
         }
 
@@ -154,46 +160,31 @@ class HomeFragment : Fragment() {
             displayChart(thingSpeakData, root)
         }
 
+        // fetch feeds to be display on daily, weekly, monthly and yearly chart
         thingspeakViewModel.lastDateEntryCount.observe(viewLifecycleOwner){lastDateEntryCount ->
             if (lastDateEntryCount!=null) {
-                Log.i(TAG, "COUNT DATE LAST ENTRY: " + lastDateEntryCount.toString())
+                Log.i(TAG, "COUNT DATE LAST ENTRY: $lastDateEntryCount")
                 if(lastDateEntryCount.equals(1)) {
                     val lastDateEntry = thingspeakViewModel.lastDateEntry.value
-                    lastDateEntry?.let {
-                        getWaterQualityLastEntries(it)
-                        thingspeakViewModel.setLastDateEntryCount(1)
+
+                    if (lastDateEntry != null) {
+                        if (SquidUtils.isDeviceOffline(requireContext())) {
+                            queryFeedsAt(lastDateEntry)
+                            thingspeakViewModel.setLastDateEntryCount(1)
+                        }else{
+                            fetchWaterQualityAt(lastDateEntry)
+                            thingspeakViewModel.setLastDateEntryCount(1)
+                        }
                     }
                 }
             }
         }
-
-    }
-    fun displayChart(root: View){
-        //TODO: query local database
-        var feeds: ListIterator<Feed>? = null
-
-        if (feeds != null) {
-            displayChart(feeds, root)
-        }else{
-            Log.i(TAG, "no displayChart")
-        }
     }
 
-    private fun displayChart(thingSpeakData: ThingSpeak?, root: View){
+    private fun displayChart(thingSpeakData: List<Feed>, root: View){
 
-        var feeds: ListIterator<Feed>? = null
-
-        if (thingSpeakData != null) {
-            feeds = thingSpeakData.feeds?.listIterator()
-            if(feeds != null){
-                displayChart(feeds, root)
-            }else{
-                Log.i(TAG, "no displayChart")
-            }
-        }else{
-            Log.i(TAG, "no displayChart")
-        }
-
+        val feeds: ListIterator<Feed> = thingSpeakData.listIterator()
+        displayChart(feeds, root)
     }
 
     private fun displayChart(feeds: ListIterator<Feed>, root: View){
@@ -348,11 +339,34 @@ class HomeFragment : Fragment() {
             .setModel(entryModelOf(entriesOf(value, value, value,value,value, value)))
     }
 
-    fun getWaterQualityLastEntries(dateNow: Instant = Instant.now()){
-        Log.d(TAG, "getWaterQualityLastEntries --> " + this.toString())
+    private fun queryFeedsAt(dateNow: Instant = Instant.now()){
+        Log.d(TAG, "queryFeedsAt --> $this")
         val timeframesDate = dateNow.atZone(ZoneId.systemDefault()).toLocalDate()
-        thingspeakViewModel.getWaterQuality(dateNow, DAILY_TIMEFRAME, true)
+        thingspeakViewModel.queryFeeds(dateNow, DAILY_TIMEFRAME, true)
         timeframeViewModel.selectedTimeframesDate(timeframesDate)
     }
+
+    fun queryRecentFeeds(){
+        if(!thingspeakViewModel.lastDateEntry.isInitialized) {
+            Log.d("HAHAHAMONG", "queryRecentFeeds")
+            thingspeakViewModel.queryLastFeeds()
+        }
+    }
+
+
+    private fun fetchWaterQualityAt(dateNow: Instant = Instant.now()){
+        Log.d(TAG, "fetchWaterQualityAt --> $this")
+        val timeframesDate = dateNow.atZone(ZoneId.systemDefault()).toLocalDate()
+        thingspeakViewModel.fetchWaterQuality(dateNow, DAILY_TIMEFRAME, true)
+        timeframeViewModel.selectedTimeframesDate(timeframesDate)
+    }
+
+    private fun fetchRecentWaterQuality(){
+        if(!thingspeakViewModel.lastDateEntry.isInitialized) {
+            Log.d(TAG, "fetchRecentWaterQuality --> $this")
+            thingspeakViewModel.fetchLastWaterQuality()
+        }
+    }
+
 
 }

@@ -155,7 +155,10 @@ interface FeedEntityDao {
     fun getAll(): Flow<List<FeedEntity>>
 
     @Query("SELECT * FROM water_quality_feed WHERE created_at >= :dateSince AND created_at <= :dateUntil")
-    fun findByDateRange(dateSince: String, dateUntil: String): Flow<List<FeedEntity>>
+    suspend fun findByDateRange(dateSince: String, dateUntil: String): List<FeedEntity>
+
+    @Query("SELECT * FROM water_quality_feed limit :limit")
+    suspend fun findMostRecent(limit: Int = ThingSpeakDailyResult):List<FeedEntity>
 
     @Query("SELECT COUNT(*) FROM water_quality_feed WHERE created_at >= :dateSince AND created_at <= :dateUntil")
     suspend fun size(dateSince: String, dateUntil: String): Int

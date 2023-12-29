@@ -19,7 +19,7 @@ class TimeframeViewModel : ViewModel() {
     val waterParameterUom: LiveData<String> get() = _waterParameterUom
 
     fun selectedTimeframesDate(selectedDate: LocalDate) {
-        _timeframesDate.value = selectedDate
+        _timeframesDate.postValue(selectedDate)
     }
     fun selectedTabPosition(selectedTab: Int) {
         _currentTabPosition.value = selectedTab
