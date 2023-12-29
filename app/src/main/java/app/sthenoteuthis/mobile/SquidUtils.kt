@@ -12,6 +12,7 @@ import app.sthenoteuthis.mobile.ui.viewmodel.WEEKLY_TIMEFRAME
 import app.sthenoteuthis.mobile.ui.viewmodel.YEARLY_TIMEFRAME
 import java.time.DayOfWeek
 import java.time.Instant
+import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.TemporalAdjusters
@@ -66,27 +67,30 @@ class SquidUtils {
                 val lastdayofYear = date.with(TemporalAdjusters.lastDayOfYear())
                 start = "$firstdayofYear 00:00:00"
                 end = "$lastdayofYear 23:59:59"
-                Log.i("TIMEHHHHHHHHH", "$start + $end")
             }else if(timeframe== WEEKLY_TIMEFRAME){
                 val date = selectedDate.atZone(zone).toLocalDate()
                 val saturday = date.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY))
                 val sunday = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))
                 start = "$sunday 00:00:00"
                 end = "$saturday 23:59:59"
-                Log.i("TIMEHHHHHHHHH", "$start + $end")
             }else if(timeframe== MONTHLY_TIMEFRAME){
                 val date = selectedDate.atZone(zone).toLocalDate()
                 val firstdayofMonth = date.with(TemporalAdjusters.firstDayOfMonth())
                 val lastdayofMonth = date.with(TemporalAdjusters.lastDayOfMonth())
                 start = "$firstdayofMonth 00:00:00"
                 end = "$lastdayofMonth 23:59:59"
-                Log.i("TIMEHHHHHHHHH", "$start + $end")
             }else{
                 start = formatter.format(selectedDate) + " 00:00:00"
                 end = formatter.format(selectedDate) + " 23:59:59"
-                Log.i("TIMEHHHHHHHHH", "$start + $end")
             }
+            Log.d("computeTimeframe", "$timeframe $start to $end")
             return Pair(start, end)
+        }
+
+        fun dateTimeStringToMilliseconds(dateTimeString: String): Long {
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+            val localDateTime = LocalDateTime.parse(dateTimeString, formatter)
+            return localDateTime.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli()
         }
     }
 

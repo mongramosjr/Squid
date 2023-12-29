@@ -72,15 +72,13 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         val isDebuggable = 0 != applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE
-        Log.d("HHHHHHHH", "onCreate --> " + this.toString())
 
         thingspeakViewModel.defaultValues()
 
         firebaseViewModel = ViewModelProvider(this)[FirebaseViewModel::class.java]
         firebaseViewModel.initFirebaseAuth()
 
-        Log.d("HHHHHHHH", thingspeakViewModel.toString() + " --> " + this.toString())
-
+        // TODO: remove this email phone viewmodel
         // for login
         emailPhoneloginViewModel = ViewModelProvider(this,
             EmailPhoneLoginViewModelFactory()
@@ -142,17 +140,6 @@ class MainActivity : AppCompatActivity() {
             }
 
         }
-
-        // TODO: Remove this test
-        // Use IO instead of MAIN dispatcher
-        CoroutineScope(Dispatchers.IO).launch {
-            Log.d("HAHAHAHAMONGCOUNT", thingspeakViewModel.countFeedsLocal().toString())
-        }
-
-        CoroutineScope(Dispatchers.IO).launch {
-            Log.d("HAHAHAHAMONGCOUNTUSER", database.loggedInAccountDao().size().toString())
-        }
-
     }
 
     public override fun onStart() {

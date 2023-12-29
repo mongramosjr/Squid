@@ -1,24 +1,24 @@
 package app.sthenoteuthis.mobile.ui.salinity
 
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.datepicker.MaterialDatePicker
-import com.google.android.material.tabs.TabLayout
 import app.sthenoteuthis.mobile.R
+import app.sthenoteuthis.mobile.SquidUtils
 import app.sthenoteuthis.mobile.adapter.TimeframesPagerAdapter
 import app.sthenoteuthis.mobile.databinding.FragmentSalinityBinding
 import app.sthenoteuthis.mobile.ui.viewmodel.SALINITY
 import app.sthenoteuthis.mobile.ui.viewmodel.ThingSpeakViewModel
 import app.sthenoteuthis.mobile.ui.viewmodel.TimeframeViewModel
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.tabs.TabLayout
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
@@ -44,11 +44,12 @@ class SalinityFragment : Fragment() {
     // TODO: What the fuck is this, no need to call this object
     companion object {
         fun newInstance() = SalinityFragment()
+
+        private const val TAG = "SalinityFragment"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.i("SalinityHHHHHHHH", "onCreate")
         timeframeViewModel = ViewModelProvider(requireActivity())[TimeframeViewModel::class.java]
         thingspeakViewModel = ViewModelProvider(requireActivity())[ThingSpeakViewModel::class.java]
 
@@ -64,7 +65,6 @@ class SalinityFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        Log.i("SalinityHHHHHHHH", "onCreateView")
         _binding = FragmentSalinityBinding.inflate(inflater, container, false)
 
         viewPager = binding.differentTimeframesPager
@@ -105,15 +105,15 @@ class SalinityFragment : Fragment() {
             Toast.makeText(binding.root.context, date, Toast.LENGTH_SHORT).show()
             timeframesSelectorButton.text = date
 
-            //propagate the selected date to be used by all children
-            Log.i("TemperatureHHHHHHHH", "setting date to display"
-                    + viewPager.currentItem.toString() + ": "  + timeframesDate.toString())
-
             // query based on the selected date and timeframe
             // getWaterQuality(selected_date, timeframe)
             // #1. query ThingSpeak
             // #2. send changes in date
-            thingspeakViewModel.fetchWaterQuality(Instant.ofEpochMilli(it), viewPager.currentItem, true)
+            if (SquidUtils.isDeviceOffline(requireContext())) {
+                thingspeakViewModel.queryFeeds(Instant.ofEpochMilli(it), viewPager.currentItem, true)
+            }else{
+                thingspeakViewModel.fetchWaterQuality(Instant.ofEpochMilli(it), viewPager.currentItem, true)
+            }
             timeframeViewModel.selectedTimeframesDate(timeframesDate)
         }
 
@@ -135,7 +135,6 @@ class SalinityFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        Log.i("PHHHHHHHHH", "onViewCreated")
         binding.fragmentSalinityToolbar.setNavigationIcon(R.drawable.arrow_back_24)
         binding.fragmentSalinityToolbar.setTitle(SALINITY)
         binding.fragmentSalinityToolbar.setNavigationOnClickListener { me: View ->

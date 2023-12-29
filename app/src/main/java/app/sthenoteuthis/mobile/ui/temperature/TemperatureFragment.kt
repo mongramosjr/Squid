@@ -1,7 +1,6 @@
 package app.sthenoteuthis.mobile.ui.temperature
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,15 +10,16 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.datepicker.MaterialDatePicker
-import com.google.android.material.tabs.TabLayout
 import app.sthenoteuthis.mobile.R
+import app.sthenoteuthis.mobile.SquidUtils
 import app.sthenoteuthis.mobile.adapter.TimeframesPagerAdapter
 import app.sthenoteuthis.mobile.databinding.FragmentTemperatureBinding
 import app.sthenoteuthis.mobile.ui.viewmodel.TEMPERATURE
 import app.sthenoteuthis.mobile.ui.viewmodel.ThingSpeakViewModel
 import app.sthenoteuthis.mobile.ui.viewmodel.TimeframeViewModel
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.tabs.TabLayout
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
@@ -49,11 +49,12 @@ class TemperatureFragment : Fragment() {
     // TODO: What the fuck is this, no need to call this object
     companion object {
         fun newInstance() = TemperatureFragment()
+
+        private const val TAG = "TemperatureFragment"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.i("TemperatureHHHHHHHH", "onCreate")
         timeframeViewModel = ViewModelProvider(requireActivity())[TimeframeViewModel::class.java]
         thingspeakViewModel = ViewModelProvider(requireActivity())[ThingSpeakViewModel::class.java]
 
@@ -69,7 +70,6 @@ class TemperatureFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        Log.i("TemperatureHHHHHHHH", "onCreateView")
         _binding = FragmentTemperatureBinding.inflate(inflater, container, false)
 
         viewPager = binding.differentTimeframesPager
@@ -82,7 +82,6 @@ class TemperatureFragment : Fragment() {
             HtmlCompat.fromHtml(getString(R.string.about_temperature_in_philippines),
                 HtmlCompat.FROM_HTML_MODE_COMPACT
             ))
-
 
         val datePicker = MaterialDatePicker.Builder.datePicker()
             .setTitleText("Select date")
@@ -116,15 +115,15 @@ class TemperatureFragment : Fragment() {
             Toast.makeText(binding.root.context, date, Toast.LENGTH_SHORT).show()
             timeframesSelectorButton.text = date
 
-            //propagate the selected date to be used by all children
-            Log.i("TemperatureHHHHHHHH", "setting date to display"
-                    + viewPager.currentItem.toString() + ": "  + timeframesDate.toString())
-
             // query based on the selected date and timeframe
             // getWaterQuality(selected_date, timeframe)
             // #1. query ThingSpeak
             // #2. send changes in date
-            thingspeakViewModel.fetchWaterQuality(Instant.ofEpochMilli(it), viewPager.currentItem, true)
+            if (SquidUtils.isDeviceOffline(requireContext())) {
+                thingspeakViewModel.queryFeeds(Instant.ofEpochMilli(it), viewPager.currentItem, true)
+            }else{
+                thingspeakViewModel.fetchWaterQuality(Instant.ofEpochMilli(it), viewPager.currentItem, true)
+            }
             timeframeViewModel.selectedTimeframesDate(timeframesDate)
         }
 
@@ -146,7 +145,6 @@ class TemperatureFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        Log.i("PHHHHHHHHH", "onViewCreated")
         binding.fragmentTemperatureToolbar.setNavigationIcon(R.drawable.arrow_back_24)
         binding.fragmentTemperatureToolbar.setTitle(TEMPERATURE)
         binding.fragmentTemperatureToolbar.setNavigationOnClickListener { me: View ->

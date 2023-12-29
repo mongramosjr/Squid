@@ -1,19 +1,18 @@
 package app.sthenoteuthis.mobile.ui.timeframes
 
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import app.sthenoteuthis.mobile.databinding.FragmentTimeframesMonthBinding
+import app.sthenoteuthis.mobile.ui.viewmodel.ThingSpeakViewModel
+import app.sthenoteuthis.mobile.ui.viewmodel.TimeframeViewModel
 import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
 import com.patrykandpatrick.vico.core.entry.FloatEntry
 import com.patrykandpatrick.vico.core.entry.entriesOf
 import com.patrykandpatrick.vico.core.entry.entryModelOf
-import app.sthenoteuthis.mobile.databinding.FragmentTimeframesMonthBinding
-import app.sthenoteuthis.mobile.ui.viewmodel.ThingSpeakViewModel
-import app.sthenoteuthis.mobile.ui.viewmodel.TimeframeViewModel
 import java.time.LocalDate
 
 class TimeframesMonthFragment : Fragment() {
@@ -27,7 +26,6 @@ class TimeframesMonthFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.i("HHHHHHHHTIMEFRAMESMONTH", "onCreate")
         // sync and get the data from parent fragment
         timeframeViewModel = ViewModelProvider(requireActivity())[TimeframeViewModel::class.java]
     }
@@ -38,7 +36,6 @@ class TimeframesMonthFragment : Fragment() {
     ): View {
         // Inflate the layout for this fragment
         _binding = FragmentTimeframesMonthBinding.inflate(inflater, container, false)
-        Log.i("HHHHHHHHTIMEFRAMESMONTH", "onCreateView")
 
         binding.timeframesMonthParameter.text = timeframeViewModel.waterParameter.value.toString()
         binding.timeframesMonthUom.text = timeframeViewModel.waterParameterUom.value.toString()
@@ -49,26 +46,12 @@ class TimeframesMonthFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        Log.i("HHHHHHHHTIMEFRAMESMONTH", "onViewCreated")
-
         /// sync and get the data from parent fragment
         val thingspeakViewModel = ViewModelProvider(requireActivity())[ThingSpeakViewModel::class.java]
         thingspeakViewModel.isDone.observe(viewLifecycleOwner){requestDone ->
             val water_parameter: String = timeframeViewModel.waterParameter.value.toString()
             val timeframesDate: LocalDate = timeframeViewModel.timeframesDate.value!!
-            val selectedDate: LocalDate = thingspeakViewModel.instantToLocalDate(requestDone.selectedDate)
-            Log.i(
-                "HHHHHHHHTIMEFRAMESMONTH",
-                "water parameter" + timeframeViewModel.waterParameter.value.toString()
-            )
-            Log.i(
-                "HHHHHHHHTIMEFRAMESMONTH",
-                "displaying " + timeframesDate.toString()
-            )
-            Log.i(
-                "HHHHHHHHTIMEFRAMESMONTH",
-                "prepping to display graph" + selectedDate.toString()
-            )
+
             val monthList: List<FloatEntry>? =
                 thingspeakViewModel.getSelectedWaterQualityData(water_parameter, timeframesDate)?.monthlyWaterQuality?.measured?.toList()
             val max_measured = monthList?.maxWithOrNull(Comparator.comparingDouble { it.y.toDouble() })

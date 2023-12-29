@@ -24,6 +24,7 @@ import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MyselfFragment : ProgressFragment() {
 
@@ -174,7 +175,6 @@ class MyselfFragment : ProgressFragment() {
         binding.btnToLogout.visibility = View.GONE
     }
 
-    // Example usage of the userDao to perform database operations within the Fragment
     private fun hasBeenHere() {
         CoroutineScope(Dispatchers.IO).launch {
             val count = loggedInAccountDao.size()
@@ -185,7 +185,7 @@ class MyselfFragment : ProgressFragment() {
     }
 
     private fun saveNewLogin(firebaseUser: FirebaseUser){
-        lifecycleScope.launch {
+        lifecycleScope.launch(Dispatchers.IO) {
             val loggedInAccount = firebaseUser.toLoggedInAccount()
             loggedInAccountDao.insert(loggedInAccount)
         }

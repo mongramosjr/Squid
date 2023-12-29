@@ -19,7 +19,7 @@ import app.sthenoteuthis.mobile.data.model.ThingSpeakYearlyAverage
 import app.sthenoteuthis.mobile.data.model.WaterQualityData
 import app.sthenoteuthis.mobile.data.model.WaterQualityTimeframe
 import app.sthenoteuthis.mobile.data.model.toFeed
-import kotlinx.coroutines.CoroutineScope
+import app.sthenoteuthis.mobile.ui.turbidity.TurbidityFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -81,6 +81,10 @@ class ThingSpeakViewModel(private val repository: ThingSpeakRepository) : ViewMo
     val isDone: LiveData<RequestDone> get() = _isDone
 
 
+    companion object {
+        private const val TAG = "ThingSpeakViewModel"
+    }
+
     fun defaultValues()
     {
         _waterQualityData.value = WaterQualityData()
@@ -95,18 +99,6 @@ class ThingSpeakViewModel(private val repository: ThingSpeakRepository) : ViewMo
 
         _isLoading.value = true
         _isError.value = false
-
-        // TODO: Remove this test
-        viewModelScope.launch {
-
-            withContext(Dispatchers.IO) {
-                try {
-                    Log.d("HAHAHAHAMONGCOUNT", countFeedsLocal().toString())
-                } catch (e: Exception) {
-                    Log.e("HAHAHAHAMONGCOUNT", e.toString() )
-                }
-            }
-        }
 
         //val client = ThingSpeakApiClient.apiService.getLast(entries)
         val client = repository.fetchLastFeeds(entries)
@@ -127,11 +119,11 @@ class ThingSpeakViewModel(private val repository: ThingSpeakRepository) : ViewMo
                         // broadcast these three variables
                         _thingSpeakData.value = feeds
                         _lastDateEntry.value = pickDateLastEntry(feeds)
-                        _lastDateEntryCount.value = 1 // NOTE: reset to always
+                        _lastDateEntryCount.value = 1 // NOTE: always reset to 1
                     }
 
                     // TODO: store responseBody to local database FeedsEntity
-                    Log.d("HHHHHHHH", "getLastWaterQuality: Processing Response from ThingSpeak --> " + this.toString())
+                    Log.d(TAG, "getLastWaterQuality: Processing Response from ThingSpeak ")
                 } else {
                     // Handle error
                     print("${response.errorBody()} ")
@@ -148,11 +140,10 @@ class ThingSpeakViewModel(private val repository: ThingSpeakRepository) : ViewMo
     }
 
 
-    //@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private fun fetchWaterQualityAt(selectedDate: Instant = Instant.now(),
                                     timeframe: Int = 0){
 
-        Log.d("HHHHHHHH", "fetchWaterQualityAt: Processing.. $this")
+        Log.d(TAG, "fetchWaterQualityAt: Processing.. $this")
 
 
         _isLoading.value = true
@@ -180,15 +171,15 @@ class ThingSpeakViewModel(private val repository: ThingSpeakRepository) : ViewMo
 
         if(_isDone.isInitialized) {
             check_dates = _isDone.value!!.dates
-            Log.d("HHHHHHHH", "getWaterQualityAt: COUNT is " + check_dates.size.toString())
+            Log.d(TAG, "fetchWaterQualityAt: COUNT is " + check_dates.size.toString())
             val date_timeframe: Pair<Int, LocalDate> = (timeframe to instantToLocalDate(selectedDate))
             if(check_dates.contains(date_timeframe)){
-                Log.d("HHHHHHHH", "getWaterQualityAt: ALREADY HAS " + instantToLocalDate(selectedDate).toString())
+                Log.d(TAG, "fetchWaterQualityAt: ALREADY HAS " + instantToLocalDate(selectedDate).toString())
                 _isDone.value = RequestDone(Instant.now(), selectedDate, check_dates)
                 return
             }
         }else{
-            Log.d("HHHHHHHH", "getWaterQualityAt: COUNT is 0")
+            Log.d(TAG, "fetchWaterQualityAt: COUNT is 0")
         }
 
         //val client = ThingSpeakApiClient.apiService.getData(start, end, average)
@@ -201,11 +192,11 @@ class ThingSpeakViewModel(private val repository: ThingSpeakRepository) : ViewMo
                 if (response.isSuccessful) {
                     val responseBody = response.body()
                     if (responseBody == null) {
-                        onError("getWaterQuality: Data Processing Error")
+                        onError("fetchWaterQualityAt: Data Processing Error")
                         return
                     }
                     // save to the viewmodel
-                    Log.i("ViewModelHHHHHHHH", "getWaterQualityAt: Size of feeds: " + responseBody.feeds?.size.toString())
+                    Log.d(TAG, "fetchWaterQualityAt: Size of feeds: " + responseBody.feeds?.size.toString())
                     if (responseBody.feeds != null) {
                         val feeds: List<Feed> = responseBody.feeds
 
@@ -221,7 +212,7 @@ class ThingSpeakViewModel(private val repository: ThingSpeakRepository) : ViewMo
                                 try {
                                     repository.insertFeeds(responseBody)
                                 } catch (e: Exception) {
-                                    Log.e("HHHHHHHHMONG", e.toString() )
+                                    Log.e(TAG, e.toString() )
                                 }
                             }
                         }
@@ -230,7 +221,7 @@ class ThingSpeakViewModel(private val repository: ThingSpeakRepository) : ViewMo
                 } else {
                     // Handle error
                     print("${response.errorBody()} ")
-                    onError("getWaterQualityAt: Data Processing Error")
+                    onError("fetchWaterQualityAt: Data Processing Error")
                     return
                 }
             }
@@ -257,43 +248,47 @@ class ThingSpeakViewModel(private val repository: ThingSpeakRepository) : ViewMo
     }
 
     fun queryLastFeeds(){
-        CoroutineScope(Dispatchers.IO).launch {
-            Log.d("HAHAHAMONG", "queryRecentFeeds")
-            val recentfeedentities = repository.findLastFeeds()
-            val feedentities = recentfeedentities.listIterator()
-            val feeds: MutableList<Feed> = mutableListOf()
-            Log.d("HAHAHAMONGFeeds", recentfeedentities.size.toString())
-            while (feedentities.hasNext()) {
-                val e = feedentities.next()
-                feeds.add(e.toFeed())
+        viewModelScope.launch {
+
+            withContext(Dispatchers.IO) {
+                val recentfeedentities = repository.findLastFeeds()
+                val feedentities = recentfeedentities.listIterator()
+                val feeds: MutableList<Feed> = mutableListOf()
+                while (feedentities.hasNext()) {
+                    val e = feedentities.next()
+                    feeds.add(e.toFeed())
+                }
+                if(recentfeedentities.isNotEmpty()){
+                    val lastfeedentity = recentfeedentities.last()
+                    val dateLastEntry = lastfeedentity.createdAt
+                    setThingSpeakData(feeds.toList())
+                    setLastDateEntry(dateLastEntry)
+                    setLastDateEntryCount(1)
+                }
             }
-
-            val lastfeedentity = recentfeedentities.last()
-            val dateLastEntry = lastfeedentity.createdAt
-
-            setThingSpeakData(feeds.toList())
-            setLastDateEntry(dateLastEntry)
-            setLastDateEntryCount(1)
         }
     }
 
     fun queryFeedsAt(selectedDate: Instant = Instant.now(), timeframe: Int = DAILY_TIMEFRAME){
-        CoroutineScope(Dispatchers.IO).launch {
-            Log.d("HAHAHAMONGqueryFeedsAt", "queryFeedsAt")
-            val (start, end) = SquidUtils.computeTimeframe(selectedDate, timeframe)
 
-            val recentfeedentities = repository.findByDateRange(start, end)
-            val feedentities = recentfeedentities.listIterator()
-            val feeds: MutableList<Feed> = mutableListOf()
-            val size = recentfeedentities.size
-            Log.d("HAHAHAMONGqueryFeedsAt", "queryFeedsAt $size $start to $end")
-            while (feedentities.hasNext()) {
-                val e = feedentities.next()
-                feeds.add(e.toFeed())
+        viewModelScope.launch {
+
+            withContext(Dispatchers.IO) {
+                val (start, end) = SquidUtils.computeTimeframe(selectedDate, timeframe)
+                val since = SquidUtils.dateTimeStringToMilliseconds(start)
+                val until = SquidUtils.dateTimeStringToMilliseconds(end)
+                val recentfeedentities = repository.findByDateRange(since, until)
+                val feedentities = recentfeedentities.listIterator()
+                val feeds: MutableList<Feed> = mutableListOf()
+                val size = recentfeedentities.size
+                while (feedentities.hasNext()) {
+                    val e = feedentities.next()
+                    feeds.add(e.toFeed())
+                }
+                // save to mutablelivedata
+                rearrangeData(feeds.toList(), selectedDate, timeframe)
+                setRequestDone(selectedDate, timeframe)
             }
-            // save to mutablelivedata
-            rearrangeData(feeds.toList(), selectedDate, timeframe)
-            setRequestDone(selectedDate, timeframe)
         }
     }
 
@@ -729,51 +724,9 @@ class ThingSpeakViewModel(private val repository: ThingSpeakRepository) : ViewMo
         return selectedDate.atZone(ZoneId.systemDefault()).toLocalDate()
     }
 
-    fun computeTimeframe(selectedDate: Instant = Instant.now(), timeframe: Int = 0):
-            Pair<String, String> {
-
-        var start: String = ""
-        var end: String = ""
-
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-            .withZone(ZoneId.systemDefault())
-        val zone = ZoneId.of("Asia/Manila")
-
-        if(timeframe== YEARLY_TIMEFRAME){
-            //val date = LocalDate.ofInstant(selectedDate, zone)
-            val date = selectedDate.atZone(zone).toLocalDate()
-            //val sundayNext = date.plusDays((7 - date.getDayOfWeek().value).toLong())
-            val firstdayofYear = date.with(TemporalAdjusters.firstDayOfYear())
-            val lastdayofYear = date.with(TemporalAdjusters.lastDayOfYear())
-            start = "$firstdayofYear 00:00:00"
-            end = "$lastdayofYear 23:59:59"
-            Log.i("TIMEHHHHHHHHH", "$start + $end")
-        }else if(timeframe== WEEKLY_TIMEFRAME){
-            val date = selectedDate.atZone(zone).toLocalDate()
-            val saturday = date.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY))
-            val sunday = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))
-            start = "$sunday 00:00:00"
-            end = "$saturday 23:59:59"
-            Log.i("TIMEHHHHHHHHH", "$start + $end")
-        }else if(timeframe== MONTHLY_TIMEFRAME){
-            val date = selectedDate.atZone(zone).toLocalDate()
-            val firstdayofMonth = date.with(TemporalAdjusters.firstDayOfMonth())
-            val lastdayofMonth = date.with(TemporalAdjusters.lastDayOfMonth())
-            start = "$firstdayofMonth 00:00:00"
-            end = "$lastdayofMonth 23:59:59"
-            Log.i("TIMEHHHHHHHHH", "$start + $end")
-        }else{
-            start = formatter.format(selectedDate) + " 00:00:00"
-            end = formatter.format(selectedDate) + " 23:59:59"
-            Log.i("TIMEHHHHHHHHH", "$start + $end")
-        }
-        return Pair(start, end)
-    }
-
     private fun pickDateLastEntry(feeds: List<Feed>): Instant{
-        var dateLastEntry: Instant
+        var dateLastEntry: Instant = Instant.now()
         val size = feeds.size
-        dateLastEntry = Instant.now()
         if(size > 0){
             val createdAt = feeds.last().createdAt
             dateLastEntry = OffsetDateTime.parse(createdAt).toInstant()
@@ -801,7 +754,7 @@ class ThingSpeakViewModel(private val repository: ThingSpeakRepository) : ViewMo
 
     fun setRequestDone(selectedDate: Instant = Instant.now(),
                        timeframe: Int = DAILY_TIMEFRAME){
-        Log.i("ViewModelHHHHHHHH", "getWaterQualityAt: Processing Response from ThingSpeak")
+        Log.i(TAG, "processing setRequestDone")
         _isLoading.postValue(false)
         // NOTE: always do this at the end of response to ensure
         // right timing of sending updates to all receiver

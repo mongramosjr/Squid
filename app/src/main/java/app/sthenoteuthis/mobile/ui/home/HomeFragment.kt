@@ -56,7 +56,6 @@ class HomeFragment : Fragment() {
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCreate --> " + this.toString())
 
         timeframeViewModel = ViewModelProvider(requireActivity())[TimeframeViewModel::class.java]
         thingspeakViewModel = ViewModelProvider(requireActivity())[ThingSpeakViewModel::class.java]
@@ -83,7 +82,6 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        Log.d(TAG, "onCreateView --> " + this.toString())
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val view: View = binding.root
         //val view = inflater.inflate(R.layout.fragment_home, container, false)
@@ -340,7 +338,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun queryFeedsAt(dateNow: Instant = Instant.now()){
-        Log.d(TAG, "queryFeedsAt --> $this")
+        Log.d(TAG, "queryFeedsAt --> $dateNow")
         val timeframesDate = dateNow.atZone(ZoneId.systemDefault()).toLocalDate()
         thingspeakViewModel.queryFeeds(dateNow, DAILY_TIMEFRAME, true)
         timeframeViewModel.selectedTimeframesDate(timeframesDate)
@@ -348,14 +346,13 @@ class HomeFragment : Fragment() {
 
     fun queryRecentFeeds(){
         if(!thingspeakViewModel.lastDateEntry.isInitialized) {
-            Log.d("HAHAHAMONG", "queryRecentFeeds")
             thingspeakViewModel.queryLastFeeds()
         }
     }
 
 
     private fun fetchWaterQualityAt(dateNow: Instant = Instant.now()){
-        Log.d(TAG, "fetchWaterQualityAt --> $this")
+        Log.d(TAG, "fetchWaterQualityAt --> $dateNow")
         val timeframesDate = dateNow.atZone(ZoneId.systemDefault()).toLocalDate()
         thingspeakViewModel.fetchWaterQuality(dateNow, DAILY_TIMEFRAME, true)
         timeframeViewModel.selectedTimeframesDate(timeframesDate)
@@ -363,7 +360,6 @@ class HomeFragment : Fragment() {
 
     private fun fetchRecentWaterQuality(){
         if(!thingspeakViewModel.lastDateEntry.isInitialized) {
-            Log.d(TAG, "fetchRecentWaterQuality --> $this")
             thingspeakViewModel.fetchLastWaterQuality()
         }
     }

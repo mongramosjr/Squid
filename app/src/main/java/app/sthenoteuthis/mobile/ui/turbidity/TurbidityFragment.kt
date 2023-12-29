@@ -1,7 +1,6 @@
 package app.sthenoteuthis.mobile.ui.turbidity
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,22 +9,22 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.datepicker.MaterialDatePicker
-import com.google.android.material.tabs.TabLayout
 import app.sthenoteuthis.mobile.R
+import app.sthenoteuthis.mobile.SquidUtils
 import app.sthenoteuthis.mobile.adapter.TimeframesPagerAdapter
 import app.sthenoteuthis.mobile.databinding.FragmentTurbidityBinding
 import app.sthenoteuthis.mobile.ui.viewmodel.TURBIDITY
 import app.sthenoteuthis.mobile.ui.viewmodel.ThingSpeakViewModel
 import app.sthenoteuthis.mobile.ui.viewmodel.TimeframeViewModel
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.tabs.TabLayout
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
-
 
 class TurbidityFragment : Fragment() {
 
@@ -45,11 +44,12 @@ class TurbidityFragment : Fragment() {
     // TODO: What the fuck is this, no need to call this object
     companion object {
         fun newInstance() = TurbidityFragment()
+
+        private const val TAG = "TurbidityFragment"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.i("TurbidityHHHHHHHH", "onCreate")
         timeframeViewModel = ViewModelProvider(requireActivity())[TimeframeViewModel::class.java]
         thingspeakViewModel = ViewModelProvider(requireActivity())[ThingSpeakViewModel::class.java]
 
@@ -65,7 +65,6 @@ class TurbidityFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        Log.i("TurbidityHHHHHHHH", "onCreateView")
         _binding = FragmentTurbidityBinding.inflate(inflater, container, false)
 
         viewPager = binding.differentTimeframesPager
@@ -106,15 +105,15 @@ class TurbidityFragment : Fragment() {
             Toast.makeText(binding.root.context, date, Toast.LENGTH_SHORT).show()
             timeframesSelectorButton.text = date
 
-            //propagate the selected date to be used by all children
-            Log.i("TemperatureHHHHHHHH", "setting date to display"
-                    + viewPager.currentItem.toString() + ": "  + timeframesDate.toString())
-
             // query based on the selected date and timeframe
             // getWaterQuality(selected_date, timeframe)
             // #1. query ThingSpeak
             // #2. send changes in date
-            thingspeakViewModel.fetchWaterQuality(Instant.ofEpochMilli(it), viewPager.currentItem, true)
+            if (SquidUtils.isDeviceOffline(requireContext())) {
+                thingspeakViewModel.queryFeeds(Instant.ofEpochMilli(it), viewPager.currentItem, true)
+            }else{
+                thingspeakViewModel.fetchWaterQuality(Instant.ofEpochMilli(it), viewPager.currentItem, true)
+            }
             timeframeViewModel.selectedTimeframesDate(timeframesDate)
         }
 
@@ -136,7 +135,6 @@ class TurbidityFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        Log.i("PHHHHHHHHH", "onViewCreated")
         binding.fragmentTurbidityToolbar.setNavigationIcon(R.drawable.arrow_back_24)
         binding.fragmentTurbidityToolbar.setTitle(TURBIDITY)
         binding.fragmentTurbidityToolbar.setNavigationOnClickListener { me: View ->

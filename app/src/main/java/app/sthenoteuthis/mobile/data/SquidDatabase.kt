@@ -7,6 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import app.sthenoteuthis.mobile.data.model.FeedEntity
 import app.sthenoteuthis.mobile.data.model.FeedEntityDao
+import app.sthenoteuthis.mobile.data.model.InstantLongConverter
 import app.sthenoteuthis.mobile.data.model.InstantStringConverter
 import app.sthenoteuthis.mobile.data.model.LoggedInAccount
 import app.sthenoteuthis.mobile.data.model.LoggedInAccountDao
@@ -14,6 +15,7 @@ import kotlinx.coroutines.CoroutineScope
 
 
 @Database(entities = [LoggedInAccount::class, FeedEntity::class], version = 1)
+@TypeConverters(InstantLongConverter::class)
 abstract class SquidDatabase: RoomDatabase()  {
 
     abstract fun loggedInAccountDao(): LoggedInAccountDao

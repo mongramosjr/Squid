@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.annotation.WorkerThread
 import app.sthenoteuthis.mobile.data.model.FeedEntity
 import app.sthenoteuthis.mobile.data.model.FeedEntityDao
+import app.sthenoteuthis.mobile.data.model.InstantLongConverter
 import app.sthenoteuthis.mobile.data.model.InstantStringConverter
 import app.sthenoteuthis.mobile.data.model.ThingSpeak
 import app.sthenoteuthis.mobile.data.model.toFeedEntity
@@ -28,7 +29,6 @@ class ThingSpeakRepository(
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun insertFeeds(responseBody: ThingSpeak){
-        Log.d("HHHHHHMONGMONG2", responseBody.toString())
         val feeds = responseBody.feeds?.listIterator()
         if(feeds!=null) {
             while (feeds.hasNext()) {
@@ -47,22 +47,22 @@ class ThingSpeakRepository(
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun size(dateSince: Instant, dateUntil: Instant): Int{
-        val dateSinceString = InstantStringConverter.fromInstant(dateSince).toString()
-        val dateUntilString = InstantStringConverter.fromInstant(dateUntil).toString()
-        return feedEntityDao.size(dateSinceString, dateUntilString)
+        val since = InstantLongConverter.dateToTimestamp(dateSince)
+        val until = InstantLongConverter.dateToTimestamp(dateUntil)
+        return feedEntityDao.size(since!!, until!!)
     }
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun findByDateRange(dateSince: Instant, dateUntil: Instant): List<FeedEntity> {
-        val dateSinceString = InstantStringConverter.fromInstant(dateSince).toString()
-        val dateUntilString = InstantStringConverter.fromInstant(dateUntil).toString()
-        return feedEntityDao.findByDateRange(dateSinceString, dateUntilString)
+        val since = InstantLongConverter.dateToTimestamp(dateSince)
+        val until = InstantLongConverter.dateToTimestamp(dateUntil)
+        return feedEntityDao.findByDateRange(since!!, until!!)
     }
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
-    suspend fun findByDateRange(dateSince: String, dateUntil: String): List<FeedEntity> {
+    suspend fun findByDateRange(dateSince: Long, dateUntil: Long): List<FeedEntity> {
         return feedEntityDao.findByDateRange(dateSince, dateUntil)
     }
 

@@ -137,7 +137,6 @@ data class ThingSpeak(
 
 
 @Entity(tableName = "water_quality_feed")
-@TypeConverters(InstantStringConverter::class)
 data class FeedEntity(
     @PrimaryKey @ColumnInfo(name = "entry_id") val entryId: String,
     @ColumnInfo(name = "created_at") val createdAt: Instant,
@@ -155,13 +154,13 @@ interface FeedEntityDao {
     fun getAll(): Flow<List<FeedEntity>>
 
     @Query("SELECT * FROM water_quality_feed WHERE created_at >= :dateSince AND created_at <= :dateUntil")
-    suspend fun findByDateRange(dateSince: String, dateUntil: String): List<FeedEntity>
+    suspend fun findByDateRange(dateSince: Long, dateUntil: Long): List<FeedEntity>
 
     @Query("SELECT * FROM water_quality_feed limit :limit")
     suspend fun findMostRecent(limit: Int = ThingSpeakDailyResult):List<FeedEntity>
 
     @Query("SELECT COUNT(*) FROM water_quality_feed WHERE created_at >= :dateSince AND created_at <= :dateUntil")
-    suspend fun size(dateSince: String, dateUntil: String): Int
+    suspend fun size(dateSince: Long, dateUntil: Long): Int
 
     @Query("SELECT COUNT(*) FROM water_quality_feed")
     suspend fun size(): Int
@@ -210,5 +209,19 @@ object InstantStringConverter {
     @JvmStatic
     fun toInstant(instantString: String?): Instant? {
         return instantString?.let { Instant.parse(it) }
+    }
+}
+
+object InstantLongConverter {
+    @TypeConverter
+    @JvmStatic
+    fun fromTimestamp(value: Long?): Instant? {
+        return value?.let { Instant.ofEpochMilli(it) }
+    }
+
+    @TypeConverter
+    @JvmStatic
+    fun dateToTimestamp(date: Instant?): Long? {
+        return date?.toEpochMilli()
     }
 }
